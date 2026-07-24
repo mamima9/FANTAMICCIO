@@ -37,6 +37,10 @@ export default function Navbar() {
             Contrade
           </Link>
 
+          <Link href="/albi-doro" className="text-white hover:text-[#D4AF37] transition">
+            Albi d'Oro
+          </Link>
+
           <Link href="/classifica" className="text-white hover:text-[#D4AF37] transition">
             Classifiche
           </Link>
@@ -60,7 +64,7 @@ export default function Navbar() {
           className="lg:hidden text-white"
           onClick={() => setOpen(!open)}
         >
-          {open ? <X size={30}/> : <Menu size={30}/>}
+          {open ? <X size={30} /> : <Menu size={30} />}
         </button>
 
       </div>
@@ -69,13 +73,25 @@ export default function Navbar() {
       {open && (
         <div className="lg:hidden bg-[#5C3A21] border-t border-[#D4AF37]/20">
 
-          <Link href="/" className="block px-6 py-4 text-white">Home</Link>
+          <Link href="/" className="block px-6 py-4 text-white">
+            Home
+          </Link>
 
-          <Link href="/contrade" className="block px-6 py-4 text-white">Contrade</Link>
+          <Link href="/contrade" className="block px-6 py-4 text-white">
+            Contrade
+          </Link>
 
-          <Link href="/classifica" className="block px-6 py-4 text-white">Classifiche</Link>
+          <Link href="/albi-doro" className="block px-6 py-4 text-white">
+            📜 Albi d'Oro
+          </Link>
 
-          <Link href="/news" className="block px-6 py-4 text-white">News</Link>
+          <Link href="/classifica" className="block px-6 py-4 text-white">
+            Classifiche
+          </Link>
+
+          <Link href="/news" className="block px-6 py-4 text-white">
+            News
+          </Link>
 
           <Link
             href="/login"
