@@ -1,107 +1,168 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/palio-dei-micci", label: "Il Palio" },
+  { href: "/contrade", label: "Contrade" },
+  { href: "/albi-doro", label: "Albi d'Oro" },
+];
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 15);
+
+    window.addEventListener("scroll", onScroll);
+
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#5C3A21]/95 backdrop-blur border-b border-[#D4AF37]/20 shadow">
-      <div className="max-w-7xl mx-auto h-20 px-6 flex items-center justify-between">
+    <header
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-[#5C3A21]/95 backdrop-blur-xl shadow-xl border-b border-[#D4AF37]/20"
+          : "bg-[#5C3A21]/80 backdrop-blur-md"
+      }`}
+    >
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
 
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-3">
+        {/* LOGO */}
+
+        <Link
+          href="/"
+          className="flex items-center gap-4 transition hover:opacity-90"
+        >
           <Image
             src="/contrade/logo.png"
             alt="FantaMiccio"
-            width={48}
-            height={48}
+            width={56}
+            height={56}
+            priority
           />
 
-          <span className="text-2xl font-bold text-[#D4AF37]">
-            FantaMiccio
-          </span>
+          <div className="hidden sm:block">
+
+            <h1 className="text-2xl font-extrabold tracking-tight text-[#D4AF37]">
+              FantaMiccio
+            </h1>
+
+            <p className="text-xs text-amber-100/80">
+              Il Fantasy del Palio dei Micci
+            </p>
+
+          </div>
+
         </Link>
 
-        {/* Desktop */}
-        <nav className="hidden lg:flex items-center gap-8 font-medium">
+        {/* DESKTOP */}
 
-          <Link href="/" className="text-white hover:text-[#D4AF37] transition">
-            Home
-          </Link>
+        <nav className="hidden items-center gap-2 lg:flex">
 
-          <Link href="/contrade" className="text-white hover:text-[#D4AF37] transition">
-            Contrade
-          </Link>
+          {links.map((link) => {
 
-          <Link href="/albi-doro" className="text-white hover:text-[#D4AF37] transition">
-            Albi d'Oro
-          </Link>
+            const active = pathname === link.href;
 
-          <Link href="/classifica" className="text-white hover:text-[#D4AF37] transition">
-            Classifiche
-          </Link>
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`relative rounded-xl px-5 py-3 font-semibold transition-all duration-300 ${
+                  active
+                    ? "text-[#D4AF37]"
+                    : "text-white hover:text-[#FFD96A]"
+                }`}
+              >
+                {link.label}
 
-          <Link href="/news" className="text-white hover:text-[#D4AF37] transition">
-            News
-          </Link>
+                <span
+                  className={`absolute bottom-1 left-1/2 h-[3px] -translate-x-1/2 rounded-full bg-[#D4AF37] transition-all duration-300 ${
+                    active ? "w-8" : "w-0"
+                  }`}
+                />
+
+              </Link>
+            );
+
+          })}
 
         </nav>
 
-        {/* Desktop button */}
+        {/* ACCEDI */}
+
         <Link
           href="/login"
-          className="hidden lg:block bg-[#D4AF37] text-[#5C3A21] font-semibold px-5 py-2 rounded-xl hover:scale-105 transition"
+          className="hidden rounded-xl bg-[#D4AF37] px-6 py-3 font-bold text-[#5C3A21] transition hover:scale-105 hover:bg-[#E4BC43] lg:block"
         >
           Accedi
         </Link>
 
-        {/* Mobile button */}
+        {/* HAMBURGER */}
+
         <button
-          className="lg:hidden text-white"
-          onClick={() => setOpen(!open)}
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="rounded-lg p-2 text-white transition hover:bg-white/10 lg:hidden"
         >
-          {open ? <X size={30} /> : <Menu size={30} />}
+          {mobileOpen ? <X size={30} /> : <Menu size={30} />}
         </button>
 
       </div>
+            {/* MOBILE MENU */}
 
-      {/* Mobile menu */}
-      {open && (
-        <div className="lg:hidden bg-[#5C3A21] border-t border-[#D4AF37]/20">
+      <div
+        className={`overflow-hidden transition-all duration-300 lg:hidden ${
+          mobileOpen ? "max-h-[500px]" : "max-h-0"
+        }`}
+      >
+        <nav className="border-t border-[#D4AF37]/20 bg-[#5C3A21]/95 backdrop-blur-xl">
 
-          <Link href="/" className="block px-6 py-4 text-white">
-            Home
-          </Link>
+          <div className="space-y-2 p-5">
 
-          <Link href="/contrade" className="block px-6 py-4 text-white">
-            Contrade
-          </Link>
+            {links.map((link) => {
 
-          <Link href="/albi-doro" className="block px-6 py-4 text-white">
-            📜 Albi d'Oro
-          </Link>
+              const active = pathname === link.href;
 
-          <Link href="/classifica" className="block px-6 py-4 text-white">
-            Classifiche
-          </Link>
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`block rounded-xl px-4 py-3 font-semibold transition ${
+                    active
+                      ? "bg-[#D4AF37] text-[#5C3A21]"
+                      : "text-white hover:bg-white/10"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
 
-          <Link href="/news" className="block px-6 py-4 text-white">
-            News
-          </Link>
+            })}
 
-          <Link
-            href="/login"
-            className="block m-4 text-center bg-[#D4AF37] text-[#5C3A21] py-3 rounded-xl font-bold"
-          >
-            Accedi
-          </Link>
+            <Link
+              href="/login"
+              className="mt-4 flex justify-center rounded-xl bg-[#D4AF37] px-5 py-3 font-bold text-[#5C3A21] transition hover:bg-[#E4BC43]"
+            >
+              Accedi
+            </Link>
 
-        </div>
-      )}
+          </div>
+
+        </nav>
+      </div>
 
     </header>
   );
