@@ -4,7 +4,6 @@ import Link from "next/link";
 export default function Hero() {
   return (
     <section className="relative bg-[#F8F5F0] overflow-hidden">
-
       <div className="max-w-7xl mx-auto px-6 py-24 flex flex-col items-center text-center">
 
         <Image
@@ -23,7 +22,7 @@ export default function Hero() {
           Il Fantasy Game del Palio dei Micci
         </p>
 
-        <div className="mt-10 flex gap-4">
+        <div className="mt-10 flex gap-4 flex-wrap justify-center">
 
           <Link
             href="/registrazione"
@@ -33,7 +32,7 @@ export default function Hero() {
           </Link>
 
           <Link
-            href="/regolamento"
+            href="#scopri"
             className="border-2 border-[#5C3A21] text-[#5C3A21] px-8 py-4 rounded-2xl font-bold text-lg hover:bg-[#5C3A21] hover:text-white transition"
           >
             Scopri di più
@@ -42,7 +41,6 @@ export default function Hero() {
         </div>
 
       </div>
-
     </section>
   );
 }

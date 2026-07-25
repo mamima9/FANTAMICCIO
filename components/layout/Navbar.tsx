@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
 
 const links = [
   { href: "/", label: "Home" },
@@ -15,8 +14,6 @@ const links = [
 
 export default function Navbar() {
   const pathname = usePathname();
-
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -26,10 +23,6 @@ export default function Navbar() {
 
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
 
   return (
     <header
@@ -56,7 +49,6 @@ export default function Navbar() {
           />
 
           <div className="hidden sm:block">
-
             <h1 className="text-2xl font-extrabold tracking-tight text-[#D4AF37]">
               FantaMiccio
             </h1>
@@ -64,17 +56,13 @@ export default function Navbar() {
             <p className="text-xs text-amber-100/80">
               Il Fantasy del Palio dei Micci
             </p>
-
           </div>
-
         </Link>
 
-        {/* DESKTOP */}
+        {/* MENU DESKTOP */}
 
         <nav className="hidden items-center gap-2 lg:flex">
-
           {links.map((link) => {
-
             const active = pathname === link.href;
 
             return (
@@ -94,15 +82,12 @@ export default function Navbar() {
                     active ? "w-8" : "w-0"
                   }`}
                 />
-
               </Link>
             );
-
           })}
-
         </nav>
 
-        {/* ACCEDI */}
+        {/* ACCEDI DESKTOP */}
 
         <Link
           href="/login"
@@ -110,60 +95,38 @@ export default function Navbar() {
         >
           Accedi
         </Link>
-
-        {/* HAMBURGER */}
-
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="rounded-lg p-2 text-white transition hover:bg-white/10 lg:hidden"
-        >
-          {mobileOpen ? <X size={30} /> : <Menu size={30} />}
-        </button>
-
       </div>
-            {/* MOBILE MENU */}
 
-      <div
-        className={`overflow-hidden transition-all duration-300 lg:hidden ${
-          mobileOpen ? "max-h-[500px]" : "max-h-0"
-        }`}
-      >
-        <nav className="border-t border-[#D4AF37]/20 bg-[#5C3A21]/95 backdrop-blur-xl">
+      {/* MENU MOBILE */}
 
-          <div className="space-y-2 p-5">
+      <div className="border-t border-[#D4AF37]/20 bg-[#5C3A21] lg:hidden">
+        <nav className="grid grid-cols-2 gap-2 p-4">
+          {links.map((link) => {
+            const active = pathname === link.href;
 
-            {links.map((link) => {
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`rounded-xl px-4 py-3 text-center font-semibold transition ${
+                  active
+                    ? "bg-[#D4AF37] text-[#5C3A21]"
+                    : "bg-white/5 text-white hover:bg-white/10"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
 
-              const active = pathname === link.href;
-
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`block rounded-xl px-4 py-3 font-semibold transition ${
-                    active
-                      ? "bg-[#D4AF37] text-[#5C3A21]"
-                      : "text-white hover:bg-white/10"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-
-            })}
-
-            <Link
-              href="/login"
-              className="mt-4 flex justify-center rounded-xl bg-[#D4AF37] px-5 py-3 font-bold text-[#5C3A21] transition hover:bg-[#E4BC43]"
-            >
-              Accedi
-            </Link>
-
-          </div>
-
+          <Link
+            href="/login"
+            className="col-span-2 mt-2 rounded-xl bg-[#D4AF37] px-5 py-3 text-center font-bold text-[#5C3A21] transition hover:bg-[#E4BC43]"
+          >
+            Accedi
+          </Link>
         </nav>
       </div>
-
     </header>
   );
 }

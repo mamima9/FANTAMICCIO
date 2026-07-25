@@ -17,7 +17,6 @@ export default function Countdown() {
       days: Math.floor(difference / (1000 * 60 * 60 * 24)),
       hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
       minutes: Math.floor((difference / 1000 / 60) % 60),
-      seconds: Math.floor((difference / 1000) % 60),
     };
   };
 
@@ -80,8 +79,6 @@ export default function Countdown() {
           <Item value={timeLeft.hours} label="Ore" />
 
           <Item value={timeLeft.minutes} label="Minuti" />
-
-          <Item value={timeLeft.seconds} label="Secondi" />
 
         </div>
       </div>

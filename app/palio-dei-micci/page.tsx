@@ -107,12 +107,12 @@ export default function PalioDeiMicciPage() {
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-8">
 
             {[
-              ["1956", "Prima edizione"],
+              ["'56", "Prima edizione"],
               ["8", "Contrade"],
-              ["2000+", "Figuranti"],
-              ["Migliaia", "Spettatori ogni anno"],
-              ["Prima domenica", "di Maggio"],
-              ["Lucca", "Manifestazione storica della Provincia"],
+              ["+2k", "Figuranti"],
+              ["10k", "Spettatori ogni anno"],
+              ["1a", "Domenica di Maggio"],
+              ["LU", "Evento storico della Provincia"],
             ].map(([numero, titolo]) => (
 
               <div
