@@ -50,26 +50,44 @@ export default function VitaDiContrada() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-5">
 
           {[
-            ["🏆", "Eventi"],
-            ["📅", "Calendario"],
-            ["🏅", "Classifiche"],
-            ["📊", "Contrade"],
-            ["📜", "Regole"],
-          ].map(([icon, title]) => (
+  {
+    icon: "🏆",
+    title: "Eventi",
+    href: "/eventi",
+  },
+  {
+    icon: "📅",
+    title: "Calendario",
+    href: "/calendario",
+  },
+  {
+    icon: "🏅",
+    title: "Classifiche",
+    href: "/classifiche",
+  },
+  {
+    icon: "📊",
+    title: "Contrade",
+    href: "/contrade",
+  },
+  {
+    icon: "📜",
+    title: "Regole",
+    href: "/regolamento",
+  },
+].map((item) => (
+  <Link
+    key={item.title}
+    href={item.href}
+    className="bg-white rounded-3xl shadow-xl p-8 text-center hover:-translate-y-2 transition"
+  >
+    <div className="text-5xl">{item.icon}</div>
 
-            <div
-              key={title}
-              className="bg-white rounded-3xl shadow-xl p-8 text-center hover:-translate-y-2 transition cursor-pointer"
-            >
-              <div className="text-5xl">{icon}</div>
-
-              <h3 className="mt-4 font-bold text-xl">
-                {title}
-              </h3>
-
-            </div>
-
-          ))}
+    <h3 className="mt-4 font-bold text-xl">
+      {item.title}
+    </h3>
+  </Link>
+))}
 
         </div>
 
