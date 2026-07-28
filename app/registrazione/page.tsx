@@ -1,8 +1,11 @@
 "use client";
 
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+
 
 const contrade = [
   "Cervia",
@@ -17,6 +20,65 @@ const contrade = [
 
 export default function RegistrazionePage() {
   const [contrada, setContrada] = useState("");
+
+  const router = useRouter();
+
+ const [nome, setNome] = useState("");
+ const [cognome, setCognome] = useState("");
+ const [username, setUsername] = useState("");
+ const [email, setEmail] = useState("");
+ const [password, setPassword] = useState("");
+ const [confirmPassword, setConfirmPassword] = useState("");
+ const [loading, setLoading] = useState(false);
+
+const handleRegister = async () => {
+  if (password !== confirmPassword) {
+    alert("Le password non coincidono");
+    return;
+  }
+
+  setLoading(true);
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+
+  if (error) {
+    setLoading(false);
+    alert(error.message);
+    return;
+  }
+
+  const user = data.user;
+
+  if (!user) {
+    setLoading(false);
+    alert("Errore durante la registrazione.");
+    return;
+  }
+
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .insert({
+      id: user.id,
+      nome,
+      cognome,
+      username,
+      contrada,
+    });
+
+  setLoading(false);
+
+  if (profileError) {
+    alert(profileError.message);
+    return;
+  }
+
+  alert("Registrazione completata! Controlla la tua email per confermare l'account.");
+
+  router.push("/login");
+};
 
   return (
     <>
@@ -43,32 +105,37 @@ export default function RegistrazionePage() {
             <div className="grid md:grid-cols-2 gap-6">
 
               <div>
-                <label className="font-semibold">Nome</label>
+  <label className="font-semibold">Nome</label>
+
+  <input
+    type="text"
+    value={nome}
+    onChange={(e) => setNome(e.target.value)}
+    placeholder="Mario"
+    className="mt-2 w-full rounded-xl border p-3"
+  />
+</div>
+
+                   <div>
+                   <label className="font-semibold">Cognome</label>
 
                 <input
-                  type="text"
-                  placeholder="Mario"
+                 type="text"
+                 value={cognome}
+                 onChange={(e) => setCognome(e.target.value)}
+                 placeholder="Rossi"
                   className="mt-2 w-full rounded-xl border p-3"
-                />
-              </div>
-
-              <div>
-                <label className="font-semibold">Cognome</label>
-
-                <input
-                  type="text"
-                  placeholder="Rossi"
-                  className="mt-2 w-full rounded-xl border p-3"
-                />
-              </div>
-
+                 />
+                </div>
               <div className="md:col-span-2">
                 <label className="font-semibold">Username</label>
 
                 <input
                   type="text"
-                  placeholder="Fantacontradaiolo"
-                  className="mt-2 w-full rounded-xl border p-3"
+                  value={username}
+                 onChange={(e) => setUsername(e.target.value)}
+                 placeholder="Fantacontradaiolo"
+                 className="mt-2 w-full rounded-xl border p-3"
                 />
               </div>
 
@@ -76,28 +143,34 @@ export default function RegistrazionePage() {
                 <label className="font-semibold">Email</label>
 
                 <input
-                  type="email"
-                  placeholder="nome@email.it"
-                  className="mt-2 w-full rounded-xl border p-3"
-                />
+                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="nome@email.it"
+                className="mt-2 w-full rounded-xl border p-3"
+                 />
               </div>
 
               <div>
                 <label className="font-semibold">Password</label>
 
                 <input
-                  type="password"
-                  className="mt-2 w-full rounded-xl border p-3"
-                />
+                type="password"
+                value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                 className="mt-2 w-full rounded-xl border p-3"
+                 />
               </div>
 
               <div>
                 <label className="font-semibold">Conferma Password</label>
 
                 <input
-                  type="password"
-                  className="mt-2 w-full rounded-xl border p-3"
-                />
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+               className="mt-2 w-full rounded-xl border p-3"
+               />
               </div>
 
               <div className="md:col-span-2">
@@ -138,11 +211,12 @@ export default function RegistrazionePage() {
             </div>
 
             <button
-              onClick={() => alert("Registrazione disponibile prossimamente")}
-              className="mt-10 w-full rounded-2xl bg-[#D4AF37] py-4 text-xl font-bold text-[#5C3A21] transition hover:scale-[1.02]"
-            >
-              🚀 Crea il mio account
-            </button>
+  onClick={handleRegister}
+  disabled={loading}
+  className="mt-10 w-full rounded-2xl bg-[#D4AF37] py-4 text-xl font-bold text-[#5C3A21] transition hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  {loading ? "Registrazione..." : "🚀 Crea il mio account"}
+</button>
 
             <p className="mt-8 text-center text-gray-600">
               Hai già un account?
