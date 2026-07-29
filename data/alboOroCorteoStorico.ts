@@ -1,6 +1,10 @@
-import { AlboOroEntry } from "./alboOro";
+export interface AlboOroCorteoStoricoEntry {
+  anno: number;
+  vincitore: string | string[] | null;
+  motivo?: string;
+}
 
-export const alboOroCorteoStorico: AlboOroEntry[] = [
+export const alboOroCorteoStorico: AlboOroCorteoStoricoEntry[] = [
   { anno: 2026, vincitore: "leondoro" },
   { anno: 2025, vincitore: "quercia" },
   { anno: 2024, vincitore: "leondoro" },
@@ -21,12 +25,12 @@ export const alboOroCorteoStorico: AlboOroEntry[] = [
   { anno: 2009, vincitore: "cervia" },
 
  
-  { anno: 2008, vincitore: "leondoro,quercia" },
+  { anno: 2008, vincitore: ["leondoro","quercia"], },
 
   { anno: 2007, vincitore: "pozzo" },
   { anno: 2006, vincitore: "quercia" },
 
-  { anno: 2005, vincitore: "leondoro,quercia" },
+  { anno: 2005, vincitore: ["leondoro","quercia"], },
 
   { anno: 2004, vincitore: "leondoro" },
   { anno: 2003, vincitore: "quercia" },

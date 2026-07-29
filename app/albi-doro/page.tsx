@@ -3,7 +3,7 @@ import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 
 const competizioni = [
-  { nome: "Corsa del Miccio", slug: "corsa", emoji: "🐴" },
+  { nome: "Corsa del Miccio", slug: "corsa", emoji: "🫏" },
   { nome: "Coppa del Presidente", slug: "coppa-presidente", emoji: "👑" },
   { nome: "Calcio", slug: "calcio", emoji: "⚽" },
   { nome: "Tema", slug: "tema", emoji: "🎭" },

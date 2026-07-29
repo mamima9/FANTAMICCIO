@@ -29,7 +29,7 @@ type Props = {
 
 const competizioni = {
   corsa: {
-    titolo: "🐴 Corsa del Miccio",
+    titolo: "🫏 Corsa del Miccio",
     dati: alboOro,
   },
   "coppa-presidente": {
@@ -124,9 +124,11 @@ export default async function GaraPage({ params }: Props) {
 
                 {gara.dati.map((entry: any) => {
 
-                  const contrada = entry.vincitore
-                    ? getContrada(entry.vincitore)
-                    : null;
+                 const vincitori = Array.isArray(entry.vincitore)
+  ? entry.vincitore
+  : entry.vincitore
+    ? [entry.vincitore]
+    : [];
 
                   return (
                     <tr
@@ -140,34 +142,45 @@ export default async function GaraPage({ params }: Props) {
 
                       <td className="p-5">
 
-                        {contrada ? (
+                        {vincitori.length > 0 ? (
 
-                          <div className="flex items-center gap-4">
+  <div className="flex flex-col gap-3">
 
-                            <div className="rounded-full border-2 border-[#D4AF37] p-1 bg-white">
+    {vincitori.map((id: string) => {
+      const contrada = getContrada(id);
 
-                              <Image
-                                src={contrada.stemma}
-                                alt={contrada.nome}
-                                width={42}
-                                height={42}
-                              />
+      if (!contrada) return null;
 
-                            </div>
+      return (
+        <div
+          key={id}
+          className="flex items-center gap-4"
+        >
+          <div className="rounded-full border-2 border-[#D4AF37] p-1 bg-white">
+            <Image
+              src={contrada.stemma}
+              alt={contrada.nome}
+              width={42}
+              height={42}
+            />
+          </div>
 
-                            <span className="text-lg font-semibold text-[#5C3A21]">
-                              {contrada.nome}
-                            </span>
+          <span className="text-lg font-semibold text-[#5C3A21]">
+            {contrada.nome}
+          </span>
+        </div>
+      );
+    })}
 
-                          </div>
+  </div>
 
-                        ) : (
+) : (
 
-                          <span className="italic text-[#8B6B3D]">
-                            {entry.motivo}
-                          </span>
+  <span className="italic text-[#8B6B3D]">
+    {entry.motivo}
+  </span>
 
-                        )}
+)}
 
                       </td>
 
