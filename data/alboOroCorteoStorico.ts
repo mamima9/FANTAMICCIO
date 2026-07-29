@@ -1,6 +1,7 @@
 import { AlboOroEntry } from "./alboOro";
 
 export const alboOroCorteoStorico: AlboOroEntry[] = [
+  { anno: 2026, vincitore: "leondoro" },
   { anno: 2025, vincitore: "quercia" },
   { anno: 2024, vincitore: "leondoro" },
   { anno: 2023, vincitore: "cervia" },
@@ -19,14 +20,13 @@ export const alboOroCorteoStorico: AlboOroEntry[] = [
   { anno: 2010, vincitore: "leondoro" },
   { anno: 2009, vincitore: "cervia" },
 
-  // Ex aequo Leon d'Oro / Quercia
-  { anno: 2008, vincitore: "leondoro" },
+ 
+  { anno: 2008, vincitore: "leondoro,quercia" },
 
   { anno: 2007, vincitore: "pozzo" },
   { anno: 2006, vincitore: "quercia" },
 
-  // Ex aequo Leon d'Oro / Quercia
-  { anno: 2005, vincitore: "leondoro" },
+  { anno: 2005, vincitore: "leondoro,quercia" },
 
   { anno: 2004, vincitore: "leondoro" },
   { anno: 2003, vincitore: "quercia" },

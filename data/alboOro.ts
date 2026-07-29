@@ -7,7 +7,7 @@ export interface AlboOroEntry {
 export const alboOro: AlboOroEntry[] = [
   { anno: 2026, vincitore: "pozzo" },
   { anno: 2025, vincitore: "leondoro" },
-  { anno: 2024, vincitore: null, motivo: "Palio non disputato" },
+  { anno: 2024, vincitore: null, motivo: "Non assegnato" },
   { anno: 2023, vincitore: "ponte" },
   { anno: 2022, vincitore: "ranocchio" },
   { anno: 2021, vincitore: null, motivo: "Palio non disputato" },

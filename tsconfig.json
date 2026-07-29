@@ -14,7 +14,9 @@
     "jsx": "react-jsx",
     "incremental": true,
 
-    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
 
     "plugins": [
       {
@@ -22,9 +24,7 @@
       }
     ],
 
-    "paths": {
-      "@/*": ["./*"]
-    }
+    "ignoreDeprecations": "6.0"
   },
 
   "include": [

@@ -5,6 +5,7 @@ export interface AlboOroBandieraEntry {
 }
 
 export const alboOroBandiera: AlboOroBandieraEntry[] = [
+  { anno: 2026, vincitore: "ponte" },
   { anno: 2025, vincitore: "leondoro" },
   { anno: 2024, vincitore: "leondoro" },
   { anno: 2023, vincitore: "leondoro" },

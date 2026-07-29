@@ -6,6 +6,7 @@ export interface AlboOroMeccheriEntry {
 
 export const alboOroMeccheri: AlboOroMeccheriEntry[] = [
   { anno: 2025, vincitore: "cervia" },
+  { anno: 2025, vincitore: "cervia,leondoro,ponte" },
   { anno: 2024, vincitore: "leondoro" },
   { anno: 2023, vincitore: "leondoro" },
   { anno: 2022, vincitore: "leondoro" },
@@ -17,7 +18,7 @@ export const alboOroMeccheri: AlboOroMeccheriEntry[] = [
   { anno: 2016, vincitore: "cervia" },
   { anno: 2015, vincitore: "leondoro" },
   { anno: 2014, vincitore: "ranocchio" },
-  { anno: 2013, vincitore: "leondoro" },
+  { anno: 2013, vincitore: "leondoro,ponte" },
   { anno: 2012, vincitore: "ponte" },
   { anno: 2011, vincitore: "cervia" },
   { anno: 2010, vincitore: "ponte" },

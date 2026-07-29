@@ -5,10 +5,11 @@ export interface AlboOroAlabardaEntry {
 }
 
 export const alboOroAlabarda: AlboOroAlabardaEntry[] = [
+  { anno: 2026, vincitori: ["leondoro"] },
   { anno: 2025, vincitori: ["quercia"] },
   { anno: 2024, vincitori: ["leondoro"] },
   { anno: 2023, vincitori: ["cervia"] },
-  { anno: 2022, vincitori: [], motivo: "Da verificare" },
+  { anno: 2022, vincitori: [], motivo: "Non assegnato" },
   { anno: 2021, vincitori: [], motivo: "Palio non disputato" },
   { anno: 2020, vincitori: [], motivo: "Palio non disputato" },
   { anno: 2019, vincitori: ["ponte"] },

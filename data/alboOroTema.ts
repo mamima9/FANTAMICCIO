@@ -5,10 +5,11 @@ export interface AlboOroTemaEntry {
 }
 
 export const alboOroTema: AlboOroTemaEntry[] = [
+  { anno: 2026, vincitore: "leondoro" },
   { anno: 2025, vincitore: "quercia" },
   { anno: 2024, vincitore: "leondoro" },
   { anno: 2023, vincitore: "cervia" },
-  { anno: 2022, vincitore: null, motivo: "Da verificare" },
+  { anno: 2022, vincitore: null, motivo: "Non assegnato" },
   { anno: 2021, vincitore: null, motivo: "Palio non disputato" },
   { anno: 2020, vincitore: null, motivo: "Palio non disputato" },
   { anno: 2019, vincitore: "ponte" },

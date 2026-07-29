@@ -5,6 +5,7 @@ export interface AlboOroStaffettaEntry {
 }
 
 export const alboOroStaffetta: AlboOroStaffettaEntry[] = [
+  { anno: 2026, vincitore: "pozzo" },
   { anno: 2025, vincitore: "pozzo" },
   { anno: 2024, vincitore: "pozzo" },
   { anno: 2023, vincitore: "pozzo" },

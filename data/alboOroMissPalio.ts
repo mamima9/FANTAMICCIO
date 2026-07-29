@@ -5,9 +5,10 @@ export interface AlboOroMissPalioEntry {
 }
 
 export const alboOroMissPalio: AlboOroMissPalioEntry[] = [
+  { anno: 2026, vincitore: "pozzo" },
   { anno: 2025, vincitore: "ponte" },
   { anno: 2024, vincitore: "ponte" },
-  { anno: 2023, vincitore: null, motivo: "Da verificare" },
+  { anno: 2023, vincitore: null, motivo: "Non assegnato" },
   { anno: 2022, vincitore: "lucertola" },
   { anno: 2021, vincitore: null, motivo: "Palio non disputato" },
   { anno: 2020, vincitore: null, motivo: "Palio non disputato" },
