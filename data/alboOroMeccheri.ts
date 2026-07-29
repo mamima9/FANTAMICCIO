@@ -5,7 +5,7 @@ export interface AlboOroMeccheriEntry {
 }
 
 export const alboOroMeccheri: AlboOroMeccheriEntry[] = [
-  { anno: 2025, vincitore: "cervia" },
+  { anno: 2026, vincitore: "pozzo" },
   { anno: 2025, vincitore: ["cervia","leondoro","ponte"], },
   { anno: 2024, vincitore: "leondoro" },
   { anno: 2023, vincitore: "leondoro" },
