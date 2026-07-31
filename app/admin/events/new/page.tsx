@@ -44,12 +44,36 @@ export default function NewEventPage() {
     });
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    console.log(form);
+    const { error } = await supabase.from("events").insert({
+      title: form.title,
+      description: form.description,
+      event_type: form.event_type,
+      season: Number(form.season),
+      event_date: form.event_date,
+      prediction_deadline: form.prediction_deadline || null,
+      status: form.status,
+    });
 
-    alert("Per ora il form funziona! Nel prossimo passo lo collegheremo a Supabase.");
+    if (error) {
+      console.error(error);
+      alert("Errore durante il salvataggio dell'evento.");
+      return;
+    }
+
+    alert("Evento salvato con successo!");
+
+    setForm({
+      title: "",
+      description: "",
+      event_type: "",
+      season: new Date().getFullYear(),
+      event_date: "",
+      prediction_deadline: "",
+      status: "DRAFT",
+    });
   }
 
   return (
@@ -80,27 +104,25 @@ export default function NewEventPage() {
           />
         </div>
 
-        {/* Questo lo cambieremo nel prossimo passo */}
+        <div>
+          <label className="mb-1 block">Tipo evento</label>
 
-    <div>
-  <label className="mb-1 block">Tipo evento</label>
+          <select
+            name="event_type"
+            value={form.event_type}
+            onChange={handleChange}
+            className="w-full rounded border p-2"
+            required
+          >
+            <option value="">Seleziona un tipo di evento</option>
 
-  <select
-    name="event_type"
-    value={form.event_type}
-    onChange={handleChange}
-    className="w-full rounded border p-2"
-    required
-  >
-    <option value="">Seleziona un tipo di evento</option>
-
-    {eventTypes.map((type) => (
-      <option key={type.id} value={type.slug}>
-        {type.name}
-      </option>
-    ))}
-  </select>
-</div>
+            {eventTypes.map((type) => (
+              <option key={type.id} value={type.slug}>
+                {type.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div>
           <label className="mb-1 block">Stagione</label>
