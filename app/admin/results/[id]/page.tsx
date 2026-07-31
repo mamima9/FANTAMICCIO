@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 
 type Contrada = {
   id: number;
-  nome: string;
+  name: string;
 };
 
 export default function ResultPage() {
@@ -31,7 +31,7 @@ export default function ResultPage() {
         await Promise.all([
           supabase
             .from("Contrade")
-            .select("id, nome")
+            .select("id, name")
             .order("nome"),
 
           supabase
@@ -102,7 +102,7 @@ export default function ResultPage() {
 
           {contrade.map((contrada) => (
             <option key={contrada.id} value={contrada.id}>
-              {contrada.nome}
+              {contrada.name}
             </option>
           ))}
         </select>
@@ -127,7 +127,7 @@ export default function ResultPage() {
 
           {contrade.map((contrada) => (
             <option key={contrada.id} value={contrada.id}>
-              {contrada.nome}
+              {contrada.name}
             </option>
           ))}
         </select>
@@ -152,7 +152,7 @@ export default function ResultPage() {
 
           {contrade.map((contrada) => (
             <option key={contrada.id} value={contrada.id}>
-              {contrada.nome}
+              {contrada.name}
             </option>
           ))}
         </select>
