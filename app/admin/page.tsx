@@ -27,12 +27,15 @@ export default function AdminPage() {
           </p>
         </Link>
 
-        <div className="rounded-xl border p-6 opacity-50">
-          <h2 className="text-xl font-semibold">⚡ Calcolo punti</h2>
-          <p className="text-gray-500">
-            Prossimamente
-          </p>
-        </div>
+        <Link
+  href="/admin/calculate"
+  className="rounded-xl border p-6 hover:bg-gray-50 transition"
+>
+  <h2 className="text-xl font-semibold">⚡ Calcolo punti</h2>
+  <p className="text-gray-500">
+    Calcola automaticamente i punti dei pronostici.
+  </p>
+</Link>
 
       </div>
     </main>
