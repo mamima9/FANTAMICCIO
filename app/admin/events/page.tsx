@@ -1,6 +1,41 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+
+type Event = {
+  id: string;
+  title: string;
+  event_type: string;
+  season: number;
+  event_date: string;
+  status: string;
+};
 
 export default function EventsPage() {
+  const supabase = createClient();
+
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadEvents() {
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .order("event_date", { ascending: false });
+
+      if (!error && data) {
+        setEvents(data);
+      }
+
+      setLoading(false);
+    }
+
+    loadEvents();
+  }, []);
+
   return (
     <main className="p-8">
       <div className="mb-8 flex items-center justify-between">
@@ -33,14 +68,39 @@ export default function EventsPage() {
           </thead>
 
           <tbody>
-            <tr>
-              <td
-                colSpan={6}
-                className="p-8 text-center text-gray-500"
-              >
-                Nessun evento presente.
-              </td>
-            </tr>
+            {loading ? (
+              <tr>
+                <td colSpan={6} className="p-8 text-center text-gray-500">
+                  Caricamento...
+                </td>
+              </tr>
+            ) : events.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="p-8 text-center text-gray-500">
+                  Nessun evento presente.
+                </td>
+              </tr>
+            ) : (
+              events.map((event) => (
+                <tr key={event.id} className="border-t">
+                  <td className="p-3">{event.title}</td>
+                  <td className="p-3">{event.event_type}</td>
+                  <td className="p-3">{event.season}</td>
+                  <td className="p-3">
+                    {new Date(event.event_date).toLocaleDateString("it-IT")}
+                  </td>
+                  <td className="p-3">{event.status}</td>
+                  <td className="p-3 text-center">
+                    <Link
+                      href={`/admin/events/${event.id}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      Modifica
+                    </Link>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
