@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type Event = {
@@ -14,12 +15,9 @@ type Event = {
   status: string;
 };
 
-export default function EditEventPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function EditEventPage() {
   const supabase = createClient();
+  const params = useParams();
 
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,14 +30,20 @@ export default function EditEventPage({
         .eq("id", params.id)
         .single();
 
-      if (!error && data) {
+      if (error) {
+        console.error(error);
+      }
+
+      if (data) {
         setEvent(data);
       }
 
       setLoading(false);
     }
 
-    loadEvent();
+    if (params.id) {
+      loadEvent();
+    }
   }, [params.id]);
 
   if (loading) {
