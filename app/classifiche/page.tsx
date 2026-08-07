@@ -35,7 +35,7 @@ export default function ClassifichePage() {
         setLoading(false);
         return;
       }
-
+console.log("DATI CLASSIFICA:", data);
 
       const users: any = {};
 
