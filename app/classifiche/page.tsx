@@ -17,17 +17,15 @@ export default function ClassifichePage() {
     async function loadRanking() {
 
       const { data, error } = await supabase
-        .from("predictions")
-        .select(`
-          points_awarded,
-          profiles (
-            username,
-            contrada_id,
-            Contrade (
-              nome
-            )
-          )
-        `);
+  .from("predictions")
+  .select(`
+    points_awarded,
+    profiles (
+      username,
+      contrada_id
+    )
+  `);
+    
 
 
       if (error) {
@@ -55,7 +53,7 @@ export default function ClassifichePage() {
           users[username] = {
             username,
             contrada:
-              profile.Contrade?.nome ?? "-",
+  profile.contrada_id ?? "-",
             punti: 0,
           };
 
