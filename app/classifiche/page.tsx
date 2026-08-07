@@ -35,7 +35,7 @@ export default function ClassifichePage() {
         setLoading(false);
         return;
       }
-console.log("DATI CLASSIFICA:", data);
+
 
       const users: any = {};
 
@@ -71,7 +71,7 @@ console.log("DATI CLASSIFICA:", data);
 
       const sorted = Object.values(users)
         .sort(
-          (a:any,b:any) =>
+          (a: any, b: any) =>
             b.punti - a.punti
         );
 
@@ -88,7 +88,9 @@ console.log("DATI CLASSIFICA:", data);
 
 
 
+
   return (
+
     <main className="min-h-screen bg-[#F8F5F0]">
 
 
@@ -100,11 +102,13 @@ console.log("DATI CLASSIFICA:", data);
 
           <div className="flex justify-between items-center flex-wrap gap-6">
 
+
             <div>
 
               <h1 className="text-5xl font-black">
                 🏆 Classifiche
               </h1>
+
 
               <p className="mt-3 text-xl text-red-100">
                 Scopri chi sta dominando la stagione.
@@ -113,8 +117,9 @@ console.log("DATI CLASSIFICA:", data);
             </div>
 
 
+
             <Link
-              href="/vita-di-contrada"
+              href="/vita-da-contrada"
               className="bg-white text-red-700 font-bold px-6 py-3 rounded-2xl shadow-lg hover:scale-105 transition"
             >
               ← Vita di Contrada
@@ -129,35 +134,38 @@ console.log("DATI CLASSIFICA:", data);
 
 
 
+
       {/* PODIO */}
 
       <section className="max-w-7xl mx-auto px-6 py-16">
 
 
-        <h2 className="text-4xl font-black text-center text-[#5C3A21] mb-12">
-          👑 Podio Generale
-        </h2>
-
-
         <div className="grid md:grid-cols-3 gap-8">
 
 
-          {ranking.slice(0,3).map((utente,index)=>(
+          {ranking.slice(0, 3).map((utente, index) => (
+
 
             <div
               key={utente.username}
-              className={`bg-white rounded-3xl shadow-xl p-8 text-center ${
+              className={`rounded-3xl shadow-xl p-8 text-center ${
                 index === 0
-                ? "bg-[#D4AF37] scale-105"
-                : ""
+                  ? "bg-[#D4AF37] scale-105"
+                  : "bg-white"
               }`}
             >
 
+
               <div className="text-6xl">
-                {index === 0 ? "🥇" :
-                 index === 1 ? "🥈" :
-                 "🥉"}
+
+                {index === 0
+                  ? "🥇"
+                  : index === 1
+                  ? "🥈"
+                  : "🥉"}
+
               </div>
+
 
 
               <h3 className="mt-4 text-3xl font-black">
@@ -165,9 +173,11 @@ console.log("DATI CLASSIFICA:", data);
               </h3>
 
 
+
               <p>
                 🏰 {utente.contrada}
               </p>
+
 
 
               <p className="mt-4 text-4xl font-black text-red-600">
@@ -177,6 +187,7 @@ console.log("DATI CLASSIFICA:", data);
 
             </div>
 
+
           ))}
 
 
@@ -184,6 +195,7 @@ console.log("DATI CLASSIFICA:", data);
 
 
       </section>
+
 
 
 
@@ -198,100 +210,143 @@ console.log("DATI CLASSIFICA:", data);
 
           <div className="bg-[#5C3A21] text-white p-6">
 
+
             <h2 className="text-3xl font-black">
               📋 Classifica Generale
             </h2>
+
 
           </div>
 
 
 
-          <table className="w-full">
+
+          <div className="overflow-x-auto">
 
 
-            <thead className="bg-gray-100">
-
-              <tr>
-
-                <th className="p-5 text-left">
-                  #
-                </th>
-
-                <th className="p-5 text-left">
-                  Contradaiolo
-                </th>
-
-                <th className="p-5 text-left">
-                  Contrada
-                </th>
-
-                <th className="p-5 text-right">
-                  Punti
-                </th>
-
-              </tr>
-
-            </thead>
+            <table className="w-full min-w-[600px]">
 
 
+              <thead className="bg-gray-100">
 
-            <tbody>
-
-
-              {loading ? (
 
                 <tr>
-                  <td
-                    colSpan={4}
-                    className="p-8 text-center"
-                  >
-                    Caricamento...
-                  </td>
+
+                  <th className="p-5 text-left">
+                    #
+                  </th>
+
+
+                  <th className="p-5 text-left">
+                    Contradaiolo
+                  </th>
+
+
+                  <th className="p-5 text-left">
+                    Contrada
+                  </th>
+
+
+                  <th className="p-5 text-right">
+                    Punti
+                  </th>
+
+
                 </tr>
 
 
-              ) : (
+              </thead>
 
 
-                ranking.map((utente,index)=>(
 
-                  <tr
-                    key={utente.username}
-                    className="border-b hover:bg-amber-50 transition"
-                  >
 
-                    <td className="p-5 font-bold">
-                      {index + 1}
+              <tbody>
+
+
+                {loading ? (
+
+
+                  <tr>
+
+                    <td
+                      colSpan={4}
+                      className="p-8 text-center"
+                    >
+                      Caricamento...
                     </td>
-
-
-                    <td className="p-5">
-                      {utente.username}
-                    </td>
-
-
-                    <td className="p-5">
-                      {utente.contrada}
-                    </td>
-
-
-                    <td className="p-5 text-right font-bold">
-                      {utente.punti}
-                    </td>
-
 
                   </tr>
 
 
-                ))
 
-              )}
-
-
-            </tbody>
+                ) : ranking.length === 0 ? (
 
 
-          </table>
+                  <tr>
+
+                    <td
+                      colSpan={4}
+                      className="p-8 text-center text-gray-500"
+                    >
+                      Nessun punteggio disponibile.
+                    </td>
+
+                  </tr>
+
+
+
+                ) : (
+
+
+                  ranking.map((utente, index) => (
+
+
+                    <tr
+                      key={utente.username}
+                      className="border-b hover:bg-amber-50 transition"
+                    >
+
+
+                      <td className="p-5 font-bold">
+                        {index + 1}
+                      </td>
+
+
+
+                      <td className="p-5 whitespace-nowrap">
+                        {utente.username}
+                      </td>
+
+
+
+                      <td className="p-5 whitespace-nowrap">
+                        {utente.contrada}
+                      </td>
+
+
+
+                      <td className="p-5 text-right font-bold">
+                        {utente.punti}
+                      </td>
+
+
+
+                    </tr>
+
+
+                  ))
+
+
+                )}
+
+
+              </tbody>
+
+
+            </table>
+
+
+          </div>
 
 
         </div>
@@ -300,6 +355,9 @@ console.log("DATI CLASSIFICA:", data);
       </section>
 
 
+
     </main>
+
   );
+
 }
