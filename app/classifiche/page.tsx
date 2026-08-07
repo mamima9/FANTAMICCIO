@@ -205,7 +205,7 @@ async function loadCategoryRanking(category: string) {
 
 
             <Link
-              href="/vita-da-contrada"
+              href="/dashboard/vita-da-contrada"
               className="bg-white text-red-700 font-bold px-6 py-3 rounded-2xl shadow-lg hover:scale-105 transition"
             >
               ← Vita di Contrada
