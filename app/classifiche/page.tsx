@@ -184,6 +184,23 @@ async function loadContradeRanking() {
   setContradeLoading(true);
 
 
+  // prendiamo tutte le 8 contrade
+  const { data: allContrade, error: contradeError } = await supabase
+    .from("Contrade")
+    .select("nome")
+    .order("nome");
+
+
+  if (contradeError) {
+    console.error(contradeError);
+    setContradeLoading(false);
+    return;
+  }
+
+
+
+  // prendiamo i punti dai pronostici
+
   const { data, error } = await supabase
     .from("predictions")
     .select(`
@@ -194,6 +211,7 @@ async function loadContradeRanking() {
     `);
 
 
+
   if (error) {
     console.error(error);
     setContradeLoading(false);
@@ -201,49 +219,63 @@ async function loadContradeRanking() {
   }
 
 
-  const contrade: any = {};
 
+  const puntiContrade:any = {};
+
+
+
+  // inizializziamo tutte le contrade a 0
+
+  allContrade?.forEach((contrada:any)=>{
+
+    puntiContrade[contrada.nome] = {
+      nome: contrada.nome,
+      punti: 0
+    };
+
+  });
+
+
+
+  // sommiamo i punti
 
   data?.forEach((prediction:any)=>{
 
+
     const profile = prediction.profiles;
+
 
     if(!profile) return;
 
 
-    const nomeContrada = profile.contrada_id;
+    const nome = profile.contrada_id;
 
 
-    if(!contrade[nomeContrada]){
+    if(puntiContrade[nome]){
 
-      contrade[nomeContrada] = {
-        nome: nomeContrada,
-        punti: 0
-      };
+      puntiContrade[nome].punti +=
+        prediction.points_awarded ?? 0;
 
     }
-
-
-    contrade[nomeContrada].punti +=
-      prediction.points_awarded ?? 0;
 
 
   });
 
 
 
-  const sorted = Object.values(contrade)
+  const sorted = Object.values(puntiContrade)
     .sort(
       (a:any,b:any)=>
-        b.punti-a.punti
+        b.punti - a.punti
     );
 
 
+
   setContradeRanking(sorted);
+
   setContradeLoading(false);
 
 }
-
 async function loadSingolaContradaRanking() {
 
   setSingolaContradaLoading(true);
@@ -581,6 +613,69 @@ if(tab.id === "popolarita"){
 
   <div className="space-y-8">
 
+    {singolaContradaRanking.map((contrada:any)=>(
+
+      <div
+        key={contrada.nome}
+        className="bg-white rounded-3xl shadow-xl overflow-hidden"
+      >
+
+        <div className="bg-[#5C3A21] text-white p-6">
+          <h2 className="text-3xl font-black">
+            🏰 {contrada.nome}
+          </h2>
+        </div>
+
+
+        <table className="w-full">
+
+          <tbody>
+
+            {contrada.utenti.map((utente:any,index:number)=>(
+
+              <tr
+                key={utente.username}
+                className="border-b hover:bg-amber-50 transition"
+              >
+
+                <td className="p-5 font-bold">
+                  {index + 1}
+                </td>
+
+                <td className="p-5">
+                  {utente.username}
+                </td>
+
+                <td className="p-5 text-right font-bold">
+                  {utente.punti}
+                </td>
+
+              </tr>
+
+            ))}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    ))}
+
+  </div>
+
+</section>
+
+)}
+
+
+          {/* CLASSIFICA INTERNA */}
+
+         {activeTab === "singola-contrada" && (
+
+<section className="max-w-7xl mx-auto px-6 pb-20">
+
+  <div className="space-y-8">
 
     {singolaContradaLoading ? (
 
@@ -588,18 +683,14 @@ if(tab.id === "popolarita"){
         Caricamento...
       </div>
 
-
     ) : (
 
-      singolaContradaRanking.map((contrada:any) => (
+      singolaContradaRanking.map((contrada:any)=>(
 
         <div
           key={contrada.nome}
           className="bg-white rounded-3xl shadow-xl overflow-hidden"
         >
-
-
-          {/* HEADER CONTRADA */}
 
           <div className="bg-[#5C3A21] text-white p-6">
 
@@ -610,11 +701,7 @@ if(tab.id === "popolarita"){
           </div>
 
 
-
-          {/* CLASSIFICA INTERNA */}
-
           <table className="w-full">
-
 
             <thead className="bg-gray-100">
 
@@ -637,77 +724,53 @@ if(tab.id === "popolarita"){
             </thead>
 
 
-
             <tbody>
 
+              {contrada.utenti.map((utente:any,index:number)=>(
 
-              {contrada.utenti.length === 0 ? (
+                <tr
+                  key={utente.username}
+                  className="border-b hover:bg-amber-50 transition"
+                >
 
-                <tr>
+                  <td className="p-5 font-bold">
+                    {index + 1}
+                  </td>
 
-                  <td
-                    colSpan={3}
-                    className="p-8 text-center text-gray-500"
-                  >
-                    Nessun partecipante
+                  <td className="p-5">
+                    {utente.username}
+                  </td>
+
+                  <td className="p-5 text-right font-bold">
+                    {utente.punti}
                   </td>
 
                 </tr>
 
-
-              ) : (
-
-
-                contrada.utenti.map(
-                  (utente:any,index:number)=>(
-
-                  <tr
-                    key={utente.username}
-                    className="border-b hover:bg-amber-50 transition"
-                  >
-
-                    <td className="p-5 font-bold">
-                      {index + 1}
-                    </td>
-
-
-                    <td className="p-5">
-                      {utente.username}
-                    </td>
-
-
-                    <td className="p-5 text-right font-bold">
-                      {utente.punti}
-                    </td>
-
-
-                  </tr>
-
-                ))
-
-              )}
-
+              ))}
 
             </tbody>
 
-
           </table>
 
-
         </div>
-
 
       ))
 
     )}
 
-
   </div>
-
 
 </section>
 
 )}
+
+            
+            
+
+
+
+
 
       {/* CLASSIFICA */}
 
