@@ -86,7 +86,8 @@ export default function CalculatePointsPage() {
     );
   }
 
-  async function handleCalculate() {
+
+    async function handleCalculate() {
     try {
       setCalculating(true);
 
@@ -94,16 +95,31 @@ export default function CalculatePointsPage() {
         params.id as string
       );
 
+      // Imposta evento come completato
+      const { error } = await supabase
+        .from("events")
+        .update({
+          status: "COMPLETED",
+        })
+        .eq("id", params.id as string);
+
+      if (error) {
+        console.error(error);
+        throw error;
+      }
+
       alert(
-        `✅ Calcolo completato!\n\n${updated} pronostici aggiornati.`
+        `✅ Calcolo completato!\n\n${updated} pronostici aggiornati.\n\nEvento impostato come COMPLETED.`
       );
+
     } catch (error) {
       console.error(error);
       alert("Errore durante il calcolo.");
     } finally {
       setCalculating(false);
     }
-  }
+}
+
 
   if (loading) {
     return (

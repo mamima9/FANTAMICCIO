@@ -91,6 +91,11 @@ export default function EventPage() {
 
   async function handleSave() {
 
+ if (event?.status !== "OPEN") {
+      alert("I pronostici sono chiusi.");
+      return;
+    }
+
     if (
       !form.winner ||
       !form.second ||
@@ -148,14 +153,13 @@ export default function EventPage() {
   }
 
 
-  if (loading) {
+    if (loading) {
     return (
       <main className="p-8">
         <p>Caricamento...</p>
       </main>
     );
   }
-
 
   if (!event) {
     return (
@@ -171,7 +175,7 @@ export default function EventPage() {
         <div className="max-w-5xl mx-auto text-center px-6">
 
           <h1 className="text-5xl font-black">
-            🐴 {event.title}
+             🫏 {event.title}
           </h1>
 
           <p className="mt-4 text-xl">
@@ -182,6 +186,8 @@ export default function EventPage() {
         </div>
       </section>
 
+
+{event.status === "OPEN" ? (
 
       <section className="max-w-4xl mx-auto py-16 px-6">
 
@@ -318,7 +324,25 @@ export default function EventPage() {
 
       </section>
 
+) : (
 
+  <section className="max-w-4xl mx-auto py-16 px-6">
+
+    <div className="bg-white rounded-3xl shadow-xl p-10 text-center">
+
+      <h2 className="text-3xl font-black text-[#5C3A21]">
+        🔒 Pronostici chiusi
+      </h2>
+
+      <p className="mt-4 text-gray-600">
+        Non è più possibile inserire pronostici per questo evento.
+      </p>
+
+    </div>
+
+  </section>
+
+)}
 
       <section className="max-w-5xl mx-auto pb-20 px-6">
 
@@ -329,7 +353,6 @@ export default function EventPage() {
             <h2 className="text-3xl font-black">
               🏆 Punteggi
             </h2>
-
           </div>
 
 
