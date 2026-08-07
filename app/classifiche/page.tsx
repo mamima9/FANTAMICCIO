@@ -17,7 +17,8 @@ const [contradeRanking, setContradeRanking] = useState<any[]>([]);
 const [contradeLoading, setContradeLoading] = useState(false);
 const [singolaContradaRanking, setSingolaContradaRanking] = useState<any[]>([]);
 const [singolaContradaLoading, setSingolaContradaLoading] = useState(false);
-
+const [popolaritaRanking, setPopolaritaRanking] = useState<any[]>([]);
+const [popolaritaLoading, setPopolaritaLoading] = useState(false);
 
   useEffect(() => {
 
@@ -337,6 +338,59 @@ async function loadSingolaContradaRanking() {
 
 }
 
+async function loadPopolaritaRanking() {
+
+  setPopolaritaLoading(true);
+
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("contrada_id");
+
+
+  if (error) {
+    console.error(error);
+    setPopolaritaLoading(false);
+    return;
+  }
+
+
+  const contrade:any = {};
+
+
+  data?.forEach((profile:any)=>{
+
+    const nome = profile.contrada_id;
+
+    if(!nome) return;
+
+
+    if(!contrade[nome]){
+      contrade[nome] = {
+        nome,
+        iscritti: 0
+      };
+    }
+
+
+    contrade[nome].iscritti++;
+
+  });
+
+
+
+  const sorted = Object.values(contrade)
+    .sort(
+      (a:any,b:any)=>
+        b.iscritti-a.iscritti
+    );
+
+
+  setPopolaritaRanking(sorted);
+  setPopolaritaLoading(false);
+
+}
+
   return (
 
     <main className="min-h-screen bg-[#F8F5F0]">
@@ -400,12 +454,8 @@ async function loadSingolaContradaRanking() {
         label: "⚽ Calcio"
       },
       {
-        id: "contrade",
-        label: "🏰 Contrade"
-      },
-      {
         id: "popolarita",
-        label: "👥 Popolarità"
+        label: " ⭐ Popolarità"
       },
       {
         id: "generale-contrade",
@@ -413,7 +463,7 @@ async function loadSingolaContradaRanking() {
       },
       {
  id:"singola-contrada",
- label:"🏰 Singola Contrada"
+ label: "🚩 Singola Contrada"
 }
 
     ].map((tab) => (
@@ -439,6 +489,9 @@ if(tab.id === "generale-contrade"){
 }
 if(tab.id === "singola-contrada"){
   loadSingolaContradaRanking();
+}
+if(tab.id === "popolarita"){
+  loadPopolaritaRanking();
 }
 }}
         className={`px-6 py-3 rounded-2xl font-bold transition ${
@@ -522,7 +575,139 @@ if(tab.id === "singola-contrada"){
 
 )}
 
+{activeTab === "singola-contrada" && (
 
+<section className="max-w-7xl mx-auto px-6 pb-20">
+
+  <div className="space-y-8">
+
+
+    {singolaContradaLoading ? (
+
+      <div className="bg-white rounded-3xl shadow-xl p-10 text-center">
+        Caricamento...
+      </div>
+
+
+    ) : (
+
+      singolaContradaRanking.map((contrada:any) => (
+
+        <div
+          key={contrada.nome}
+          className="bg-white rounded-3xl shadow-xl overflow-hidden"
+        >
+
+
+          {/* HEADER CONTRADA */}
+
+          <div className="bg-[#5C3A21] text-white p-6">
+
+            <h2 className="text-3xl font-black">
+              🏰 {contrada.nome}
+            </h2>
+
+          </div>
+
+
+
+          {/* CLASSIFICA INTERNA */}
+
+          <table className="w-full">
+
+
+            <thead className="bg-gray-100">
+
+              <tr>
+
+                <th className="p-5 text-left">
+                  #
+                </th>
+
+                <th className="p-5 text-left">
+                  Contradaiolo
+                </th>
+
+                <th className="p-5 text-right">
+                  Punti
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+
+            <tbody>
+
+
+              {contrada.utenti.length === 0 ? (
+
+                <tr>
+
+                  <td
+                    colSpan={3}
+                    className="p-8 text-center text-gray-500"
+                  >
+                    Nessun partecipante
+                  </td>
+
+                </tr>
+
+
+              ) : (
+
+
+                contrada.utenti.map(
+                  (utente:any,index:number)=>(
+
+                  <tr
+                    key={utente.username}
+                    className="border-b hover:bg-amber-50 transition"
+                  >
+
+                    <td className="p-5 font-bold">
+                      {index + 1}
+                    </td>
+
+
+                    <td className="p-5">
+                      {utente.username}
+                    </td>
+
+
+                    <td className="p-5 text-right font-bold">
+                      {utente.punti}
+                    </td>
+
+
+                  </tr>
+
+                ))
+
+              )}
+
+
+            </tbody>
+
+
+          </table>
+
+
+        </div>
+
+
+      ))
+
+    )}
+
+
+  </div>
+
+
+</section>
+
+)}
 
       {/* CLASSIFICA */}
 
@@ -852,6 +1037,109 @@ className="border-b hover:bg-amber-50"
 </section>
 
 )}
+
+{activeTab === "popolarita" && (
+
+<section className="max-w-7xl mx-auto px-6 pb-20">
+
+  <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+
+
+    <div className="bg-[#5C3A21] text-white p-6">
+
+      <h2 className="text-3xl font-black">
+        👥 Popolarità Contrade
+      </h2>
+
+    </div>
+
+
+
+    <table className="w-full">
+
+
+      <thead className="bg-gray-100">
+
+        <tr>
+
+          <th className="p-5 text-left">
+            #
+          </th>
+
+          <th className="p-5 text-left">
+            Contrada
+          </th>
+
+          <th className="p-5 text-right">
+            Iscritti
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+
+      <tbody>
+
+
+      {popolaritaLoading ? (
+
+        <tr>
+          <td
+            colSpan={3}
+            className="p-8 text-center"
+          >
+            Caricamento...
+          </td>
+        </tr>
+
+
+      ) : (
+
+
+        popolaritaRanking.map((contrada,index)=>(
+
+          <tr
+            key={contrada.nome}
+            className="border-b hover:bg-amber-50 transition"
+          >
+
+            <td className="p-5 font-bold">
+              {index + 1}
+            </td>
+
+
+            <td className="p-5 font-bold">
+              🏰 {contrada.nome}
+            </td>
+
+
+            <td className="p-5 text-right font-bold">
+              {contrada.iscritti}
+            </td>
+
+
+          </tr>
+
+        ))
+
+
+      )}
+
+
+      </tbody>
+
+
+    </table>
+
+
+  </div>
+
+</section>
+
+)}
+
 
     </main>
 
