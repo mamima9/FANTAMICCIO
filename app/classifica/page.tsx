@@ -1,8 +1,96 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ClassifichePage() {
+
+  const supabase = createClient();
+
+  const [ranking, setRanking] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+
+    async function loadRanking() {
+
+      const { data, error } = await supabase
+        .from("predictions")
+        .select(`
+          points_awarded,
+          profiles (
+            username,
+            contrada_id,
+            Contrade (
+              nome
+            )
+          )
+        `);
+
+
+      if (error) {
+        console.error(error);
+        setLoading(false);
+        return;
+      }
+
+
+      const users: any = {};
+
+
+      data?.forEach((prediction: any) => {
+
+        const profile = prediction.profiles;
+
+        if (!profile) return;
+
+
+        const username = profile.username;
+
+
+        if (!users[username]) {
+
+          users[username] = {
+            username,
+            contrada:
+              profile.Contrade?.nome ?? "-",
+            punti: 0,
+          };
+
+        }
+
+
+        users[username].punti +=
+          prediction.points_awarded ?? 0;
+
+      });
+
+
+
+      const sorted = Object.values(users)
+        .sort(
+          (a:any,b:any) =>
+            b.punti - a.punti
+        );
+
+
+      setRanking(sorted);
+      setLoading(false);
+
+    }
+
+
+    loadRanking();
+
+  }, []);
+
+
+
   return (
     <main className="min-h-screen bg-[#F8F5F0]">
+
 
       {/* HERO */}
 
@@ -13,6 +101,7 @@ export default function ClassifichePage() {
           <div className="flex justify-between items-center flex-wrap gap-6">
 
             <div>
+
               <h1 className="text-5xl font-black">
                 🏆 Classifiche
               </h1>
@@ -20,7 +109,9 @@ export default function ClassifichePage() {
               <p className="mt-3 text-xl text-red-100">
                 Scopri chi sta dominando la stagione.
               </p>
+
             </div>
+
 
             <Link
               href="/vita-di-contrada"
@@ -28,6 +119,7 @@ export default function ClassifichePage() {
             >
               ← Vita di Contrada
             </Link>
+
 
           </div>
 
@@ -41,63 +133,58 @@ export default function ClassifichePage() {
 
       <section className="max-w-7xl mx-auto px-6 py-16">
 
+
         <h2 className="text-4xl font-black text-center text-[#5C3A21] mb-12">
           👑 Podio Generale
         </h2>
 
+
         <div className="grid md:grid-cols-3 gap-8">
 
-          <div className="bg-white rounded-3xl shadow-xl p-8 text-center">
 
-            <div className="text-6xl">🥈</div>
+          {ranking.slice(0,3).map((utente,index)=>(
 
-            <h3 className="mt-4 text-3xl font-black">
-              Luca
-            </h3>
+            <div
+              key={utente.username}
+              className={`bg-white rounded-3xl shadow-xl p-8 text-center ${
+                index === 0
+                ? "bg-[#D4AF37] scale-105"
+                : ""
+              }`}
+            >
 
-            <p>💙 Leon d'Oro</p>
+              <div className="text-6xl">
+                {index === 0 ? "🥇" :
+                 index === 1 ? "🥈" :
+                 "🥉"}
+              </div>
 
-            <p className="mt-4 text-4xl font-black text-red-600">
-              2.210
-            </p>
 
-          </div>
+              <h3 className="mt-4 text-3xl font-black">
+                {utente.username}
+              </h3>
 
-          <div className="bg-[#D4AF37] rounded-3xl shadow-2xl p-10 text-center scale-105">
 
-            <div className="text-7xl">🥇</div>
+              <p>
+                🏰 {utente.contrada}
+              </p>
 
-            <h3 className="mt-4 text-4xl font-black">
-              Manuel
-            </h3>
 
-            <p>❤️ Cervia</p>
+              <p className="mt-4 text-4xl font-black text-red-600">
+                {utente.punti}
+              </p>
 
-            <p className="mt-4 text-5xl font-black">
-              2.248
-            </p>
 
-          </div>
+            </div>
 
-          <div className="bg-white rounded-3xl shadow-xl p-8 text-center">
+          ))}
 
-            <div className="text-6xl">🥉</div>
-
-            <h3 className="mt-4 text-3xl font-black">
-              Marco
-            </h3>
-
-            <p>💚 Madonnina</p>
-
-            <p className="mt-4 text-4xl font-black text-red-600">
-              2.192
-            </p>
-
-          </div>
 
         </div>
 
+
       </section>
+
 
 
 
@@ -105,7 +192,9 @@ export default function ClassifichePage() {
 
       <section className="max-w-7xl mx-auto px-6 pb-20">
 
+
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+
 
           <div className="bg-[#5C3A21] text-white p-6">
 
@@ -115,60 +204,101 @@ export default function ClassifichePage() {
 
           </div>
 
+
+
           <table className="w-full">
+
 
             <thead className="bg-gray-100">
 
               <tr>
 
-                <th className="p-5 text-left">#</th>
-                <th className="p-5 text-left">Contradaiolo</th>
-                <th className="p-5 text-left">Contrada</th>
-                <th className="p-5 text-right">Punti</th>
+                <th className="p-5 text-left">
+                  #
+                </th>
+
+                <th className="p-5 text-left">
+                  Contradaiolo
+                </th>
+
+                <th className="p-5 text-left">
+                  Contrada
+                </th>
+
+                <th className="p-5 text-right">
+                  Punti
+                </th>
 
               </tr>
 
             </thead>
 
+
+
             <tbody>
 
-              {[
-                ["1","Manuel","❤️ Cervia","2248"],
-                ["2","Luca","💙 Leon d'Oro","2210"],
-                ["3","Marco","💚 Madonnina","2192"],
-                ["4","Andrea","💛 Il Ponte","2168"],
-                ["5","Simone","🩵 Ranocchio","2150"],
-                ["6","Davide","🧡 Pozzo","2133"],
-                ["7","Matteo","💜 Lucertola","2120"],
-                ["8","Filippo","🤍 Corte","2104"],
-                ["9","Alessio","❤️ Cervia","2098"],
-                ["10","Giacomo","💙 Leon d'Oro","2084"],
-              ].map((riga)=>(
-                <tr
-                  key={riga[0]}
-                  className="border-b hover:bg-amber-50 transition"
-                >
 
-                  <td className="p-5 font-bold">{riga[0]}</td>
+              {loading ? (
 
-                  <td className="p-5">{riga[1]}</td>
-
-                  <td className="p-5">{riga[2]}</td>
-
-                  <td className="p-5 text-right font-bold">
-                    {riga[3]}
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="p-8 text-center"
+                  >
+                    Caricamento...
                   </td>
-
                 </tr>
-              ))}
+
+
+              ) : (
+
+
+                ranking.map((utente,index)=>(
+
+                  <tr
+                    key={utente.username}
+                    className="border-b hover:bg-amber-50 transition"
+                  >
+
+                    <td className="p-5 font-bold">
+                      {index + 1}
+                    </td>
+
+
+                    <td className="p-5">
+                      {utente.username}
+                    </td>
+
+
+                    <td className="p-5">
+                      {utente.contrada}
+                    </td>
+
+
+                    <td className="p-5 text-right font-bold">
+                      {utente.punti}
+                    </td>
+
+
+                  </tr>
+
+
+                ))
+
+              )}
+
 
             </tbody>
 
+
           </table>
+
 
         </div>
 
+
       </section>
+
 
     </main>
   );
