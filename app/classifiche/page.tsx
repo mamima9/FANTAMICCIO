@@ -13,6 +13,8 @@ export default function ClassifichePage() {
   const [activeTab, setActiveTab] = useState("generale");
   const [categoryRanking, setCategoryRanking] = useState<any[]>([]);
 const [categoryLoading, setCategoryLoading] = useState(false);
+const [contradeRanking, setContradeRanking] = useState<any[]>([]);
+const [contradeLoading, setContradeLoading] = useState(false);
 
 
   useEffect(() => {
@@ -174,6 +176,71 @@ async function loadCategoryRanking(category: string) {
 
 }
 
+async function loadContradeRanking() {
+
+  setContradeLoading(true);
+
+
+  const { data, error } = await supabase
+    .from("predictions")
+    .select(`
+      points_awarded,
+      profiles (
+        contrada_id
+      )
+    `);
+
+
+  if (error) {
+    console.error(error);
+    setContradeLoading(false);
+    return;
+  }
+
+
+  const contrade: any = {};
+
+
+  data?.forEach((prediction:any)=>{
+
+    const profile = prediction.profiles;
+
+    if(!profile) return;
+
+
+    const nomeContrada = profile.contrada_id;
+
+
+    if(!contrade[nomeContrada]){
+
+      contrade[nomeContrada] = {
+        nome: nomeContrada,
+        punti: 0
+      };
+
+    }
+
+
+    contrade[nomeContrada].punti +=
+      prediction.points_awarded ?? 0;
+
+
+  });
+
+
+
+  const sorted = Object.values(contrade)
+    .sort(
+      (a:any,b:any)=>
+        b.punti-a.punti
+    );
+
+
+  setContradeRanking(sorted);
+  setContradeLoading(false);
+
+}
+
 
   return (
 
@@ -267,6 +334,10 @@ async function loadCategoryRanking(category: string) {
   if(tab.id === "calcio"){
     loadCategoryRanking("calcio");
   }
+
+if(tab.id === "generale-contrade"){
+  loadContradeRanking();
+}
 
 }}
         className={`px-6 py-3 rounded-2xl font-bold transition ${
@@ -587,7 +658,99 @@ async function loadCategoryRanking(category: string) {
 </section>
 
 )}
+{activeTab === "generale-contrade" && (
 
+<section className="max-w-7xl mx-auto px-6 pb-20">
+
+<div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+
+
+<div className="bg-[#5C3A21] text-white p-6">
+
+<h2 className="text-3xl font-black">
+🏰 Classifica 8 Contrade
+</h2>
+
+</div>
+
+
+<table className="w-full">
+
+<thead className="bg-gray-100">
+
+<tr>
+
+<th className="p-5 text-left">
+#
+</th>
+
+<th className="p-5 text-left">
+Contrada
+</th>
+
+<th className="p-5 text-right">
+Punti
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody>
+
+
+{contradeLoading ? (
+
+<tr>
+<td colSpan={3} className="p-8 text-center">
+Caricamento...
+</td>
+</tr>
+
+
+) : (
+
+contradeRanking.map((contrada,index)=>(
+
+<tr
+key={contrada.nome}
+className="border-b hover:bg-amber-50"
+>
+
+<td className="p-5 font-bold">
+{index+1}
+</td>
+
+
+<td className="p-5 font-bold">
+🏰 {contrada.nome}
+</td>
+
+
+<td className="p-5 text-right font-bold">
+{contrada.punti}
+</td>
+
+
+</tr>
+
+))
+
+)}
+
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+</section>
+
+)}
 
     </main>
 
