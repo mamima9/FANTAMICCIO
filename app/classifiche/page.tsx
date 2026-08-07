@@ -15,6 +15,8 @@ export default function ClassifichePage() {
 const [categoryLoading, setCategoryLoading] = useState(false);
 const [contradeRanking, setContradeRanking] = useState<any[]>([]);
 const [contradeLoading, setContradeLoading] = useState(false);
+const [singolaContradaRanking, setSingolaContradaRanking] = useState<any[]>([]);
+const [singolaContradaLoading, setSingolaContradaLoading] = useState(false);
 
 
   useEffect(() => {
@@ -241,6 +243,99 @@ async function loadContradeRanking() {
 
 }
 
+async function loadSingolaContradaRanking() {
+
+  setSingolaContradaLoading(true);
+
+
+  const { data, error } = await supabase
+    .from("predictions")
+    .select(`
+      points_awarded,
+      profiles (
+        username,
+        contrada_id
+      )
+    `);
+
+
+  if (error) {
+    console.error(error);
+    setSingolaContradaLoading(false);
+    return;
+  }
+
+
+  const users: any = {};
+
+
+  data?.forEach((prediction:any)=>{
+
+    const profile = prediction.profiles;
+
+    if(!profile) return;
+
+
+    const key = profile.contrada_id;
+
+
+    if(!users[key]){
+      users[key] = [];
+    }
+
+
+    const existing = users[key]
+      .find(
+        (u:any)=>u.username === profile.username
+      );
+
+
+    if(existing){
+
+      existing.punti +=
+        prediction.points_awarded ?? 0;
+
+    } else {
+
+      users[key].push({
+
+        username: profile.username,
+
+        contrada: profile.contrada_id,
+
+        punti:
+          prediction.points_awarded ?? 0
+
+      });
+
+    }
+
+
+  });
+
+
+
+  const result = Object.keys(users).map(
+    (contrada)=>({
+
+      nome: contrada,
+
+      utenti:
+        users[contrada]
+          .sort(
+            (a:any,b:any)=>
+              b.punti-a.punti
+          )
+
+    })
+  );
+
+
+  setSingolaContradaRanking(result);
+
+  setSingolaContradaLoading(false);
+
+}
 
   return (
 
@@ -316,6 +411,10 @@ async function loadContradeRanking() {
         id: "generale-contrade",
         label: "🏰 8 Contrade"
       },
+      {
+ id:"singola-contrada",
+ label:"🏰 Singola Contrada"
+}
 
     ].map((tab) => (
 
@@ -338,7 +437,9 @@ async function loadContradeRanking() {
 if(tab.id === "generale-contrade"){
   loadContradeRanking();
 }
-
+if(tab.id === "singola-contrada"){
+  loadSingolaContradaRanking();
+}
 }}
         className={`px-6 py-3 rounded-2xl font-bold transition ${
           activeTab === tab.id
