@@ -57,7 +57,7 @@ export default function CalendarioPage() {
         <div className="flex justify-center mt-12">
 
           <Link
-            href="/vitadicontrada"
+            href="/dashboard/vita-da-contrada"
             className="bg-[#D4AF37] text-[#5C3A21] px-8 py-4 rounded-2xl font-bold shadow-lg hover:scale-105 transition"
           >
             ← Torna a Vita di Contrada
