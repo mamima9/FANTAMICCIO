@@ -62,7 +62,7 @@ export default function DashboardNavbar({ user }: Props) {
               href="/dashboard/vita-da-contrada"
               className="transition hover:text-[#D4AF37]"
             >
-              Vita da Contrada
+              Vita di Contrada
             </Link>
           </nav>
         </div>
