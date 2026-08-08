@@ -116,7 +116,7 @@ const coloriContrade: Record<
             username,
             contrada:
   profile.contrada_id ?? "-",
-            punti: 0,
+            punti: profile.punti ?? 0,
           };
 
         }
