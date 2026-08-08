@@ -42,9 +42,17 @@ const handleRegister = async () => {
   setLoading(true);
 
   const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  });
+  email,
+  password,
+  options: {
+    data: {
+      nome,
+      cognome,
+      username,
+      contrada,
+    },
+  },
+});
 
   if (error) {
     setLoading(false);
@@ -60,22 +68,6 @@ const handleRegister = async () => {
     return;
   }
 
-  const { error: profileError } = await supabase
-    .from("profiles")
-    .insert({
-      id: user.id,
-      nome,
-      cognome,
-      username,
-      contrada_id: contrada,
-    });
-
-  setLoading(false);
-
-  if (profileError) {
-    alert(profileError.message);
-    return;
-  }
 
   alert("Registrazione completata! Controlla la tua email per confermare l'account.");
 
