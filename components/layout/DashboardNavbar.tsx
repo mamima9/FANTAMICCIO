@@ -35,7 +35,10 @@ export default function DashboardNavbar({ user }: Props) {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         {/* Logo */}
         <div className="flex items-center gap-8">
-          <Link href="/dashboard" className="flex items-center gap-3">
+      <a
+  href="https://fantamiccio.vercel-roan.app/"
+  className="flex items-center gap-3"
+>
             <Image
               src="/contrade/logo.png"
               alt="FantaMiccio"
@@ -47,7 +50,7 @@ export default function DashboardNavbar({ user }: Props) {
             <span className="text-xl font-bold text-[#D4AF37]">
               FantaMiccio
             </span>
-          </Link>
+          </a>
 
           {/* Menu Desktop */}
           <nav className="hidden items-center gap-6 md:flex">
