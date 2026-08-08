@@ -6,43 +6,37 @@ const classifiche = [
   {
     titolo: "Generale",
     emoji: "🏆",
-    descrizione:
-      "La classifica generale di tutti i contradaioli.",
+    descrizione: "La classifica generale di tutti i contradaioli.",
     href: "/classifiche/generale",
   },
   {
     titolo: "MiccioCanterino",
     emoji: "🎤",
-    descrizione:
-      "La classifica della gara di canto.",
+    descrizione: "La classifica della gara di canto.",
     href: "/classifiche/miccio-canterino",
   },
   {
     titolo: "Calcio",
     emoji: "⚽",
-    descrizione:
-      "La classifica della gara di calcio.",
+    descrizione: "La classifica della gara di calcio.",
     href: "/classifiche/calcio",
   },
   {
     titolo: "Popolarità",
     emoji: "⭐",
-    descrizione:
-      "Le contrade con più iscritti.",
+    descrizione: "Le contrade con più iscritti.",
     href: "/classifiche/popolarita",
   },
   {
     titolo: "8 Contrade",
     emoji: "🏰",
-    descrizione:
-      "La classifica complessiva delle otto contrade.",
+    descrizione: "La classifica complessiva delle otto contrade.",
     href: "/classifiche/otto-contrade",
   },
   {
     titolo: "Singola Contrada",
     emoji: "🚩",
-    descrizione:
-      "La classifica interna di ogni contrada.",
+    descrizione: "La classifica interna di ogni contrada.",
     href: "/classifiche/contrada",
   },
 ];
