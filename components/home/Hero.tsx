@@ -1,10 +1,40 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Hero() {
+  const [user, setUser] = useState<any>(null);
+
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function loadUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      setUser(user);
+    }
+
+    loadUser();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   return (
-    <section className="relative bg-[#F8F5F0] overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 py-24 flex flex-col items-center text-center">
+    <section className="py-20 md:py-28">
+      <div className="mx-auto flex max-w-7xl flex-col items-center px-6 text-center">
 
         <Image
           src="/contrade/logo.png"
@@ -18,22 +48,22 @@ export default function Hero() {
           FantaMiccio
         </h1>
 
-        <p className="mt-4 text-2xl text-gray-700 max-w-2xl">
+        <p className="mt-4 max-w-2xl text-2xl text-gray-700">
           Il Fantasy Game del Palio dei Micci
         </p>
 
-        <div className="mt-10 flex gap-4 flex-wrap justify-center">
+        <div className="mt-10 flex flex-wrap justify-center gap-4">
 
           <Link
-            href="/registrazione"
-            className="bg-[#D4AF37] text-[#5C3A21] px-8 py-4 rounded-2xl font-bold text-lg hover:scale-105 transition"
+            href={user ? "/dashboard" : "/registrazione"}
+            className="rounded-2xl bg-[#D4AF37] px-8 py-4 text-lg font-bold text-[#5C3A21] transition hover:scale-105"
           >
             Gioca Ora
           </Link>
 
           <Link
             href="#scopri"
-            className="border-2 border-[#5C3A21] text-[#5C3A21] px-8 py-4 rounded-2xl font-bold text-lg hover:bg-[#5C3A21] hover:text-white transition"
+            className="rounded-2xl border-2 border-[#5C3A21] px-8 py-4 text-lg font-bold text-[#5C3A21] transition hover:bg-[#5C3A21] hover:text-white"
           >
             Scopri di più
           </Link>
