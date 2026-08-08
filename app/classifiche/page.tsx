@@ -66,6 +66,14 @@ export default function ClassifichePage() {
         </div>
 
       </section>
+<div className="max-w-7xl mx-auto px-5 md:px-6 pt-8">
+  <Link
+    href="/dashboard/vita-da-contrada"
+    className="inline-flex items-center gap-2 font-bold text-[#5C3A21] hover:text-[#D4AF37] transition"
+  >
+    ← Torna a Vita di Contrada
+  </Link>
+</div>
 
 
       {/* CARD */}
