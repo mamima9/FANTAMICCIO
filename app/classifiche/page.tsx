@@ -31,7 +31,50 @@ const stemmiContrade: Record<string, string> = {
   "Quercia": "/contrade/quercia.png",
   "Ranocchio": "/contrade/ranocchio.png",
 };
+const coloriContrade: Record<
+  string,
+  { primario: string; secondario: string }
+> = {
+  "Cervia": {
+    primario: "#87CEEB",
+    secondario: "#FFFFFF",
+  },
 
+  "Leon d'Oro": {
+    primario: "#FFD700",
+    secondario: "#D00000",
+  },
+
+  "Lucertola": {
+    primario: "#D00000",
+    secondario: "#008000",
+  },
+
+  "Madonnina": {
+    primario: "#008CFF",
+    secondario: "#FFD700",
+  },
+
+  "Ponte": {
+    primario: "#D00000",
+    secondario: "#0057B8",
+  },
+
+  "Pozzo": {
+    primario: "#FFFFFF",
+    secondario: "#D00000",
+  },
+
+  "Quercia": {
+    primario: "#FFFFFF",
+    secondario: "#111111",
+  },
+
+  "Ranocchio": {
+    primario: "#FFD700",
+    secondario: "#008000",
+  },
+};
   useEffect(() => {
 
     async function loadRanking() {
@@ -619,68 +662,6 @@ if(tab.id === "popolarita"){
 
 )}
 
-{activeTab === "singola-contrada" && (
-
-<section className="max-w-7xl mx-auto px-6 pb-20">
-
-  <div className="space-y-8">
-
-    {singolaContradaRanking.map((contrada:any)=>(
-
-      <div
-        key={contrada.nome}
-        className="bg-white rounded-3xl shadow-xl overflow-hidden"
-      >
-
-        <div className="bg-[#5C3A21] text-white p-6">
-          <h2 className="text-3xl font-black">
-            🏰 {contrada.nome}
-          </h2>
-        </div>
-
-
-        <table className="w-full">
-
-          <tbody>
-
-            {contrada.utenti.map((utente:any,index:number)=>(
-
-              <tr
-                key={utente.username}
-                className="border-b hover:bg-amber-50 transition"
-              >
-
-                <td className="p-5 font-bold">
-                  {index + 1}
-                </td>
-
-                <td className="p-5">
-                  {utente.username}
-                </td>
-
-                <td className="p-5 text-right font-bold">
-                  {utente.punti}
-                </td>
-
-              </tr>
-
-            ))}
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-    ))}
-
-  </div>
-
-</section>
-
-)}
-
-
           {/* CLASSIFICA INTERNA */}
 
          {activeTab === "singola-contrada" && (
@@ -704,7 +685,12 @@ if(tab.id === "popolarita"){
           className="bg-white rounded-3xl shadow-xl overflow-hidden"
         >
 
-          <div className="bg-[#5C3A21] text-white p-6">
+          <div
+  className="p-6"
+  style={{
+    background: `linear-gradient(135deg, ${coloriContrade[contrada.nome]?.primario ?? "#5C3A21"} 0%, ${coloriContrade[contrada.nome]?.secondario ?? "#D4AF37"} 100%)`,
+  }}
+>
 
            <div className="flex items-center gap-4">
 
