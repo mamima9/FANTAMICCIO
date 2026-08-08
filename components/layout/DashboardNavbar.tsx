@@ -36,7 +36,7 @@ export default function DashboardNavbar({ user }: Props) {
         {/* Logo */}
         <div className="flex items-center gap-8">
       <a
-  href="https://fantamiccio-roan.vercel.app/"
+  href="/"
   className="flex items-center gap-3"
 >
             <Image
