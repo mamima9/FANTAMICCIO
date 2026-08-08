@@ -256,14 +256,16 @@ async function loadContradeRanking() {
 
   // prendiamo i punti dai pronostici
 
-  const { data, error } = await supabase
-    .from("predictions")
-    .select(`
-      points_awarded,
-      profiles (
-        contrada_id
-      )
-    `);
+ const { data, error } = await supabase
+  .from("predictions")
+  .select(`
+    points_awarded,
+    profiles (
+      username,
+      contrada_id,
+      punti
+    )
+  `);
 
 
 
