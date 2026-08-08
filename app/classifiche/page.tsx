@@ -366,8 +366,9 @@ async function loadSingolaContradaRanking() {
     const profile = prediction.profiles;
 
     if (!profile) return;
+    if (!profile.contrada_id) return;
 
-    const key = profile.contrada_id;
+    const key = String(profile.contrada_id);
 
     if (!users[key]) {
       users[key] = [];
@@ -378,33 +379,23 @@ async function loadSingolaContradaRanking() {
     );
 
     if (existing) {
-      existing.punti +=
-        prediction.points_awarded ?? 0;
+      existing.punti += prediction.points_awarded ?? 0;
     } else {
       users[key].push({
         username: profile.username,
-
-        contrada:
-          nomiContrade[String(profile.contrada_id)] ?? "-",
-
-        punti:
-          prediction.points_awarded ?? 0,
+        contrada: nomiContrade[key] ?? "-",
+        punti: prediction.points_awarded ?? 0,
       });
     }
   });
 
-  const result = Object.keys(users).map(
-    (contrada) => ({
-      nome:
-        nomiContrade[contrada] ?? "-",
+  const result = Object.keys(users).map((contradaId) => ({
+    nome: nomiContrade[contradaId] ?? "-",
 
-      utenti:
-        users[contrada].sort(
-          (a: any, b: any) =>
-            b.punti - a.punti
-        ),
-    })
-  );
+    utenti: users[contradaId].sort(
+      (a: any, b: any) => b.punti - a.punti
+    ),
+  }));
 
   setSingolaContradaRanking(result);
   setSingolaContradaLoading(false);
