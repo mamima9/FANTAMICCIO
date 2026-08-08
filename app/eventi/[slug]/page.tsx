@@ -171,6 +171,13 @@ export default function EventPage() {
     return (
     <main className="min-h-screen bg-[#F8F5F0]">
 
+<Link
+  href="/dashboard/vita-da-contrada"
+  className="inline-flex items-center rounded-xl bg-[#5C3A21] px-5 py-3 font-bold text-white transition hover:bg-[#7A4A25]"
+>
+  ← Torna a Vita di Contrada
+</Link>
+
       <section className="bg-gradient-to-r from-red-900 via-red-700 to-yellow-600 text-white py-16">
         <div className="max-w-5xl mx-auto text-center px-6">
 
@@ -327,6 +334,7 @@ export default function EventPage() {
 ) : (
 
   <section className="max-w-4xl mx-auto py-16 px-6">
+
 
     <div className="bg-white rounded-3xl shadow-xl p-10 text-center">
 
