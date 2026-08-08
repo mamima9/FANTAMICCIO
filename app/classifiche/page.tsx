@@ -112,14 +112,11 @@ const coloriContrade: Record<
 
         if (!users[username]) {
 
-          users[username] = {
-            username,
-            contrada:
-  profile.contrada_id ?? "-",
-            punti: profile.punti ?? 0,
-          };
-
-        }
+      users[username] = {
+  username,
+  contrada: profile.contrada_id ?? "-",
+  punti: 0,
+};
 
 
         users[username].punti +=
@@ -256,14 +253,13 @@ async function loadContradeRanking() {
 
   // prendiamo i punti dai pronostici
 
- const { data, error } = await supabase
+const { data, error } = await supabase
   .from("predictions")
   .select(`
     points_awarded,
     profiles (
       username,
-      contrada_id,
-      punti
+      contrada_id
     )
   `);
 
