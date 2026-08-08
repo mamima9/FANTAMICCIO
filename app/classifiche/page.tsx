@@ -31,16 +31,7 @@ const stemmiContrade: Record<string, string> = {
   "Quercia": "/contrade/quercia.png",
   "Ranocchio": "/contrade/ranocchio.png",
 };
-const nomiContrade: Record<number, string> = {
-  1: "Cervia",
-  2: "Leon d'Oro",
-  3: "Lucertola",
-  4: "Madonnina",
-  5: "Ponte",
-  6: "Pozzo",
-  7: "Quercia",
-  8: "Ranocchio",
-};
+
 const coloriContrade: Record<
   string,
   { primario: string; secondario: string }
@@ -124,7 +115,7 @@ const coloriContrade: Record<
 
       users[username] = {
   username,
-  contrada: nomiContrade[profile.contrada_id] ?? "-",
+  contrada: profile.contrada_id ?? "-",
   punti: 0,
 };
 }
