@@ -10,7 +10,7 @@ export default function EventiPage() {
         <div className="max-w-7xl mx-auto px-6 text-center">
 
           <h1 className="text-5xl font-black">
-            🏆 Eventi FantaMiccio
+          🫏 Eventi del FantaMiccio
           </h1>
 
           <p className="mt-4 text-xl text-red-100">

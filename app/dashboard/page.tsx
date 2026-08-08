@@ -383,7 +383,7 @@ export default function DashboardPage() {
               </p>
 
               <h1 className="text-3xl md:text-5xl font-black mt-1">
-                Benvenuto{profile?.username ? "," : ""}
+                Benvenuto/a {profile?.username ? "," : ""}
                 {profile?.username
                   ? ` ${profile.username}`
                   : ""}
