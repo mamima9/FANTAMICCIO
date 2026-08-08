@@ -20,7 +20,7 @@ const [singolaContradaRanking, setSingolaContradaRanking] = useState<any[]>([]);
 const [singolaContradaLoading, setSingolaContradaLoading] = useState(false);
 const [popolaritaRanking, setPopolaritaRanking] = useState<any[]>([]);
 const [popolaritaLoading, setPopolaritaLoading] = useState(false);
-
+const [selectedContrada, setSelectedContrada] = useState("Cervia");
 const stemmiContrade: Record<string, string> = {
   "Cervia": "/contrade/cervia.png",
   "Leon d'Oro": "/contrade/leondoro.png",
@@ -666,9 +666,32 @@ if(tab.id === "popolarita"){
 
          {activeTab === "singola-contrada" && (
 
-<section className="max-w-7xl mx-auto px-6 pb-20">
+  <section className="max-w-7xl mx-auto px-6 pb-20">
 
-  <div className="space-y-8">
+    {/* SELETTORE CONTRADA */}
+
+    <div className="mb-8 flex gap-3 overflow-x-auto pb-2">
+
+      {singolaContradaRanking.map((contrada: any) => (
+
+        <button
+          key={contrada.nome}
+          onClick={() => setSelectedContrada(contrada.nome)}
+          className={`flex-shrink-0 px-5 py-3 rounded-2xl font-bold transition ${
+            selectedContrada === contrada.nome
+              ? "bg-[#5C3A21] text-white shadow-lg scale-105"
+              : "bg-white text-[#5C3A21] shadow hover:scale-105"
+          }`}
+        >
+          {contrada.nome}
+        </button>
+
+      ))}
+
+    </div>
+
+
+    {/* CONTRADA SELEZIONATA */}
 
     {singolaContradaLoading ? (
 
@@ -678,106 +701,140 @@ if(tab.id === "popolarita"){
 
     ) : (
 
-      singolaContradaRanking.map((contrada:any)=>(
+      (() => {
 
-        <div
-          key={contrada.nome}
-          className="bg-white rounded-3xl shadow-xl overflow-hidden"
-        >
+        const contrada = singolaContradaRanking.find(
+          (c: any) => c.nome === selectedContrada
+        );
 
-          <div
-  className="p-6"
-  style={{
-    background: `linear-gradient(135deg, ${coloriContrade[contrada.nome]?.primario ?? "#5C3A21"} 0%, ${coloriContrade[contrada.nome]?.secondario ?? "#D4AF37"} 100%)`,
-  }}
->
+        if (!contrada) return null;
 
-           <div className="flex items-center gap-4">
+        return (
 
-  {stemmiContrade[contrada.nome] && (
-    <Image
-      src={stemmiContrade[contrada.nome]}
-      alt={`Stemma ${contrada.nome}`}
-      width={70}
-      height={70}
-      className="object-contain"
-    />
-  )}
+          <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
 
-  <h2 className="text-3xl font-black">
-    {contrada.nome}
-  </h2>
+            {/* HEADER */}
 
-</div>
+            <div
+              className="p-6"
+              style={{
+                background: `linear-gradient(
+                  135deg,
+                  ${coloriContrade[contrada.nome]?.primario ?? "#5C3A21"},
+                  ${coloriContrade[contrada.nome]?.secondario ?? "#D4AF37"}
+                )`,
+              }}
+            >
+
+              <div className="flex items-center gap-4">
+
+                {stemmiContrade[contrada.nome] && (
+                  <Image
+                    src={stemmiContrade[contrada.nome]}
+                    alt={`Stemma ${contrada.nome}`}
+                    width={70}
+                    height={70}
+                    className="object-contain"
+                  />
+                )}
+
+                <h2 className="text-3xl font-black text-[#5C3A21]">
+                  {contrada.nome}
+                </h2>
+
+              </div>
+
+            </div>
+
+
+            {/* TABELLA */}
+
+            <div className="overflow-x-auto">
+
+              <table className="w-full min-w-[500px]">
+
+                <thead className="bg-gray-100">
+
+                  <tr>
+
+                    <th className="p-5 text-left">
+                      #
+                    </th>
+
+                    <th className="p-5 text-left">
+                      Contradaiolo
+                    </th>
+
+                    <th className="p-5 text-right">
+                      Punti
+                    </th>
+
+                  </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                  {contrada.utenti.length === 0 ? (
+
+                    <tr>
+
+                      <td
+                        colSpan={3}
+                        className="p-8 text-center text-gray-500"
+                      >
+                        Nessun partecipante
+                      </td>
+
+                    </tr>
+
+                  ) : (
+
+                    contrada.utenti.map(
+                      (utente: any, index: number) => (
+
+                        <tr
+                          key={utente.username}
+                          className="border-b hover:bg-amber-50 transition"
+                        >
+
+                          <td className="p-5 font-bold">
+                            {index + 1}
+                          </td>
+
+                          <td className="p-5">
+                            {utente.username}
+                          </td>
+
+                          <td className="p-5 text-right font-bold">
+                            {utente.punti}
+                          </td>
+
+                        </tr>
+
+                      )
+                    )
+
+                  )}
+
+                </tbody>
+
+              </table>
+
+            </div>
 
           </div>
 
+        );
 
-          <table className="w-full">
-
-            <thead className="bg-gray-100">
-
-              <tr>
-
-                <th className="p-5 text-left">
-                  #
-                </th>
-
-                <th className="p-5 text-left">
-                  Contradaiolo
-                </th>
-
-                <th className="p-5 text-right">
-                  Punti
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody>
-
-              {contrada.utenti.map((utente:any,index:number)=>(
-
-                <tr
-                  key={utente.username}
-                  className="border-b hover:bg-amber-50 transition"
-                >
-
-                  <td className="p-5 font-bold">
-                    {index + 1}
-                  </td>
-
-                  <td className="p-5">
-                    {utente.username}
-                  </td>
-
-                  <td className="p-5 text-right font-bold">
-                    {utente.punti}
-                  </td>
-
-                </tr>
-
-              ))}
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-      ))
+      })()
 
     )}
 
-  </div>
-
-</section>
+  </section>
 
 )}
-
-            
             
 
 

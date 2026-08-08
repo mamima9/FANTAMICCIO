@@ -67,7 +67,7 @@ const handleRegister = async () => {
       nome,
       cognome,
       username,
-      contrada,
+      contrada_id: contrada,
     });
 
   setLoading(false);
