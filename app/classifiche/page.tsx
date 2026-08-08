@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import Image from "next/image";
 
 export default function ClassifichePage() {
 
@@ -19,6 +20,17 @@ const [singolaContradaRanking, setSingolaContradaRanking] = useState<any[]>([]);
 const [singolaContradaLoading, setSingolaContradaLoading] = useState(false);
 const [popolaritaRanking, setPopolaritaRanking] = useState<any[]>([]);
 const [popolaritaLoading, setPopolaritaLoading] = useState(false);
+
+const stemmiContrade: Record<string, string> = {
+  "Cervia": "/contrade/cervia.png",
+  "Leon d'Oro": "/contrade/leondoro.png",
+  "Lucertola": "/contrade/lucertola.png",
+  "Madonnina": "/contrade/madonnina.png",
+  "Ponte": "/contrade/ponte.png",
+  "Pozzo": "/contrade/pozzo.png",
+  "Quercia": "/contrade/quercia.png",
+  "Ranocchio": "/contrade/ranocchio.png",
+};
 
   useEffect(() => {
 
@@ -694,9 +706,23 @@ if(tab.id === "popolarita"){
 
           <div className="bg-[#5C3A21] text-white p-6">
 
-            <h2 className="text-3xl font-black">
-              🏰 {contrada.nome}
-            </h2>
+           <div className="flex items-center gap-4">
+
+  {stemmiContrade[contrada.nome] && (
+    <Image
+      src={stemmiContrade[contrada.nome]}
+      alt={`Stemma ${contrada.nome}`}
+      width={70}
+      height={70}
+      className="object-contain"
+    />
+  )}
+
+  <h2 className="text-3xl font-black">
+    {contrada.nome}
+  </h2>
+
+</div>
 
           </div>
 
@@ -1073,7 +1099,23 @@ className="border-b hover:bg-amber-50"
 
 
 <td className="p-5 font-bold">
-🏰 {contrada.nome}
+<div className="flex items-center gap-4">
+
+  {stemmiContrade[contrada.nome] && (
+    <Image
+      src={stemmiContrade[contrada.nome]}
+      alt={`Stemma ${contrada.nome}`}
+      width={55}
+      height={55}
+      className="object-contain"
+    />
+  )}
+
+  <span>
+    {contrada.nome}
+  </span>
+
+</div>
 </td>
 
 
