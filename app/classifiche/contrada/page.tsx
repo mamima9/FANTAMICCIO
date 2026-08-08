@@ -5,15 +5,26 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 
+const nomiContrade: Record<number, string> = {
+  1: "Cervia",
+  2: "Leon d'Oro",
+  3: "Lucertola",
+  4: "Madonnina",
+  5: "Ponte",
+  6: "Pozzo",
+  7: "Quercia",
+  8: "Ranocchio",
+};
+
 const stemmiContrade: Record<string, string> = {
-  "Cervia": "/contrade/cervia.png",
+  Cervia: "/contrade/cervia.png",
   "Leon d'Oro": "/contrade/leondoro.png",
-  "Lucertola": "/contrade/lucertola.png",
-  "Madonnina": "/contrade/madonnina.png",
-  "Ponte": "/contrade/ponte.png",
-  "Pozzo": "/contrade/pozzo.png",
-  "Quercia": "/contrade/quercia.png",
-  "Ranocchio": "/contrade/ranocchio.png",
+  Lucertola: "/contrade/lucertola.png",
+  Madonnina: "/contrade/madonnina.png",
+  Ponte: "/contrade/ponte.png",
+  Pozzo: "/contrade/pozzo.png",
+  Quercia: "/contrade/quercia.png",
+  Ranocchio: "/contrade/ranocchio.png",
 };
 
 const coloriContrade: Record<
@@ -61,21 +72,21 @@ const coloriContrade: Record<
   },
 };
 
-const nomiContrade: Record<number, string> = {
-  1: "Cervia",
-  2: "Leon d'Oro",
-  3: "Lucertola",
-  4: "Madonnina",
-  5: "Ponte",
-  6: "Pozzo",
-  7: "Quercia",
-  8: "Ranocchio",
+type Utente = {
+  username: string;
+  punti: number;
+};
+
+type Contrada = {
+  id: number;
+  nome: string;
+  utenti: Utente[];
 };
 
 export default function ClassificaContradaPage() {
   const supabase = createClient();
 
-  const [ranking, setRanking] = useState<any[]>([]);
+  const [ranking, setRanking] = useState<Contrada[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedContrada, setSelectedContrada] = useState(1);
 
@@ -83,116 +94,162 @@ export default function ClassificaContradaPage() {
     async function loadRanking() {
       setLoading(true);
 
-      // PRENDIAMO GLI UTENTI E I LORO PUNTI
-      const { data: predictions, error: predictionsError } =
+      /*
+       * 1. PRENDIAMO TUTTI I PROFILI
+       *
+       * In questo modo sappiamo con certezza:
+       * username -> contrada_id
+       */
+      const { data: profiles, error: profilesError } =
         await supabase
-          .from("predictions")
-          .select(`
-            points_awarded,
-            profiles (
-              username,
-              contrada_id
-            )
-          `);
+          .from("profiles")
+          .select("id, username, contrada_id");
 
-      if (predictionsError) {
-        console.error("Errore predictions:", predictionsError);
+      if (profilesError) {
+        console.error(
+          "Errore caricamento profiles:",
+          profilesError
+        );
         setLoading(false);
         return;
       }
 
-      // CREIAMO LE 8 CONTRADE
-      const contrade: Record<number, any[]> = {};
+      /*
+       * 2. PRENDIAMO TUTTE LE PREDICTIONS
+       */
+      const { data: predictions, error: predictionsError } =
+        await supabase
+          .from("predictions")
+          .select(
+            "user_id, points_awarded"
+          );
 
-      Object.keys(nomiContrade).forEach((id) => {
-        contrade[Number(id)] = [];
-      });
-
-      // RAGGRUPPIAMO GLI UTENTI PER CONTRADA
-      predictions?.forEach((prediction: any) => {
-        const profile = prediction.profiles;
-
-        if (!profile) return;
-        if (!profile.contrada_id) return;
-
-        const contradaId = Number(profile.contrada_id);
-
-        if (!contrade[contradaId]) {
-          contrade[contradaId] = [];
-        }
-
-        const existing = contrade[contradaId].find(
-          (utente: any) =>
-            utente.username === profile.username
+      if (predictionsError) {
+        console.error(
+          "Errore caricamento predictions:",
+          predictionsError
         );
+        setLoading(false);
+        return;
+      }
 
-        if (existing) {
-          existing.punti +=
-            Number(prediction.points_awarded) || 0;
-        } else {
-          contrade[contradaId].push({
-            username: profile.username,
-            punti:
-              Number(prediction.points_awarded) || 0,
-          });
+      /*
+       * 3. CREIAMO LE 8 CONTRADE
+       */
+      const contrade: Record<number, Contrada> = {};
+
+      Object.entries(nomiContrade).forEach(
+        ([id, nome]) => {
+          contrade[Number(id)] = {
+            id: Number(id),
+            nome,
+            utenti: [],
+          };
         }
-      });
-
-      // ORDINIAMO GLI UTENTI DI OGNI CONTRADA
-      Object.keys(contrade).forEach((id) => {
-        contrade[Number(id)].sort(
-          (a: any, b: any) =>
-            b.punti - a.punti
-        );
-      });
-
-      const result = Object.keys(contrade).map(
-        (id) => ({
-          id: Number(id),
-          nome: nomiContrade[Number(id)],
-          utenti: contrade[Number(id)],
-        })
       );
 
-      setRanking(result);
+      /*
+       * 4. CALCOLIAMO I PUNTI PER UTENTE
+       */
+      const puntiUtenti: Record<
+        string,
+        number
+      > = {};
+
+      predictions?.forEach((prediction: any) => {
+        const userId = prediction.user_id;
+
+        if (!userId) return;
+
+        if (!puntiUtenti[userId]) {
+          puntiUtenti[userId] = 0;
+        }
+
+        puntiUtenti[userId] +=
+          Number(prediction.points_awarded) || 0;
+      });
+
+      /*
+       * 5. COLLEGHIAMO PROFILO -> CONTRADA
+       */
+      profiles?.forEach((profile: any) => {
+        if (!profile.contrada_id) return;
+
+        const contradaId =
+          Number(profile.contrada_id);
+
+        if (!contrade[contradaId]) return;
+
+        contrade[contradaId].utenti.push({
+          username:
+            profile.username ?? "Utente",
+          punti:
+            puntiUtenti[profile.id] ?? 0,
+        });
+      });
+
+      /*
+       * 6. ORDINIAMO GLI UTENTI
+       */
+      Object.values(contrade).forEach(
+        (contrada) => {
+          contrada.utenti.sort(
+            (a, b) => b.punti - a.punti
+          );
+        }
+      );
+
+      setRanking(
+        Object.values(contrade)
+      );
+
       setLoading(false);
     }
 
     loadRanking();
   }, []);
 
-  const contradaSelezionata = ranking.find(
-    (contrada) =>
-      contrada.id === selectedContrada
-  );
+  const contradaSelezionata =
+    ranking.find(
+      (contrada) =>
+        contrada.id === selectedContrada
+    );
 
   const nomeContrada =
     nomiContrade[selectedContrada];
+
+  const colori =
+    coloriContrade[nomeContrada] ?? {
+      primario: "#5C3A21",
+      secondario: "#D4AF37",
+    };
 
   return (
     <main className="min-h-screen bg-[#F8F5F0]">
 
       {/* HERO */}
 
-      <section className="bg-gradient-to-r from-[#8B0000] via-red-700 to-[#D4AF37] text-white py-14">
+      <section className="bg-gradient-to-r from-[#5C3A21] via-[#7A4A25] to-[#D4AF37] text-white py-14">
 
         <div className="max-w-7xl mx-auto px-6">
 
           <div className="flex justify-between items-center flex-wrap gap-6">
 
             <div>
+
               <h1 className="text-5xl font-black">
                 🚩 Classifica Contrada
               </h1>
 
-              <p className="mt-3 text-xl text-red-100">
-                Scopri la classifica interna di ogni contrada.
+              <p className="mt-3 text-xl text-amber-100">
+                La classifica interna di ogni contrada.
               </p>
+
             </div>
 
             <Link
               href="/dashboard/classifiche"
-              className="bg-white text-red-700 font-bold px-6 py-3 rounded-2xl shadow-lg hover:scale-105 transition"
+              className="bg-white text-[#5C3A21] font-bold px-6 py-3 rounded-2xl shadow-lg hover:scale-105 transition"
             >
               ← Classifiche
             </Link>
@@ -210,30 +267,37 @@ export default function ClassificaContradaPage() {
         <div className="flex gap-3 overflow-x-auto pb-3">
 
           {Object.entries(nomiContrade).map(
-            ([id, nome]) => (
+            ([id, nome]) => {
 
-              <button
-                key={id}
-                onClick={() =>
-                  setSelectedContrada(Number(id))
-                }
-                className={`flex-shrink-0 px-5 py-3 rounded-2xl font-bold transition ${
-                  selectedContrada === Number(id)
-                    ? "bg-[#5C3A21] text-white shadow-lg scale-105"
-                    : "bg-white text-[#5C3A21] shadow hover:scale-105"
-                }`}
-              >
-                {nome}
-              </button>
+              const contradaId =
+                Number(id);
 
-            )
+              return (
+                <button
+                  key={contradaId}
+                  onClick={() =>
+                    setSelectedContrada(
+                      contradaId
+                    )
+                  }
+                  className={`flex-shrink-0 px-5 py-3 rounded-2xl font-bold transition ${
+                    selectedContrada ===
+                    contradaId
+                      ? "bg-[#5C3A21] text-white shadow-lg scale-105"
+                      : "bg-white text-[#5C3A21] shadow hover:scale-105"
+                  }`}
+                >
+                  {nome}
+                </button>
+              );
+            }
           )}
 
         </div>
 
       </section>
 
-      {/* CLASSIFICA */}
+      {/* CONTENUTO */}
 
       <section className="max-w-7xl mx-auto px-6 py-10">
 
@@ -254,28 +318,30 @@ export default function ClassificaContradaPage() {
               style={{
                 background: `linear-gradient(
                   135deg,
-                  ${
-                    coloriContrade[nomeContrada]?.primario ??
-                    "#5C3A21"
-                  },
-                  ${
-                    coloriContrade[nomeContrada]?.secondario ??
-                    "#D4AF37"
-                  }
+                  ${colori.primario},
+                  ${colori.secondario}
                 )`,
               }}
             >
 
               <div className="flex items-center gap-4">
 
-                {stemmiContrade[nomeContrada] && (
+                {stemmiContrade[
+                  nomeContrada
+                ] && (
+
                   <Image
-                    src={stemmiContrade[nomeContrada]}
+                    src={
+                      stemmiContrade[
+                        nomeContrada
+                      ]
+                    }
                     alt={`Stemma ${nomeContrada}`}
                     width={75}
                     height={75}
                     className="object-contain"
                   />
+
                 )}
 
                 <div>
@@ -323,7 +389,8 @@ export default function ClassificaContradaPage() {
                 <tbody>
 
                   {!contradaSelezionata ||
-                  contradaSelezionata.utenti.length === 0 ? (
+                  contradaSelezionata.utenti
+                    .length === 0 ? (
 
                     <tr>
 
@@ -340,12 +407,14 @@ export default function ClassificaContradaPage() {
 
                     contradaSelezionata.utenti.map(
                       (
-                        utente: any,
-                        index: number
+                        utente,
+                        index
                       ) => (
 
                         <tr
-                          key={utente.username}
+                          key={
+                            utente.username
+                          }
                           className="border-b hover:bg-amber-50 transition"
                         >
 
@@ -357,22 +426,28 @@ export default function ClassificaContradaPage() {
 
                             <div className="flex items-center gap-3">
 
-                              {stemmiContrade[nomeContrada] && (
+                              {stemmiContrade[
+                                nomeContrada
+                              ] && (
+
                                 <Image
                                   src={
                                     stemmiContrade[
                                       nomeContrada
                                     ]
                                   }
-                                  alt={`Stemma ${nomeContrada}`}
+                                  alt=""
                                   width={45}
                                   height={45}
                                   className="object-contain"
                                 />
+
                               )}
 
                               <span className="font-semibold">
-                                {utente.username}
+                                {
+                                  utente.username
+                                }
                               </span>
 
                             </div>
@@ -380,7 +455,9 @@ export default function ClassificaContradaPage() {
                           </td>
 
                           <td className="p-5 text-right font-black text-lg">
-                            {utente.punti}
+                            {
+                              utente.punti
+                            }
                           </td>
 
                         </tr>
