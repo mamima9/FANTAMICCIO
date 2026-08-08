@@ -31,6 +31,16 @@ const stemmiContrade: Record<string, string> = {
   "Quercia": "/contrade/quercia.png",
   "Ranocchio": "/contrade/ranocchio.png",
 };
+const nomiContrade: Record<number, string> = {
+  1: "Cervia",
+  2: "Leon d'Oro",
+  3: "Lucertola",
+  4: "Madonnina",
+  5: "Ponte",
+  6: "Pozzo",
+  7: "Quercia",
+  8: "Ranocchio",
+};
 const coloriContrade: Record<
   string,
   { primario: string; secondario: string }
@@ -114,15 +124,15 @@ const coloriContrade: Record<
 
       users[username] = {
   username,
-  contrada: profile.contrada_id ?? "-",
+  contrada: nomiContrade[profile.contrada_id] ?? "-",
   punti: 0,
 };
-
+}
 
         users[username].punti +=
           prediction.points_awarded ?? 0;
-
-      });
+      
+        });
 
 
 
@@ -801,9 +811,25 @@ if(tab.id === "popolarita"){
                             {index + 1}
                           </td>
 
-                          <td className="p-5">
-                            {utente.username}
-                          </td>
+                         <td className="p-5">
+  <div className="flex items-center gap-3">
+
+    {stemmiContrade[utente.contrada] && (
+      <Image
+        src={stemmiContrade[utente.contrada]}
+        alt={`Stemma ${utente.contrada}`}
+        width={45}
+        height={45}
+        className="object-contain"
+      />
+    )}
+
+    <span className="font-semibold">
+      {utente.contrada}
+    </span>
+
+  </div>
+</td>
 
                           <td className="p-5 text-right font-bold">
                             {utente.punti}
