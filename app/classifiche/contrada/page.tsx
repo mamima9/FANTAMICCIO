@@ -29,6 +29,56 @@ const nomiContrade: Record<string, string> = {
   "8": "Ranocchio",
 };
 
+/* COLORI DELLE CONTRADE */
+
+const coloriContrade: Record<
+  string,
+  {
+    primario: string;
+    secondario: string;
+  }
+> = {
+  Cervia: {
+    primario: "#FFFFFF",
+    secondario: "#87CEEB",
+  },
+
+  "Leon d'Oro": {
+    primario: "#FFD700",
+    secondario: "#D71920",
+  },
+
+  Lucertola: {
+    primario: "#D71920",
+    secondario: "#16823B",
+  },
+
+  Madonnina: {
+    primario: "#1E5AA8",
+    secondario: "#FFD700",
+  },
+
+  Ponte: {
+    primario: "#D71920",
+    secondario: "#1E5AA8",
+  },
+
+  Pozzo: {
+    primario: "#FFFFFF",
+    secondario: "#D71920",
+  },
+
+  Quercia: {
+    primario: "#FFFFFF",
+    secondario: "#171717",
+  },
+
+  Ranocchio: {
+    primario: "#FFD700",
+    secondario: "#16823B",
+  },
+};
+
 type Utente = {
   username: string;
   contrada_id: string;
@@ -48,6 +98,8 @@ export default function ContradaPage() {
 
   useEffect(() => {
     async function loadRanking() {
+      setLoading(true);
+
       const { data, error } = await supabase
         .from("predictions")
         .select(`
@@ -79,25 +131,30 @@ export default function ContradaPage() {
           ? prediction.profiles[0]
           : prediction.profiles;
 
-        if (!profile?.username || !profile?.contrada_id) return;
+        if (!profile?.username || !profile?.contrada_id) {
+          return;
+        }
 
         const id = String(profile.contrada_id);
 
-        if (!contrade[id]) return;
+        if (!contrade[id]) {
+          return;
+        }
 
-        const existing = contrade[id].utenti.find(
+        const punti =
+          Number(prediction.points_awarded) || 0;
+
+        const utenteEsistente = contrade[id].utenti.find(
           (utente) => utente.username === profile.username
         );
 
-        if (existing) {
-          existing.punti +=
-            Number(prediction.points_awarded) || 0;
+        if (utenteEsistente) {
+          utenteEsistente.punti += punti;
         } else {
           contrade[id].utenti.push({
             username: profile.username,
             contrada_id: id,
-            punti:
-              Number(prediction.points_awarded) || 0,
+            punti,
           });
         }
       });
@@ -122,6 +179,8 @@ export default function ContradaPage() {
   return (
     <main className="min-h-screen bg-[#F8F5F0]">
 
+      {/* HERO */}
+
       <section className="bg-gradient-to-r from-[#5C3A21] via-[#7A4A25] to-[#D4AF37] text-white py-12 md:py-16">
 
         <div className="max-w-7xl mx-auto px-5 md:px-6">
@@ -141,7 +200,7 @@ export default function ContradaPage() {
             🚩 Singola Contrada
           </h1>
 
-          <p className="text-base md:text-xl text-amber-100 mt-3">
+          <p className="text-base md:text-xl text-amber-100 mt-3 max-w-2xl">
             La classifica interna di ogni contrada.
           </p>
 
@@ -149,20 +208,27 @@ export default function ContradaPage() {
 
       </section>
 
+
+      {/* CONTENUTO */}
+
       <section className="max-w-7xl mx-auto px-5 md:px-6 py-8 md:py-12">
 
         {loading ? (
+
           <div className="bg-white rounded-3xl shadow-xl p-10 text-center">
             Caricamento...
           </div>
+
         ) : (
+
           <>
 
-            {/* SELETTORE */}
+            {/* SELETTORE CONTRADE */}
 
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2 md:gap-3 mb-8">
 
               {ranking.map((item) => (
+
                 <button
                   key={item.id}
                   onClick={() =>
@@ -170,54 +236,88 @@ export default function ContradaPage() {
                   }
                   className={`p-3 rounded-2xl font-bold transition ${
                     selectedContrada === item.id
-                      ? "bg-[#5C3A21] text-white shadow-lg"
+                      ? "bg-[#5C3A21] text-white shadow-lg scale-[1.02]"
                       : "bg-white text-[#5C3A21] shadow hover:bg-amber-50"
                   }`}
                 >
+
                   <div className="flex justify-center mb-1">
+
                     <Image
                       src={stemmiContrade[item.id]}
-                      alt=""
+                      alt={`Stemma ${item.nome}`}
                       width={38}
                       height={38}
                       className="object-contain"
                     />
+
                   </div>
 
                   <span className="text-xs md:text-sm">
                     {item.nome}
                   </span>
+
                 </button>
+
               ))}
 
             </div>
 
 
-            {/* CONTRADA */}
+            {/* CONTRADA SELEZIONATA */}
 
             {contrada && (
+
               <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
 
-                <div className="bg-[#5C3A21] text-white p-6">
+                {/* HEADER SFUMATO */}
+
+                <div
+                  className="p-6 md:p-8"
+                  style={{
+                    background: `linear-gradient(
+                      135deg,
+                      ${
+                        coloriContrade[contrada.nome]?.primario ??
+                        "#5C3A21"
+                      },
+                      ${
+                        coloriContrade[contrada.nome]?.secondario ??
+                        "#D4AF37"
+                      }
+                    )`,
+                  }}
+                >
 
                   <div className="flex items-center gap-4">
 
-                    <Image
-                      src={stemmiContrade[contrada.id]}
-                      alt={`Stemma ${contrada.nome}`}
-                      width={65}
-                      height={65}
-                      className="object-contain"
-                    />
+                    {/* STEMMA */}
+
+                    <div className="bg-white/80 rounded-2xl p-2 flex-shrink-0">
+
+                      <Image
+                        src={stemmiContrade[contrada.id]}
+                        alt={`Stemma ${contrada.nome}`}
+                        width={70}
+                        height={70}
+                        className="object-contain"
+                      />
+
+                    </div>
+
+
+                    {/* NOME */}
 
                     <div>
-                      <h2 className="text-2xl md:text-3xl font-black">
+
+                      <h2 className="text-2xl md:text-4xl font-black text-[#5C3A21]">
                         {contrada.nome}
                       </h2>
 
-                      <p className="text-amber-200">
+                      <p className="text-[#5C3A21] font-semibold mt-1">
                         Classifica interna
                       </p>
+
                     </div>
 
                   </div>
@@ -225,59 +325,119 @@ export default function ContradaPage() {
                 </div>
 
 
+                {/* TABELLA */}
+
                 {contrada.utenti.length === 0 ? (
 
-                  <div className="p-10 text-center text-gray-500">
-                    Nessun partecipante.
+                  <div className="p-10 text-center">
+
+                    <div className="text-5xl mb-4">
+                      🚩
+                    </div>
+
+                    <p className="text-gray-500 font-medium">
+                      Nessun partecipante in questa contrada.
+                    </p>
+
                   </div>
 
                 ) : (
 
                   <div>
 
-                    {contrada.utenti.map((utente, index) => (
+                    {/* INTESTAZIONE */}
 
-                      <div
-                        key={utente.username}
-                        className="border-b last:border-b-0 p-4 md:p-5"
-                      >
+                    <div className="hidden md:grid grid-cols-[60px_minmax(0,1fr)_120px] items-center gap-4 bg-gray-100 px-6 py-4 text-sm font-black text-gray-600">
 
-                        <div className="grid grid-cols-[32px_48px_minmax(0,1fr)_auto] items-center gap-3 md:gap-4">
+                      <div>
+                        #
+                      </div>
 
-                          <div className="font-black">
-                            {index + 1}
-                          </div>
+                      <div>
+                        Contradaiolo
+                      </div>
 
-                          <Image
-                            src={stemmiContrade[utente.contrada_id]}
-                            alt=""
-                            width={42}
-                            height={42}
-                            className="object-contain"
-                          />
+                      <div className="text-right">
+                        Punti
+                      </div>
 
-                          <div className="font-bold text-[#5C3A21] break-words min-w-0">
-                            {utente.username}
-                          </div>
+                    </div>
 
-                          <div className="font-black whitespace-nowrap">
-                            {utente.punti} pt
+
+                    {/* UTENTI */}
+
+                    {contrada.utenti.map(
+                      (utente, index) => (
+
+                        <div
+                          key={utente.username}
+                          className="border-b last:border-b-0 px-4 md:px-6 py-4 md:py-5 hover:bg-amber-50 transition"
+                        >
+
+                          <div className="grid grid-cols-[32px_42px_minmax(0,1fr)_auto] md:grid-cols-[60px_minmax(0,1fr)_120px] items-center gap-3 md:gap-4">
+
+                            {/* POSIZIONE */}
+
+                            <div className="font-black text-lg">
+                              {index + 1}
+                            </div>
+
+
+                            {/* STEMMA */}
+
+                            <div className="md:hidden">
+
+                              <Image
+                                src={
+                                  stemmiContrade[
+                                    utente.contrada_id
+                                  ]
+                                }
+                                alt=""
+                                width={38}
+                                height={38}
+                                className="object-contain"
+                              />
+
+                            </div>
+
+
+                            {/* UTENTE */}
+
+                            <div className="font-bold text-[#5C3A21] min-w-0 break-words">
+
+                              <span>
+                                {utente.username}
+                              </span>
+
+                            </div>
+
+
+                            {/* PUNTI */}
+
+                            <div className="font-black text-lg whitespace-nowrap">
+
+                              {utente.punti} pt
+
+                            </div>
+
                           </div>
 
                         </div>
 
-                      </div>
-
-                    ))}
+                      )
+                    )}
 
                   </div>
 
                 )}
 
               </div>
+
             )}
 
           </>
+
         )}
 
       </section>
