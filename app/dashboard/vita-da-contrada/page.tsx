@@ -58,7 +58,7 @@ export default function VitaDiContrada() {
       <section className="max-w-7xl mx-auto px-6 py-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {[
-            { icon: "🏆", title: "Eventi", href: "/eventi" },
+            { icon: "🫏", title: "Eventi", href: "/eventi" },
             { icon: "📅", title: "Calendario", href: "/calendario" },
             { icon: "🏆", title: "Classifiche", href: "/classifiche" },
           ].map((item) => (

@@ -33,7 +33,8 @@ export default function EventiPage() {
             className="bg-white rounded-3xl shadow-xl p-8 hover:-translate-y-2 transition"
           >
             <div className="text-6xl text-center">
-              🐴
+             🫏
+ 
             </div>
 
             <h2 className="text-2xl font-black mt-6 text-center">
