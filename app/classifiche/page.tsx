@@ -331,9 +331,7 @@ const { data, error } = await supabase
 
 }
 async function loadSingolaContradaRanking() {
-
   setSingolaContradaLoading(true);
-
 
   const { data, error } = await supabase
     .from("predictions")
@@ -345,83 +343,71 @@ async function loadSingolaContradaRanking() {
       )
     `);
 
-
   if (error) {
     console.error(error);
     setSingolaContradaLoading(false);
     return;
   }
 
-
   const users: any = {};
 
+  const nomiContrade: Record<string, string> = {
+    "1": "Cervia",
+    "2": "Leon d'Oro",
+    "3": "Lucertola",
+    "4": "Madonnina",
+    "5": "Ponte",
+    "6": "Pozzo",
+    "7": "Quercia",
+    "8": "Ranocchio",
+  };
 
-  data?.forEach((prediction:any)=>{
-
+  data?.forEach((prediction: any) => {
     const profile = prediction.profiles;
 
-    if(!profile) return;
-
+    if (!profile) return;
 
     const key = profile.contrada_id;
 
-
-    if(!users[key]){
+    if (!users[key]) {
       users[key] = [];
     }
 
+    const existing = users[key].find(
+      (u: any) => u.username === profile.username
+    );
 
-    const existing = users[key]
-      .find(
-        (u:any)=>u.username === profile.username
-      );
-
-
-    if(existing){
-
+    if (existing) {
       existing.punti +=
         prediction.points_awarded ?? 0;
-
     } else {
-
       users[key].push({
-
         username: profile.username,
 
-        contrada: profile.contrada_id,
+        contrada:
+          nomiContrade[String(profile.contrada_id)] ?? "-",
 
         punti:
-          prediction.points_awarded ?? 0
-
+          prediction.points_awarded ?? 0,
       });
-
     }
-
-
   });
 
-
-
   const result = Object.keys(users).map(
-    (contrada)=>({
-
-      nome: contrada,
+    (contrada) => ({
+      nome:
+        nomiContrade[contrada] ?? "-",
 
       utenti:
-        users[contrada]
-          .sort(
-            (a:any,b:any)=>
-              b.punti-a.punti
-          )
-
+        users[contrada].sort(
+          (a: any, b: any) =>
+            b.punti - a.punti
+        ),
     })
   );
 
-
   setSingolaContradaRanking(result);
-
   setSingolaContradaLoading(false);
-
 }
 
 async function loadPopolaritaRanking() {
