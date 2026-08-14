@@ -14,17 +14,17 @@ type DashboardUser = {
     logo: string;
   };
 };
-const stemmiContrade: Record<string, string> = {
-  "La Cervia": "/account/contrade/cervia.png",
-  "Leon d'Oro": "/account/contrade/leondoro.png",
-  "La Lucertola": "/account/contrade/lucertola.jpg",
-  "La Madonnina": "/account/contrade/madonnina.jpg",
-  "Il Ponte": "/account/contrade/ponte.jpg",
-  "Il Pozzo": "/account/contrade/pozzo.png",
-  "La Quercia": "/account/contrade/quercia.png",
-  "Il Ranocchio": "/account/contrade/ranocchio.png",
-};
 
+const stemmiContrade: Record<string, string> = {
+  "Cervia": "/account/contrade/cervia.png",
+  "Leon d'Oro": "/account/contrade/leondoro.png",
+  "Lucertola": "/account/contrade/lucertola.jpg",
+  "Madonnina": "/account/contrade/madonnina.jpg",
+  "Ponte": "/account/contrade/ponte.jpg",
+  "Pozzo": "/account/contrade/pozzo.png",
+  "Quercia": "/account/contrade/quercia.png",
+  "Ranocchio": "/account/contrade/ranocchio.png",
+};
 
 type Props = {
   user: DashboardUser;
@@ -40,23 +40,28 @@ export default function DashboardNavbar({ user }: Props) {
     router.replace("/");
     router.refresh();
   }
-  const stemmaContrada = stemmiContrade[user.contrada.nome];
+
+  const stemmaContrada =
+    stemmiContrade[user.contrada.nome] || "/account/contrade/cervia.png";
+
   return (
     <header className="sticky top-0 z-50 border-b border-[#D4AF37] bg-[#5C3A21] text-white">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+
         {/* Logo */}
         <div className="flex items-center gap-8">
-      <a
-  href="/"
-  className="flex items-center gap-3"
->
-           <Image
-  src="/contrade/logo.png"
-  alt="FantaMiccio"
-  width={42}
-  height={42}
-  className="rounded-full"
-/>
+          <a
+            href="/"
+            className="flex items-center gap-3"
+          >
+            <Image
+              src="/contrade/logo.png"
+              alt="FantaMiccio"
+              width={42}
+              height={42}
+              className="rounded-full"
+            />
+
             <span className="text-xl font-bold text-[#D4AF37]">
               FantaMiccio
             </span>
@@ -86,6 +91,7 @@ export default function DashboardNavbar({ user }: Props) {
             onClick={() => setOpen(!open)}
             className="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-white/10"
           >
+            {/* UNICO STEMMA DELLA CONTRADA */}
             <Image
               src={stemmaContrada}
               alt={user.contrada.nome}
@@ -113,30 +119,20 @@ export default function DashboardNavbar({ user }: Props) {
 
           {open && (
             <div className="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-[#D4AF37] bg-white text-gray-800 shadow-xl">
+
               <div className="border-b px-4 py-3">
-  <p className="font-semibold">{user.username}</p>
+                <p className="font-semibold">
+                  {user.username}
+                </p>
+              </div>
 
-  <div className="mt-2 flex items-center gap-2">
-    <Image
-     src={stemmaContrada}
-      alt={user.contrada.nome}
-      width={32}
-      height={32}
-      className="rounded-full border border-[#D4AF37]"
-    />
+              <Link
+                href="/"
+                className="flex items-center gap-2 px-4 py-3 transition hover:bg-gray-100"
+              >
+                🏠 Torna alla Home iniziale
+              </Link>
 
-    <span className="text-sm text-gray-600">
-      Contrada del cuore
-    </span>
-  </div>
-</div>
-
-<Link
-  href="/"
-  className="flex items-center gap-2 px-4 py-3 transition hover:bg-gray-100"
->
-  🏠 Torna alla Home iniziale
-</Link>
               <button
                 onClick={handleLogout}
                 className="block w-full px-4 py-3 text-left text-red-600 transition hover:bg-red-50"
@@ -151,7 +147,9 @@ export default function DashboardNavbar({ user }: Props) {
       {/* Menu Mobile */}
       <nav className="border-t border-white/10 md:hidden">
         <div className="flex justify-around py-3">
-          <Link href="/dashboard">Sede</Link>
+          <Link href="/dashboard">
+            Sede
+          </Link>
 
           <Link href="/dashboard/vita-da-contrada">
             Vita di Contrada
