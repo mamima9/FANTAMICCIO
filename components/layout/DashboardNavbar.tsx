@@ -15,14 +15,14 @@ type DashboardUser = {
   };
 };
 const stemmiContrade: Record<string, string> = {
-  "La Cervia": "/public/contrade/cervia.png",
-  "Leon d'Oro": "/public/contrade/leondoro.png",
-  "La Lucertola": "/public/contrade/lucertola.png",
-  "La Madonnina": "/public/contrade/madonnina.png",
-  "Il Ponte": "/public/contrade/ponte.png",
-  "Il Pozzo": "/public/contrade/pozzo.png",
-  "La Quercia": "/public/contrade/quercia.png",
-  "Il Ranocchio": "/public/contrade/ranocchio.png",
+  "La Cervia": "/account/contrade/cervia.png",
+  "Leon d'Oro": "/account/contrade/leondoro.png",
+  "La Lucertola": "/account/contrade/lucertola.png",
+  "La Madonnina": "/account/contrade/madonnina.png",
+  "Il Ponte": "/account/contrade/ponte.png",
+  "Il Pozzo": "/account/contrade/pozzo.png",
+  "La Quercia": "/account/contrade/quercia.png",
+  "Il Ranocchio": "/account/contrade/ranocchio.png",
 };
 
 
