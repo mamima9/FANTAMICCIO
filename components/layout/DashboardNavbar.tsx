@@ -111,12 +111,9 @@ export default function DashboardNavbar({ user }: Props) {
                 </p>
               </div>
 
-              <Link
-                href="/dashboard/account"
-                className="block px-4 py-3 transition hover:bg-gray-100"
-              >
-                Account
-              </Link>
+              <Link href="/">
+  Torna alla Home iniziale 
+</Link>
 
               <button
                 onClick={handleLogout}

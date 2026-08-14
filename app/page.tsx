@@ -34,13 +34,13 @@ export default function Home() {
 
               <br /><br />
 
-              Scegli la Contrada che rappresenti, costruisci la tua squadra e conquista punti in ogni competizione.
+              Scegli la Contrada che rappresenti, partecipa agli eventi  e conquista punti in ogni competizione.
 
-              Ogni tua vittoria contribuirà ad accrescere la popolarità della tua Contrada e a farla scalare la classifica dei Fantacontradaioli.
+              Ogni tua vittoria contribuirà a farti scalare la classifica dei Fantacontradaioli e aiutare la tua contrada nel confronto con le altre.
 
               <br /><br />
 
-              Partecipa al Fanta Torneo di Calcio, pronostica il Miccio vincitore del Palio e metti alla prova le tue conoscenze in tutte le competizioni che accompagneranno il mondo del Palio durante l'anno.
+              Partecipa al Fanta Torneo di Calcio, pronostica il podio della corsa del miccio del Palio e metti alla prova le tue conoscenze in tutte le competizioni che accompagneranno il mondo del Palio durante l'anno.
 
               <br /><br />
 
@@ -53,7 +53,7 @@ export default function Home() {
 
               <div>⚽ <strong>Crea la squadra del Torneo di Calcio</strong></div>
 
-              <div>🏇 <strong>Pronostica il Miccio vincitore del Palio</strong></div>
+              <div>🫏 <strong>Pronostica il podio nella corsa del miccio</strong></div>
 
               <div>🏆 <strong>Sfida amici e altri Fantacontradaioli</strong></div>
 
