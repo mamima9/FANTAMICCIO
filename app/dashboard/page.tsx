@@ -429,7 +429,7 @@ export default function DashboardPage() {
                 </p>
 
                 <h2 className="text-xl md:text-2xl font-black text-[#5C3A21] mt-1">
-                  🏆 Classifica Generale
+                   Classifica Generale
                 </h2>
 
               </div>
@@ -488,7 +488,7 @@ export default function DashboardPage() {
                 </p>
 
                 <h2 className="text-xl md:text-2xl font-black text-[#5C3A21] mt-1">
-                  🚩 Classifica Contrada
+                   Classifica Contrada
                 </h2>
 
               </div>
@@ -547,7 +547,7 @@ export default function DashboardPage() {
                 </p>
 
                 <h2 className="text-xl md:text-2xl font-black text-[#5C3A21] mt-1">
-                  ⭐ Popolarità
+                   Popolarità
                 </h2>
 
               </div>
@@ -606,7 +606,7 @@ export default function DashboardPage() {
                 </p>
 
                 <h2 className="text-xl md:text-2xl font-black text-[#5C3A21] mt-1">
-                  🏰 8 Contrade
+                   8 Contrade
                 </h2>
 
               </div>
