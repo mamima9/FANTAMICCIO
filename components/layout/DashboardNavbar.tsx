@@ -9,21 +9,18 @@ import { createClient } from "@/lib/supabase/client";
 type DashboardUser = {
   username: string;
   avatar?: string | null;
-  contrada: {
-    nome: string;
-    logo: string;
-  };
+  contrada_id: number | null;
 };
 
-const stemmiContrade: Record<string, string> = {
-  "Cervia": "/account/cervia.png",
-  "Leon d'Oro": "/account/leondoro.png",
-  "Lucertola": "/account/lucertola.jpg",
-  "Madonnina": "/account/madonnina.jpg",
-  "Ponte": "/account/ponte.jpg",
-  "Pozzo": "/account/pozzo.png",
-  "Quercia": "/account/quercia.png",
-  "Ranocchio": "/account/ranocchi.png",
+const stemmiContrade: Record<number, string> = {
+  1: "/account/cervia.png",
+  2: "/account/leondoro.png",
+  3: "/account/lucertola.jpg",
+  4: "/account/madonnina.jpg",
+  5: "/account/ponte.jpg",
+  6: "/account/pozzo.png",
+  7: "/account/quercia.png",
+  8: "/account/ranocchi.png",
 };
 
 type Props = {
@@ -41,16 +38,20 @@ export default function DashboardNavbar({ user }: Props) {
     router.refresh();
   }
 
+  // Se non ha una contrada → Barone di Motrone
+  // Se ha una contrada → usa il relativo personaggio
   const stemmaContrada =
-    stemmiContrade[user.contrada.nome] || "/account/barone.png";
+    user.contrada_id !== null
+      ? stemmiContrade[user.contrada_id] || "/account/barone.png"
+      : "/account/barone.png";
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#D4AF37] bg-[#5C3A21] text-white">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
 
-        {/* Logo */}
+        {/* LOGO FANTAMICCIO */}
         <div className="flex items-center gap-8">
-          <a
+          <Link
             href="/"
             className="flex items-center gap-3"
           >
@@ -65,9 +66,9 @@ export default function DashboardNavbar({ user }: Props) {
             <span className="text-xl font-bold text-[#D4AF37]">
               FantaMiccio
             </span>
-          </a>
+          </Link>
 
-          {/* Menu Desktop */}
+          {/* MENU DESKTOP */}
           <nav className="hidden items-center gap-6 md:flex">
             <Link
               href="/dashboard"
@@ -85,16 +86,17 @@ export default function DashboardNavbar({ user }: Props) {
           </nav>
         </div>
 
-        {/* Menu Utente */}
+        {/* MENU UTENTE */}
         <div className="relative">
           <button
             onClick={() => setOpen(!open)}
             className="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-white/10"
           >
-            {/* UNICO STEMMA DELLA CONTRADA */}
+
+            {/* PERSONAGGIO ACCOUNT */}
             <Image
               src={stemmaContrada}
-              alt={user.contrada.nome}
+              alt="Personaggio account"
               width={34}
               height={34}
               className="rounded-full border border-white"
@@ -117,6 +119,7 @@ export default function DashboardNavbar({ user }: Props) {
             </svg>
           </button>
 
+          {/* TENDINA */}
           {open && (
             <div className="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-[#D4AF37] bg-white text-gray-800 shadow-xl">
 
@@ -144,9 +147,10 @@ export default function DashboardNavbar({ user }: Props) {
         </div>
       </div>
 
-      {/* Menu Mobile */}
+      {/* MENU MOBILE */}
       <nav className="border-t border-white/10 md:hidden">
         <div className="flex justify-around py-3">
+
           <Link href="/dashboard">
             Sede
           </Link>
@@ -154,6 +158,7 @@ export default function DashboardNavbar({ user }: Props) {
           <Link href="/dashboard/vita-da-contrada">
             Vita di Contrada
           </Link>
+
         </div>
       </nav>
     </header>
