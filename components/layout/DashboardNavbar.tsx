@@ -15,14 +15,14 @@ type DashboardUser = {
   };
 };
 const stemmiContrade: Record<string, string> = {
-  "La Cervia": "/contrade/cervia.png",
-  "Leon d'Oro": "/contrade/leondoro.png",
-  "La Lucertola": "/contrade/lucertola.png",
-  "La Madonnina": "/contrade/madonnina.png",
-  "Il Ponte": "/contrade/ponte.png",
-  "Il Pozzo": "/contrade/pozzo.png",
-  "La Quercia": "/contrade/quercia.png",
-  "Il Ranocchio": "/contrade/ranocchio.png",
+  "La Cervia": "/public/contrade/cervia.png",
+  "Leon d'Oro": "/public/contrade/leondoro.png",
+  "La Lucertola": "/public/contrade/lucertola.png",
+  "La Madonnina": "/public/contrade/madonnina.png",
+  "Il Ponte": "/public/contrade/ponte.png",
+  "Il Pozzo": "/public/contrade/pozzo.png",
+  "La Quercia": "/public/contrade/quercia.png",
+  "Il Ranocchio": "/public/contrade/ranocchio.png",
 };
 
 
@@ -155,7 +155,7 @@ const stemmaContrada =
           <Link href="/dashboard">Sede</Link>
 
           <Link href="/dashboard/vita-da-contrada">
-            Vita da Contrada
+            Vita di Contrada
           </Link>
         </div>
       </nav>
