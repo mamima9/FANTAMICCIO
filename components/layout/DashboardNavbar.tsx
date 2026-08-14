@@ -57,7 +57,7 @@ export default function DashboardNavbar({ user }: Props) {
 
   // Se la contrada non viene riconosciuta → Cervia
   const stemmaContrada =
-    stemmiContrade[user.contrada?.nome] || "/account/cervia.png";
+    stemmiContrade[user.contrada?.nome] || "/account/leondoro.png";
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#D4AF37] bg-[#5C3A21] text-white">
