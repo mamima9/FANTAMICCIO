@@ -29,14 +29,11 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  // Temporaneo: dati della contrada
+  // Dati dell'utente per la Dashboard
   const dashboardUser = {
     username: profile.username,
     avatar: profile.avatar,
-    contrada: {
-      nome: "Contrada",
-      logo: "/contrade/logo.png",
-    },
+    contrada_id: profile.contrada_id,
   };
 
   return (

@@ -9,35 +9,18 @@ import { createClient } from "@/lib/supabase/client";
 type DashboardUser = {
   username: string;
   avatar?: string | null;
-  contrada: {
-    nome: string;
-    logo: string;
-  };
+  contrada_id: number | null;
 };
 
-const stemmiContrade: Record<string, string> = {
-  "La Cervia": "/account/cervia.png",
-  "Cervia": "/account/cervia.png",
-
-  "Leon d'Oro": "/account/leondoro.png",
-
-  "La Lucertola": "/account/lucertola.jpg",
-  "Lucertola": "/account/lucertola.jpg",
-
-  "La Madonnina": "/account/madonnina.jpg",
-  "Madonnina": "/account/madonnina.jpg",
-
-  "Il Ponte": "/account/ponte.jpg",
-  "Ponte": "/account/ponte.jpg",
-
-  "Il Pozzo": "/account/pozzo.png",
-  "Pozzo": "/account/pozzo.png",
-
-  "La Quercia": "/account/quercia.png",
-  "Quercia": "/account/quercia.png",
-
-  "Il Ranocchio": "/account/ranocchi.png",
-  "Ranocchio": "/account/ranocchi.png",
+const stemmiContrade: Record<number, string> = {
+  1: "/account/cervia.png",
+  2: "/account/leondoro.png",
+  3: "/account/lucertola.jpg",
+  4: "/account/madonnina.jpg",
+  5: "/account/ponte.jpg",
+  6: "/account/pozzo.png",
+  7: "/account/quercia.png",
+  8: "/account/ranocchi.png",
 };
 
 type Props = {
@@ -55,9 +38,9 @@ export default function DashboardNavbar({ user }: Props) {
     router.refresh();
   }
 
-  // Se la contrada non viene riconosciuta → Cervia
+  // Per ora: se contrada_id è null o non valido, usa Cervia come default
   const stemmaContrada =
-    stemmiContrade[user.contrada?.nome] || "/account/leondoro.png";
+    stemmiContrade[user.contrada_id ?? 1] || "/account/cervia.png";
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#D4AF37] bg-[#5C3A21] text-white">
@@ -106,7 +89,6 @@ export default function DashboardNavbar({ user }: Props) {
             onClick={() => setOpen(!open)}
             className="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-white/10"
           >
-
             {/* PERSONAGGIO ACCOUNT */}
             <Image
               src={stemmaContrada}
@@ -156,6 +138,7 @@ export default function DashboardNavbar({ user }: Props) {
               >
                 Esci
               </button>
+
             </div>
           )}
         </div>
