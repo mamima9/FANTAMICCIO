@@ -9,18 +9,35 @@ import { createClient } from "@/lib/supabase/client";
 type DashboardUser = {
   username: string;
   avatar?: string | null;
-  contrada_id: number | null;
+  contrada: {
+    nome: string;
+    logo: string;
+  };
 };
 
-const stemmiContrade: Record<number, string> = {
-  1: "/account/cervia.png",
-  2: "/account/leondoro.png",
-  3: "/account/lucertola.jpg",
-  4: "/account/madonnina.jpg",
-  5: "/account/ponte.jpg",
-  6: "/account/pozzo.png",
-  7: "/account/quercia.png",
-  8: "/account/ranocchi.png",
+const stemmiContrade: Record<string, string> = {
+  "La Cervia": "/account/cervia.png",
+  "Cervia": "/account/cervia.png",
+
+  "Leon d'Oro": "/account/leondoro.png",
+
+  "La Lucertola": "/account/lucertola.jpg",
+  "Lucertola": "/account/lucertola.jpg",
+
+  "La Madonnina": "/account/madonnina.jpg",
+  "Madonnina": "/account/madonnina.jpg",
+
+  "Il Ponte": "/account/ponte.jpg",
+  "Ponte": "/account/ponte.jpg",
+
+  "Il Pozzo": "/account/pozzo.png",
+  "Pozzo": "/account/pozzo.png",
+
+  "La Quercia": "/account/quercia.png",
+  "Quercia": "/account/quercia.png",
+
+  "Il Ranocchio": "/account/ranocchi.png",
+  "Ranocchio": "/account/ranocchi.png",
 };
 
 type Props = {
@@ -38,12 +55,9 @@ export default function DashboardNavbar({ user }: Props) {
     router.refresh();
   }
 
-  // Se non ha una contrada → Barone di Motrone
-  // Se ha una contrada → usa il relativo personaggio
+  // Se la contrada non viene riconosciuta → Cervia
   const stemmaContrada =
-    user.contrada_id !== null
-      ? stemmiContrade[user.contrada_id] || "/account/barone.png"
-      : "/account/barone.png";
+    stemmiContrade[user.contrada?.nome] || "/account/cervia.png";
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#D4AF37] bg-[#5C3A21] text-white">

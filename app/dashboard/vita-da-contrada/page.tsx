@@ -67,29 +67,20 @@ export default function VitaDiContrada() {
         </div>
       </section>
 
-      {/* COUNTDOWN */}
-      <section className="max-w-7xl mx-auto px-6 mt-14 pb-16">
-        <div className="rounded-3xl bg-gradient-to-r from-[#5C3A21] to-[#8B5E3C] text-white p-10 shadow-2xl text-center">
-          <h2 className="text-4xl font-black">⏳ Prossimo Evento</h2>
+      {/* EVENTO IN CORSO */}
+<section className="max-w-7xl mx-auto px-6 mt-14 pb-16">
+  <div className="rounded-3xl bg-gradient-to-r from-[#5C3A21] to-[#8B5E3C] text-white p-10 shadow-2xl text-center">
 
-          {nextEvent.date ? (
-            <>
-              <p className="text-6xl font-black mt-8">--</p>
-              <p className="text-2xl">Giorni</p>
-              <p className="mt-5 text-xl">{nextEvent.title}</p>
-            </>
-          ) : (
-            <>
-              <p className="text-4xl font-black mt-8">
-                {nextEvent.title}
-              </p>
-              <p className="mt-4 text-xl text-yellow-300">
-                {nextEvent.description}
-              </p>
-            </>
-          )}
-        </div>
-      </section>
-    </main>
+    <h2 className="text-4xl font-black">
+      ⌛ Evento in corso
+    </h2>
+
+    <p className="text-4xl font-black mt-8">
+      Off Season 2026
+    </p>
+
+  </div>
+</section>
+ </main>
   );
 }
