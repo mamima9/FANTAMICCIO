@@ -120,7 +120,7 @@ export default function Navbar() {
             href="/dashboard"
             className="hidden rounded-xl bg-[#D4AF37] px-6 py-3 font-bold text-[#5C3A21] transition hover:scale-105 hover:bg-[#E4BC43] lg:block"
           >
-            Dashboard
+            Sede
           </Link>
         ) : (
           <Link
@@ -159,7 +159,7 @@ export default function Navbar() {
               href="/dashboard"
               className="col-span-2 mt-2 rounded-xl bg-[#D4AF37] px-5 py-3 text-center font-bold text-[#5C3A21] transition hover:bg-[#E4BC43]"
             >
-              Dashboard
+              Sede
             </Link>
           ) : (
             <Link
