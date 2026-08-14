@@ -104,17 +104,29 @@ export default function DashboardNavbar({ user }: Props) {
           {open && (
             <div className="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-[#D4AF37] bg-white text-gray-800 shadow-xl">
               <div className="border-b px-4 py-3">
-                <p className="font-semibold">{user.username}</p>
+  <p className="font-semibold">{user.username}</p>
 
-                <p className="text-sm text-gray-500">
-                  {user.contrada.nome}
-                </p>
-              </div>
+  <div className="mt-2 flex items-center gap-2">
+    <Image
+      src={user.contrada.logo || "/contrade/logo.png"}
+      alt={user.contrada.nome}
+      width={32}
+      height={32}
+      className="rounded-full border border-[#D4AF37]"
+    />
 
-              <Link href="/">
-     Torna alla Home iniziale 
+    <span className="text-sm text-gray-600">
+      Contrada del cuore
+    </span>
+  </div>
+</div>
+
+<Link
+  href="/"
+  className="flex items-center gap-2 px-4 py-3 transition hover:bg-gray-100"
+>
+  🏠 Torna alla Home iniziale
 </Link>
-
               <button
                 onClick={handleLogout}
                 className="block w-full px-4 py-3 text-left text-red-600 transition hover:bg-red-50"
