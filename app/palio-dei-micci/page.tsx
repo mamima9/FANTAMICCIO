@@ -1,3 +1,4 @@
+import Navbar from "@/components/layout/Navbar";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -14,6 +15,9 @@ const contrade = [
 
 export default function PalioDeiMicciPage() {
   return (
+    <>
+  <Navbar />
+
     <main className="bg-[#faf6ef] text-[#5C3A21]">
 
       {/* HERO */}
@@ -616,5 +620,6 @@ export default function PalioDeiMicciPage() {
       </section>
 
     </main>
+      </>
   );
 }
