@@ -58,7 +58,7 @@ export default function DashboardNavbar({ user }: Props) {
               href="/dashboard"
               className="transition hover:text-[#D4AF37]"
             >
-              Dashboard
+              Sede
             </Link>
 
             <Link
@@ -112,7 +112,7 @@ export default function DashboardNavbar({ user }: Props) {
               </div>
 
               <Link href="/">
-  Torna alla Home iniziale 
+     Torna alla Home iniziale 
 </Link>
 
               <button
@@ -129,7 +129,7 @@ export default function DashboardNavbar({ user }: Props) {
       {/* Menu Mobile */}
       <nav className="border-t border-white/10 md:hidden">
         <div className="flex justify-around py-3">
-          <Link href="/dashboard">Dashboard</Link>
+          <Link href="/dashboard">Sede</Link>
 
           <Link href="/dashboard/vita-da-contrada">
             Vita da Contrada
