@@ -107,7 +107,7 @@ export default function PopolaritaPage() {
           </h1>
 
           <p className="text-base md:text-xl text-amber-100 mt-3">
-            Le contrade con più contradaioli iscritti.
+            Le 8 contrade classificate per numero di Fantacontradaioli
           </p>
 
         </div>
