@@ -61,13 +61,6 @@ export default function Hero() {
             Gioca Ora
           </Link>
 
-          <Link
-            href="#scopri"
-            className="rounded-2xl border-2 border-[#5C3A21] px-8 py-4 text-lg font-bold text-[#5C3A21] transition hover:bg-[#5C3A21] hover:text-white"
-          >
-            Scopri di più
-          </Link>
-
         </div>
 
       </div>
