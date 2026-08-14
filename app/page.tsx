@@ -9,7 +9,7 @@ export default function Home() {
     <>
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-6">
+      <main className="min-h-screen bg-white">
 
         <Hero />
 
@@ -47,8 +47,8 @@ export default function Home() {
               Anche se in un certo evento non puoi essere presente, puoi sostenere la tua Contrada e vivere la stessa esperienza: scegli quella per cui fai il tifo, rappresentala nelle classifiche e contribuisci a renderla la più popolare.
             </p>
 
-            <div className="text-[#5C3A21]">
-              
+            <div className="text-[#5C3A21]mt-6">
+
               <div>🛡️ <strong>Scegli la tua Contrada del cuore</strong></div>
 
               <div>⚽ <strong>Crea la squadra del Torneo di Calcio</strong></div>
