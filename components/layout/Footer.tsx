@@ -26,14 +26,14 @@ export default function Footer() {
         <div>
           <h4 className="font-semibold mb-3">Seguici</h4>
 
-          <a
-            href="https://instagram.com/NOME_PROFILO"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-pink-400 transition"
-          >
-            📷 Instagram
-          </a>
+        <a
+  href="https://instagram.com/fantamiccio"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="hover:text-pink-400 transition"
+>
+  📷 Instagram
+</a>
         </div>
 
       </div>
