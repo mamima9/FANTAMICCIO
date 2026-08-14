@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Navbar from "@/components/layout/Navbar";
 
 import { contrade } from "@/data/contrade";
 
@@ -10,6 +11,7 @@ import { ponteInfo } from "@/data/contradeInfo/ponte";
 import { pozzoInfo } from "@/data/contradeInfo/pozzo";
 import { querciaInfo } from "@/data/contradeInfo/quercia";
 import { ranocchioInfo } from "@/data/contradeInfo/ranocchio";
+
 
 const infoContrade = {
   cervia: cerviaInfo,
@@ -37,6 +39,8 @@ export default async function ContradaPage({
   }
 
   return (
+     <>
+    <Navbar />
     <main className="min-h-screen bg-gradient-to-b from-amber-50 via-white to-amber-100">
 
       {/* HERO */}
@@ -133,5 +137,6 @@ export default async function ContradaPage({
       </section>
 
     </main>
+      </>
   );
 }
