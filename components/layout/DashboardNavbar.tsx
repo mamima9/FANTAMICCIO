@@ -51,14 +51,13 @@ const stemmaContrada =
   href="/"
   className="flex items-center gap-3"
 >
-            <Image
-              src={user.contrada.logo || "/contrade/logo.png"}
-              alt="FantaMiccio"
-              width={42}
-              height={42}
-              className="rounded-full"
-            />
-
+           <Image
+  src="/contrade/logo.png"
+  alt="FantaMiccio"
+  width={42}
+  height={42}
+  className="rounded-full"
+/>
             <span className="text-xl font-bold text-[#D4AF37]">
               FantaMiccio
             </span>
