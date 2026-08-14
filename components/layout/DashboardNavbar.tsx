@@ -16,14 +16,14 @@ type DashboardUser = {
 };
 
 const stemmiContrade: Record<string, string> = {
-  "Cervia": "/account/contrade/cervia.png",
-  "Leon d'Oro": "/account/contrade/leondoro.png",
-  "Lucertola": "/account/contrade/lucertola.jpg",
-  "Madonnina": "/account/contrade/madonnina.jpg",
-  "Ponte": "/account/contrade/ponte.jpg",
-  "Pozzo": "/account/contrade/pozzo.png",
-  "Quercia": "/account/contrade/quercia.png",
-  "Ranocchio": "/account/contrade/ranocchio.png",
+  "Cervia": "/account/cervia.png",
+  "Leon d'Oro": "/account/leondoro.png",
+  "Lucertola": "/account/lucertola.jpg",
+  "Madonnina": "/account/madonnina.jpg",
+  "Ponte": "/account/ponte.jpg",
+  "Pozzo": "/account/pozzo.png",
+  "Quercia": "/account/quercia.png",
+  "Ranocchio": "/account/ranocchi.png",
 };
 
 type Props = {
@@ -42,7 +42,7 @@ export default function DashboardNavbar({ user }: Props) {
   }
 
   const stemmaContrada =
-    stemmiContrade[user.contrada.nome] || "/account/contrade/cervia.png";
+    stemmiContrade[user.contrada.nome] || "/account/barone.png";
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#D4AF37] bg-[#5C3A21] text-white">
