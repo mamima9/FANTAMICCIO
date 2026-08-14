@@ -20,6 +20,16 @@ export default function EventiPage() {
         </div>
       </section>
 
+<div className="mt-10 text-center">
+  <Link
+    href="/dashboard/vita-da-contrada"
+    className="inline-flex items-center gap-2 rounded-xl bg-[#5C3A21] px-6 py-3 font-bold text-white transition hover:bg-[#8B5E3C]"
+  >
+    ← Torna a Vita di Contrada
+  </Link>
+</div>
+
+
       {/* EVENTI */}
 
       <section className="max-w-7xl mx-auto px-6 py-16">
@@ -46,7 +56,7 @@ export default function EventiPage() {
             </p>
 
             <p className="mt-6 text-center font-bold text-red-700">
-              Gioca →
+              Chiuso →
             </p>
           </Link>
 
