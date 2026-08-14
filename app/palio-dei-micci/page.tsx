@@ -583,8 +583,8 @@ export default function PalioDeiMicciPage() {
             <p className="text-xl max-w-3xl mx-auto leading-9 mb-12">
 
               Scopri la storia delle Contrade, consulta gli Albi d'Oro e,
-              soprattutto, prepara la tua squadra su <strong>FantaMiccio</strong>
-              per vivere il Palio da protagonista.
+              soprattutto, prepara la tua squadra su FantaMiccio 
+               per vivere il Palio da protagonista.
 
             </p>
 

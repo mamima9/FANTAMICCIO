@@ -1,5 +1,5 @@
 import Image from "next/image";
-
+import Navbar from "@/components/layout/Navbar";
 const contrade = [
   { nome: "La Cervia", stemma: "/contrade/cervia.png" },
   { nome: "Leon d'Oro", stemma: "/contrade/leondoro.png" },
@@ -13,6 +13,8 @@ const contrade = [
 
 export default function Contrade() {
   return (
+    <>
+  <Navbar />
     <section className="py-20">
       <div className="max-w-7xl mx-auto px-6">
         <h2 className="text-4xl font-bold text-center text-[#5C3A21] mb-12">
@@ -40,5 +42,6 @@ export default function Contrade() {
         </div>
       </div>
     </section>
+    </>
   );
 }
