@@ -43,14 +43,7 @@ export default function VitaDiContrada() {
                 Il cuore della community di FantaMiccio
               </p>
             </div>
-
-            <Link
-              href="/dashboard"
-              className="bg-[#D4AF37] text-[#5C3A21] px-5 py-3 rounded-2xl font-bold shadow-lg hover:scale-105 transition"
-            >
-              👤 Il mio Profilo
-            </Link>
-          </div>
+                      </div>
         </div>
       </section>
 
