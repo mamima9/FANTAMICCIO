@@ -17,9 +17,9 @@ type DashboardUser = {
 const stemmiContrade: Record<string, string> = {
   "La Cervia": "/account/contrade/cervia.png",
   "Leon d'Oro": "/account/contrade/leondoro.png",
-  "La Lucertola": "/account/contrade/lucertola.png",
-  "La Madonnina": "/account/contrade/madonnina.png",
-  "Il Ponte": "/account/contrade/ponte.png",
+  "La Lucertola": "/account/contrade/lucertola.jpg",
+  "La Madonnina": "/account/contrade/madonnina.jpg",
+  "Il Ponte": "/account/contrade/ponte.jpg",
   "Il Pozzo": "/account/contrade/pozzo.png",
   "La Quercia": "/account/contrade/quercia.png",
   "Il Ranocchio": "/account/contrade/ranocchio.png",
@@ -40,8 +40,7 @@ export default function DashboardNavbar({ user }: Props) {
     router.replace("/");
     router.refresh();
   }
-const stemmaContrada =
-  stemmiContrade[user.contrada.nome] || "/contrade/logo.png";
+  const stemmaContrada = stemmiContrade[user.contrada.nome];
   return (
     <header className="sticky top-0 z-50 border-b border-[#D4AF37] bg-[#5C3A21] text-white">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
