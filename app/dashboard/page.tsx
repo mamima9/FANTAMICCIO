@@ -115,26 +115,28 @@ export default function DashboardPage() {
 
 
         /* =========================
-           PREDICTIONS
-        ========================= */
+   EVENT POINTS
+========================= */
 
-        const { data: predictions, error: predictionsError } =
-          await supabase
-            .from("predictions")
-            .select(`
-              user_id,
-              points_awarded,
-              profiles (
-                username,
-                contrada_id
-              )
-            `);
+const { data: eventPoints, error: eventPointsError } =
+  await supabase
+    .from("event_points")
+    .select(`
+      user_id,
+      points,
+      contrada_id,
+      profiles (
+        username,
+        contrada_id
+      )
+    `);
 
-        if (predictionsError) {
-          console.error("Errore predictions:", predictionsError);
-          setLoading(false);
-          return;
-        }
+if (eventPointsError) {
+  console.error("Errore event_points:", eventPointsError);
+  setLoading(false);
+  return;
+}
+        
 
 
         /* =========================
@@ -143,26 +145,26 @@ export default function DashboardPage() {
 
         const users: Record<string, RankingUser> = {};
 
-        predictions?.forEach((prediction: any) => {
-          const profileData = Array.isArray(prediction.profiles)
-            ? prediction.profiles[0]
-            : prediction.profiles;
+        eventPoints?.forEach((point: any) => {
+  const profileData = Array.isArray(point.profiles)
+    ? point.profiles[0]
+    : point.profiles;
 
-          if (!profileData?.username) return;
+  if (!profileData?.username) return;
 
-          const username = profileData.username;
+  const userId = String(point.user_id);
 
-          if (!users[username]) {
-            users[username] = {
-              username,
-              contrada_id: String(profileData.contrada_id ?? ""),
-              punti: 0,
-            };
-          }
+  if (!users[userId]) {
+    users[userId] = {
+      username: profileData.username,
+      contrada_id: String(profileData.contrada_id ?? ""),
+      punti: 0,
+    };
+  }
 
-          users[username].punti +=
-            Number(prediction.points_awarded) || 0;
-        });
+  users[userId].punti += Number(point.points) || 0;
+});
+       
 
         const generalRanking = Object.values(users).sort(
           (a, b) => b.punti - a.punti
@@ -259,20 +261,16 @@ export default function DashboardPage() {
           };
         });
 
-        predictions?.forEach((prediction: any) => {
-          const profileData = Array.isArray(prediction.profiles)
-            ? prediction.profiles[0]
-            : prediction.profiles;
+        eventPoints?.forEach((point: any) => {
+  if (!point?.contrada_id) return;
 
-          if (!profileData?.contrada_id) return;
+  const id = String(point.contrada_id);
 
-          const id = String(profileData.contrada_id);
+  if (!contrade[id]) return;
 
-          if (!contrade[id]) return;
-
-          contrade[id].punti +=
-            Number(prediction.points_awarded) || 0;
-        });
+  contrade[id].punti += Number(point.points) || 0;
+});
+        
 
         const contradeRanking = Object.values(contrade).sort(
           (a, b) => b.punti - a.punti
