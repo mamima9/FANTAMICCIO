@@ -1,9 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type Event = {
@@ -23,7 +21,6 @@ type Contrada = {
 
 export default function EventPage() {
   const supabase = createClient();
-  const params = useParams();
 
   const [event, setEvent] = useState<Event | null>(null);
   const [contrade, setContrade] = useState<Contrada[]>([]);
@@ -51,7 +48,7 @@ export default function EventPage() {
           .select(
             "id,title,description,event_date,prediction_deadline,status"
           )
-          .eq("slug", params.slug as string)
+          .eq("slug", "corsa-del-miccio")
           .single(),
 
         supabase
@@ -82,11 +79,9 @@ export default function EventPage() {
     }
 
 
-    if (params.slug) {
-      loadData();
-    }
+   loadData();
 
-  }, [params.slug]);
+}, []);
 
 
   async function handleSave() {
