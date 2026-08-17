@@ -488,7 +488,7 @@ export default function DashboardPage() {
                 </p>
 
                 <h2 className="text-xl md:text-2xl font-black text-[#5C3A21] mt-1">
-                   Classifica Contrada
+                   Classifica interna della mia Contrada
                 </h2>
 
               </div>
@@ -606,7 +606,7 @@ export default function DashboardPage() {
                 </p>
 
                 <h2 className="text-xl md:text-2xl font-black text-[#5C3A21] mt-1">
-                   8 Contrade
+                   Classifica delle 8 Contrade
                 </h2>
 
               </div>
