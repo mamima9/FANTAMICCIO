@@ -96,81 +96,82 @@ export default function ContradaPage() {
   const [selectedContrada, setSelectedContrada] = useState("1");
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadRanking() {
-      setLoading(true);
+ useEffect(() => {
+  async function loadRanking() {
+    setLoading(true);
 
-      const { data, error } = await supabase
-        .from("predictions")
-        .select(`
-          points_awarded,
-          profiles (
-            username,
-            contrada_id
-          )
-        `);
+    const { data, error } = await supabase
+      .from("event_points")
+      .select(`
+        points,
+        user_id,
+        contrada_id,
+        profiles (
+          username,
+          contrada_id
+        )
+      `);
 
-      if (error) {
-        console.error(error);
-        setLoading(false);
+    if (error) {
+      console.error(error);
+      setLoading(false);
+      return;
+    }
+
+    const contrade: Record<string, Contrada> = {};
+
+    Object.keys(nomiContrade).forEach((id) => {
+      contrade[id] = {
+        id,
+        nome: nomiContrade[id],
+        utenti: [],
+      };
+    });
+
+    data?.forEach((point: any) => {
+      const profile = Array.isArray(point.profiles)
+        ? point.profiles[0]
+        : point.profiles;
+
+      if (!profile?.username || !point.contrada_id) {
         return;
       }
 
-      const contrade: Record<string, Contrada> = {};
+      const id = String(point.contrada_id);
 
-      Object.keys(nomiContrade).forEach((id) => {
-        contrade[id] = {
-          id,
-          nome: nomiContrade[id],
-          utenti: [],
-        };
-      });
+      if (!contrade[id]) {
+        return;
+      }
 
-      data?.forEach((prediction: any) => {
-        const profile = Array.isArray(prediction.profiles)
-          ? prediction.profiles[0]
-          : prediction.profiles;
+      const punti = Number(point.points) || 0;
 
-        if (!profile?.username || !profile?.contrada_id) {
-          return;
-        }
+      const utenteEsistente = contrade[id].utenti.find(
+        (utente) => utente.username === profile.username
+      );
 
-        const id = String(profile.contrada_id);
+      if (utenteEsistente) {
+        utenteEsistente.punti += punti;
+      } else {
+        contrade[id].utenti.push({
+          username: profile.username,
+          contrada_id: id,
+          punti,
+        });
+      }
+    });
 
-        if (!contrade[id]) {
-          return;
-        }
+    Object.values(contrade).forEach((contrada) => {
+      contrada.utenti.sort(
+        (a, b) => b.punti - a.punti
+      );
+    });
 
-        const punti =
-          Number(prediction.points_awarded) || 0;
+    setRanking(Object.values(contrade));
+    setLoading(false);
+  }
 
-        const utenteEsistente = contrade[id].utenti.find(
-          (utente) => utente.username === profile.username
-        );
-
-        if (utenteEsistente) {
-          utenteEsistente.punti += punti;
-        } else {
-          contrade[id].utenti.push({
-            username: profile.username,
-            contrada_id: id,
-            punti,
-          });
-        }
-      });
-
-      Object.values(contrade).forEach((contrada) => {
-        contrada.utenti.sort(
-          (a, b) => b.punti - a.punti
-        );
-      });
-
-      setRanking(Object.values(contrade));
-      setLoading(false);
-    }
-
-    loadRanking();
-  }, []);
+  loadRanking();
+}, []);
 
   const contrada = ranking.find(
     (item) => item.id === selectedContrada
