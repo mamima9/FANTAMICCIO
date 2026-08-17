@@ -6,25 +6,25 @@ const classifiche = [
   {
     titolo: "Generale",
     emoji: "🏆",
-    descrizione: "La classifica generale di tutti i contradaioli.",
+    descrizione: "La classifica generale di tutti i fantacontradaioli.",
     href: "/classifiche/generale",
   },
   {
     titolo: "MiccioCanterino",
     emoji: "🎤",
-    descrizione: "La classifica della gara di canto.",
+    descrizione: "La classifica dell'evento del miccio canterino.",
     href: "/classifiche/miccio-canterino",
   },
   {
     titolo: "Calcio",
     emoji: "⚽",
-    descrizione: "La classifica della gara di calcio.",
+    descrizione: "La classifica dell'evento del torneo di calcio.",
     href: "/classifiche/calcio",
   },
   {
     titolo: "Popolarità",
     emoji: "⭐",
-    descrizione: "Le contrade con più iscritti.",
+    descrizione: "La classifica dell contrade in base agli iscritti.",
     href: "/classifiche/popolarita",
   },
   {
@@ -66,6 +66,7 @@ export default function ClassifichePage() {
         </div>
 
       </section>
+      
 <div className="max-w-7xl mx-auto px-5 md:px-6 pt-8">
   <Link
     href="/dashboard/vita-da-contrada"
