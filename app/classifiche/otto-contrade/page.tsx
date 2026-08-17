@@ -39,58 +39,53 @@ export default function OttoContradePage() {
   const [ranking, setRanking] = useState<Contrada[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadRanking() {
-      const { data, error } = await supabase
-        .from("predictions")
-        .select(`
-          points_awarded,
-          profiles (
-            contrada_id
-          )
-        `);
+ useEffect(() => {
+  async function loadRanking() {
+    setLoading(true);
 
-      if (error) {
-        console.error(error);
-        setLoading(false);
-        return;
-      }
+    const { data, error } = await supabase
+      .from("event_points")
+      .select(`
+        points,
+        contrada_id
+      `);
 
-      const contrade: Record<string, Contrada> = {};
-
-      Object.keys(nomiContrade).forEach((id) => {
-        contrade[id] = {
-          id,
-          nome: nomiContrade[id],
-          punti: 0,
-        };
-      });
-
-      data?.forEach((prediction: any) => {
-        const profile = Array.isArray(prediction.profiles)
-          ? prediction.profiles[0]
-          : prediction.profiles;
-
-        if (!profile?.contrada_id) return;
-
-        const id = String(profile.contrada_id);
-
-        if (!contrade[id]) return;
-
-        contrade[id].punti +=
-          Number(prediction.points_awarded) || 0;
-      });
-
-      const sorted = Object.values(contrade).sort(
-        (a, b) => b.punti - a.punti
-      );
-
-      setRanking(sorted);
+    if (error) {
+      console.error(error);
       setLoading(false);
+      return;
     }
 
-    loadRanking();
-  }, []);
+    const contrade: Record<string, Contrada> = {};
+
+    Object.keys(nomiContrade).forEach((id) => {
+      contrade[id] = {
+        id,
+        nome: nomiContrade[id],
+        punti: 0,
+      };
+    });
+
+    data?.forEach((point: any) => {
+      if (!point?.contrada_id) return;
+
+      const id = String(point.contrada_id);
+
+      if (!contrade[id]) return;
+
+      contrade[id].punti += Number(point.points) || 0;
+    });
+
+    const sorted = Object.values(contrade).sort(
+      (a, b) => b.punti - a.punti
+    );
+
+    setRanking(sorted);
+    setLoading(false);
+  }
+
+  loadRanking();
+}, []);
 
   const podio = ranking.slice(0, 3);
 
