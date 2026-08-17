@@ -31,11 +31,11 @@ export default function CalendarioPage() {
 
 
         <h2 className="mt-6 text-center text-3xl font-black text-[#5C3A21]">
-  OFF SEASON 2026
+  Agosto 2026 : OFF SEASON 2026
 </h2>
 
 <p className="mt-2 text-center text-lg text-[#5C3A21]/80">
-  Ha ufficialmente inizio la Off Season 2026 di FantaMiccio.
+   Ha ufficialmente inizio la Off Season 2026 di FantaMiccio.
 </p>
 
       
