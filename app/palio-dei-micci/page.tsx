@@ -63,8 +63,7 @@ export default function PalioDeiMicciPage() {
             <p>
               Il <strong>Palio dei Micci</strong> è una manifestazione
               storico-folcloristica ideata nel <strong>1956</strong> e
-              disputata ogni anno la <strong>prima domenica di maggio</strong>
-              a Querceta.
+              disputata ogni anno la <strong>prima domenica di maggio </strong>  a Querceta.
             </p>
 
             <p>
