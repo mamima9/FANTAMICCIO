@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 const links = [
-  { href: "/", label: "Home" },
+  { href: "/", label: "FantaMiccio" },
   { href: "/palio-dei-micci", label: "Il Palio" },
   { href: "/contrade", label: "Contrade" },
   { href: "/albi-doro", label: "Albi d'Oro" },
@@ -52,6 +52,17 @@ export default function Navbar() {
   }, []);
 
   return (
+  <>
+    {/* PIAZZA DEL SAPERE */}
+
+    <div className="w-full bg-[#F8F5F0] border-b border-[#D4AF37]/40">
+      <div className="mx-auto max-w-7xl px-4 py-2 text-center">
+        <p className="text-sm font-black uppercase tracking-[0.25em] text-[#5C3A21]">
+          Piazza del Sapere
+        </p>
+      </div>
+    </div>
+
     <header
   className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         scrolled
@@ -172,5 +183,6 @@ export default function Navbar() {
         </nav>
       </div>
     </header>
+     </>
   );
 }
