@@ -334,19 +334,15 @@ if (eventPointsError) {
     : null;
 
 const sfondiContrade: Record<string, string> = {
-  "1": "/contrade/sfondi/cervia.png",
-  "2": "/contrade/sfondi/leondoro.png",
-  "3": "/contrade/sfondi/lucertola.png",
-  "4": "/contrade/sfondi/madonnina.png",
-  "5": "/contrade/sfondi/ponte.png",
-  "6": "/contrade/sfondi/pozzo.png",
-  "7": "/contrade/sfondi/quercia.png",
-  "8": "/contrade/sfondi/ranocchio.png",
+  "1": "/contrade//cervia-bg.png",
+  "2": "/contrade/leondoro-bg.png",
+  "3": "/contrade/lucertola-bg.png",
+  "4": "/contrade/madonnina-bg.png",
+  "5": "/contrade/ponte-bg.png",
+  "6": "/contrade/pozzo-bg.png",
+  "7": "/contrade/quercia-bg.png",
+  "8": "/contrade/ranocchio-bg.png",
 };
-
-const sfondoContrada = contradaId
-  ? sfondiContrade[contradaId]
-  : undefined;
 
   const stemma = contradaId
     ? stemmiContrade[contradaId]
