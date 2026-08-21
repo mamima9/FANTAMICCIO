@@ -333,6 +333,14 @@ if (eventPointsError) {
     ? String(profile.contrada_id)
     : null;
 
+    const sfondiContrade: Record<string, string> = {
+  "1": "/contrade/cervia-bg.png",
+};
+
+const sfondoContrada = contradaId
+  ? sfondiContrade[contradaId]
+  : undefined;
+
   const stemma = contradaId
     ? stemmiContrade[contradaId]
     : null;
@@ -343,7 +351,14 @@ if (eventPointsError) {
 
 
   return (
-    <main className="min-h-screen bg-[#F8F5F0]">
+    <main
+  className="min-h-screen bg-cover bg-center bg-fixed"
+  style={{
+    backgroundImage: sfondoContrada
+      ? `url(${sfondoContrada})`
+      : undefined,
+  }}
+>
 
       {/* =========================
           HERO
