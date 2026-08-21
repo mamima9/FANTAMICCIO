@@ -167,7 +167,7 @@ export default function VitaDiContrada() {
       </section>
 
       {/* EVENTO IN CORSO */}
-<section className="max-w-7xl mx-auto px-6 mt-20 pb-20">
+<section className="max-w-7xl mx-auto px-6 mt-40 pb-20">
   <div className="text-center text-white drop-shadow-lg">
 
     <h2 className="text-5xl md:text-6xl font-black">
