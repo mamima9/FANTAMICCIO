@@ -102,6 +102,12 @@ export default function VitaDiContrada() {
     ? sfondiContrade[contradaId]
     : null;
 
+    const testoEventoBianco =
+  contradaId === "2" ||
+  contradaId === "3" ||
+  contradaId === "4" ||
+  contradaId === "5";
+
   return (
     <main
       className="relative min-h-screen bg-cover bg-center bg-fixed"
@@ -167,8 +173,15 @@ export default function VitaDiContrada() {
       </section>
 
       {/* EVENTO IN CORSO */}
+{/* EVENTO IN CORSO */}
 <section className="max-w-7xl mx-auto px-6 mt-40 pb-20">
-  <div className="text-center text-white drop-shadow-lg">
+  <div
+    className={`text-center font-black ${
+      testoEventoBianco
+        ? "text-white drop-shadow-lg"
+        : "text-black drop-shadow-md"
+    }`}
+  >
 
     <h2 className="text-5xl md:text-6xl font-black">
       ⌛ Evento in corso
