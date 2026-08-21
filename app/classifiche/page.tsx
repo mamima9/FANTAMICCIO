@@ -10,7 +10,7 @@ const classifiche = [
     href: "/classifiche/generale",
   },
   {
-    titolo: "MiccioCanterino",
+    titolo: "Miccio Canterino",
     emoji: "🎤",
     descrizione: "La classifica dell'evento del miccio canterino.",
     href: "/classifiche/miccio-canterino",
