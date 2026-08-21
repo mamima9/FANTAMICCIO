@@ -1,4 +1,10 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+
+const supabase = createClient();
 
 type Event = {
   id: number | null;
@@ -31,19 +37,95 @@ const events: Event[] = [];
 // TODO: Aggiungere classifiche dinamiche.
 
 export default function VitaDiContrada() {
+  const [contradaId, setContradaId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // ============================================
+  // RECUPERO CONTRADA UTENTE
+  // ============================================
+
+  useEffect(() => {
+    async function loadProfile() {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          setLoading(false);
+          return;
+        }
+
+        const { data: profileData, error } = await supabase
+          .from("profiles")
+          .select("contrada_id")
+          .eq("id", user.id)
+          .single();
+
+        if (error) {
+          console.error("Errore profilo:", error);
+          setLoading(false);
+          return;
+        }
+
+        setContradaId(
+          profileData?.contrada_id !== null
+            ? String(profileData.contrada_id)
+            : null
+        );
+      } catch (error) {
+        console.error("Errore:", error);
+      }
+
+      setLoading(false);
+    }
+
+    loadProfile();
+  }, []);
+
+  // ============================================
+  // SFONDI DELLE 8 CONTRADE
+  // ============================================
+
+  const sfondiContrade: Record<string, string> = {
+    "1": "/contrade/bgv/cervia-bgv.png",
+    "2": "/contrade/bgv/leondoro-bgv.png",
+    "3": "/contrade/bgv/lucertola-bgv.png",
+    "4": "/contrade/bgv/madonnina-bgv.jpg",
+    "5": "/contrade/bgv/ponte-bgv.png",
+    "6": "/contrade/bgv/pozzo-bgv.png",
+    "7": "/contrade/bgv/quercia-bgv.png",
+    "8": "/contrade/bgv/ranocchio-bgv.png",
+  };
+
+  const sfondo = contradaId
+    ? sfondiContrade[contradaId]
+    : null;
+
   return (
-    <main className="min-h-screen bg-[#F8F5F0]">
+    <main
+      className="relative min-h-screen bg-cover bg-center bg-fixed"
+      style={{
+        backgroundImage: sfondo
+          ? `url(${sfondo})`
+          : "none",
+        backgroundColor: "#F8F5F0",
+      }}
+    >
       {/* HERO */}
       <section className="bg-gradient-to-r from-red-700 via-red-600 to-amber-500 text-white py-14">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
-              <h1 className="text-5xl font-black">🎭 Vita di Contrada</h1>
+              <h1 className="text-5xl font-black">
+                🎭 Vita di Contrada
+              </h1>
+
               <p className="mt-3 text-xl text-red-100">
                 Il cuore della community di FantaMiccio
               </p>
             </div>
-                      </div>
+          </div>
         </div>
       </section>
 
@@ -51,36 +133,53 @@ export default function VitaDiContrada() {
       <section className="max-w-7xl mx-auto px-6 py-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {[
-            { icon: "🫏", title: "Eventi", href: "/eventi" },
-            { icon: "📅", title: "Calendario", href: "/calendario" },
-            { icon: "🏆", title: "Classifiche", href: "/classifiche" },
+            {
+              icon: "🫏",
+              title: "Eventi",
+              href: "/eventi",
+            },
+            {
+              icon: "📅",
+              title: "Calendario",
+              href: "/calendario",
+            },
+            {
+              icon: "🏆",
+              title: "Classifiche",
+              href: "/classifiche",
+            },
           ].map((item) => (
             <Link
               key={item.title}
               href={item.href}
               className="bg-white rounded-3xl shadow-xl p-8 text-center hover:-translate-y-2 transition"
             >
-              <div className="text-5xl">{item.icon}</div>
-              <h3 className="mt-4 font-bold text-xl">{item.title}</h3>
+              <div className="text-5xl">
+                {item.icon}
+              </div>
+
+              <h3 className="mt-4 font-bold text-xl">
+                {item.title}
+              </h3>
             </Link>
           ))}
         </div>
       </section>
 
       {/* EVENTO IN CORSO */}
-<section className="max-w-7xl mx-auto px-6 mt-14 pb-16">
-  <div className="rounded-3xl bg-gradient-to-r from-[#5C3A21] to-[#8B5E3C] text-white p-10 shadow-2xl text-center">
+      <section className="max-w-7xl mx-auto px-6 mt-14 pb-16">
+        <div className="rounded-3xl bg-gradient-to-r from-[#5C3A21] to-[#8B5E3C] text-white p-10 shadow-2xl text-center">
 
-    <h2 className="text-4xl font-black">
-      ⌛ Evento in corso
-    </h2>
+          <h2 className="text-4xl font-black">
+            ⌛ Evento in corso
+          </h2>
 
-    <p className="text-4xl font-black mt-8">
-      Off Season 2026
-    </p>
+          <p className="text-4xl font-black mt-8">
+            Off Season 2026
+          </p>
 
-  </div>
-</section>
- </main>
+        </div>
+      </section>
+    </main>
   );
 }
