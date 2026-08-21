@@ -381,7 +381,7 @@ if (eventPointsError) {
               </p>
 
               <h1 className="text-3xl md:text-5xl font-black mt-1">
-                Benvenuto/a {profile?.username ? "," : ""}
+                Benvenuto/a nella Sede {profile?.username ? "," : ""}
                 {profile?.username
                   ? ` ${profile.username}`
                   : ""}
