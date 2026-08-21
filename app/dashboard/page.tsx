@@ -333,8 +333,15 @@ if (eventPointsError) {
     ? String(profile.contrada_id)
     : null;
 
-    const sfondiContrade: Record<string, string> = {
-  "1": "/contrade/cervia-bg.png",
+const sfondiContrade: Record<string, string> = {
+  "1": "/contrade/sfondi/cervia.png",
+  "2": "/contrade/sfondi/leondoro.png",
+  "3": "/contrade/sfondi/lucertola.png",
+  "4": "/contrade/sfondi/madonnina.png",
+  "5": "/contrade/sfondi/ponte.png",
+  "6": "/contrade/sfondi/pozzo.png",
+  "7": "/contrade/sfondi/quercia.png",
+  "8": "/contrade/sfondi/ranocchio.png",
 };
 
 const sfondoContrada = contradaId
@@ -349,16 +356,21 @@ const sfondoContrada = contradaId
     ? nomiContrade[contradaId]
     : null;
 
+const sfondo = contradaId
+  ? sfondiContrade[contradaId]
+  : null;
 
   return (
-    <main
-  className="min-h-screen bg-cover bg-center bg-fixed"
+  <main
+  className="relative min-h-screen bg-cover bg-center bg-fixed"
   style={{
-    backgroundImage: sfondoContrada
-      ? `url(${sfondoContrada})`
-      : undefined,
+    backgroundImage: sfondo
+      ? `url(${sfondo})`
+      : "none",
+    backgroundColor: "#F8F5F0",
   }}
 >
+
 
       {/* =========================
           HERO
