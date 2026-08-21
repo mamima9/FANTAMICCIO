@@ -355,7 +355,7 @@ export default function ContradaPage() {
                       </div>
 
                       <div>
-                        Contradaiolo
+                        Fnntacontradaiolo
                       </div>
 
                       <div className="text-right">
