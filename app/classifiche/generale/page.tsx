@@ -110,7 +110,7 @@ export default function GeneralePage() {
           </h1>
 
           <p className="text-base md:text-xl text-amber-100 mt-3 max-w-2xl">
-            La classifica generale di tutti i contradaioli.
+            La classifica generale di tutti i Fantacontradaioli.
           </p>
 
         </div>
