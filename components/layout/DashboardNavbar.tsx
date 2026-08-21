@@ -125,19 +125,47 @@ export default function DashboardNavbar({ user }: Props) {
                 </p>
               </div>
 
-              <Link
-                href="/"
-                className="flex items-center gap-2 px-4 py-3 transition hover:bg-gray-100"
-              >
-                🏠 Torna alla Home iniziale
-              </Link>
+             <Link
+  href="/"
+  className="flex items-center gap-2 px-4 py-3 transition hover:bg-gray-100"
+>
+  🏠 Torna alla Home iniziale
+</Link>
 
-              <button
-                onClick={handleLogout}
-                className="block w-full px-4 py-3 text-left text-red-600 transition hover:bg-red-50"
-              >
-                Esci
-              </button>
+<Link
+  href="/password-dimenticata"
+  className="flex items-center gap-2 px-4 py-3 transition hover:bg-gray-100"
+>
+  🔐 Password dimenticata
+</Link>
+
+<Link
+  href="/cambia-email"
+  className="flex items-center gap-2 px-4 py-3 transition hover:bg-gray-100"
+>
+  ✉️ Cambia email
+</Link>
+
+<Link
+  href="/cambia-password"
+  className="flex items-center gap-2 px-4 py-3 transition hover:bg-gray-100"
+>
+  🔑 Cambia password
+</Link>
+
+<Link
+  href="/cambia-username"
+  className="flex items-center gap-2 px-4 py-3 transition hover:bg-gray-100"
+>
+  👤 Cambia username
+</Link>
+
+<button
+  onClick={handleLogout}
+  className="block w-full px-4 py-3 text-left text-red-600 transition hover:bg-red-50"
+>
+  Esci
+</button>
 
             </div>
           )}
