@@ -167,19 +167,19 @@ export default function VitaDiContrada() {
       </section>
 
       {/* EVENTO IN CORSO */}
-      <section className="max-w-7xl mx-auto px-6 mt-14 pb-16">
-        <div className="rounded-3xl bg-gradient-to-r from-[#5C3A21] to-[#8B5E3C] text-white p-10 shadow-2xl text-center">
+<section className="max-w-7xl mx-auto px-6 mt-20 pb-20">
+  <div className="text-center text-white drop-shadow-lg">
 
-          <h2 className="text-4xl font-black">
-            ⌛ Evento in corso
-          </h2>
+    <h2 className="text-5xl md:text-6xl font-black">
+      ⌛ Evento in corso
+    </h2>
 
-          <p className="text-4xl font-black mt-8">
-            Off Season 2026
-          </p>
+    <p className="text-4xl md:text-5xl font-black mt-6">
+      Off Season 2026
+    </p>
 
-        </div>
-      </section>
+  </div>
+</section>
     </main>
   );
 }
