@@ -1,5 +1,5 @@
 "use client";
-
+import ViewportDesktop from "../ViewportDesktop";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -109,6 +109,8 @@ export default function VitaDiContrada() {
   contradaId === "5";
 
   return (
+    <>
+    <ViewportDesktop />
     <main
       className="relative min-h-screen bg-cover bg-center bg-fixed"
       style={{
@@ -194,5 +196,6 @@ export default function VitaDiContrada() {
   </div>
 </section>
     </main>
+    </>
   );
 }
