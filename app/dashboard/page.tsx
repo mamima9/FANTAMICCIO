@@ -1,5 +1,5 @@
 "use client";
-
+import ViewportDesktop from "./ViewportDesktop";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -357,6 +357,8 @@ const sfondo = contradaId
   : null;
 
   return (
+      <>
+    <ViewportDesktop />
   <main
   className="relative min-h-screen bg-cover bg-center bg-fixed"
   style={{
@@ -693,5 +695,6 @@ const sfondo = contradaId
       </section>
 
     </main>
+      </>
   );
 }
