@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -9,12 +10,12 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: "#5C3A21",
     theme_color: "#5C3A21",
     icons: [
-  {
-    src: "/contrade/icon-app.png",
-    sizes: "512x512",
-    type: "image/png",
-    purpose: "any",
-  },
-],
+      {
+        src: "/contrade/icon-app.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
+      },
+    ],
   };
 }
