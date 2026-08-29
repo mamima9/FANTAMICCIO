@@ -15,6 +15,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "FantaMiccio",
   description: "Il fantasy game del palio dei micci",
+  icons: {
+    icon: "/contrade/logo500.png",
+    apple: "/contrade/logo500.png",
+  },
 };
 
 export default function RootLayout({
