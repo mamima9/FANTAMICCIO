@@ -16,9 +16,9 @@ export const metadata: Metadata = {
   title: "FantaMiccio",
   description: "Il fantasy game del palio dei micci",
   icons: {
-    icon: "/contrade/logo.png",
-    shortcut: "/contrade/logo.png",
-    apple: "/contrade/logo.png",
+    icon: "/contrade/logo500.png",
+    shortcut: "/contrade/logo500.png",
+    apple: "/contrade/logo500.png",
   },
 };
 
