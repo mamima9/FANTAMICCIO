@@ -15,11 +15,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "FantaMiccio",
   description: "Il fantasy game del palio dei micci",
-  icons: {
-    icon: "/contrade/logo500.png",
-    shortcut: "/contrade/logo500.png",
-    apple: "/contrade/logo500.png",
-  },
 };
 
 export default function RootLayout({
@@ -32,7 +27,30 @@ export default function RootLayout({
       lang="it"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        <link
+          rel="icon"
+          type="image/png"
+          href="/contrade/logo500.png"
+        />
+        <link
+          rel="shortcut icon"
+          type="image/png"
+          href="/contrade/logo500.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          href="/contrade/logo500.png"
+        />
+        <link
+          rel="manifest"
+          href="/manifest.webmanifest"
+        />
+      </head>
+
+      <body className="min-h-full flex flex-col">
+        {children}
+      </body>
     </html>
   );
 }
