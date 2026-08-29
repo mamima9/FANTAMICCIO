@@ -12,13 +12,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "FantaMiccio",
   description: "Il fantasy game del palio dei micci",
   icons: {
-    icon: "/images/logo.png",
-      shortcut: "/images/logo.png",
-    apple: "/images/logo.png",
+    icon: "/contrade/logo.png",
+    shortcut: "/contrade/logo.png",
+    apple: "/contrade/logo.png",
   },
 };
 
@@ -29,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="it"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
