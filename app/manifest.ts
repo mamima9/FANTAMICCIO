@@ -9,12 +9,12 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: "#5C3A21",
     theme_color: "#5C3A21",
     icons: [
-      {
-        src: "/contrade/logo500.png",
-        sizes: "500x500",
-        type: "image/png",
-        purpose: "any",
-      },
-    ],
+  {
+    src: "/contrade/icon-app.png",
+    sizes: "512x512",
+    type: "image/png",
+    purpose: "any",
+  },
+],
   };
 }
