@@ -734,12 +734,12 @@ const sfondo = contradaId
 
         </div>
 
-        {/* =========================
+      {/* =========================
     I MIEI BADGE
 ========================= */}
 
 {badges.length > 0 && (
-  <div className="mt-8">
+  <div className="mt-8 w-full md:w-1/3">
 
     <div className="bg-white rounded-3xl shadow-xl p-6 md:p-7">
 
@@ -767,28 +767,32 @@ const sfondo = contradaId
 
           <div
             key={badge.id}
-            className="rounded-2xl bg-[#F8F5F0] p-4 text-center border border-[#E8DED3]"
+            className="rounded-2xl bg-[#F8F5F0] p-4 border border-[#E8DED3] flex items-center gap-5"
           >
 
-            <div className="flex justify-center mb-3">
+            <div className="shrink-0">
 
               <Image
                 src={badge.icona}
                 alt={badge.nome}
-                width={110}
-                height={110}
+                width={90}
+                height={90}
                 className="object-contain"
               />
 
             </div>
 
-            <h3 className="font-black text-[#5C3A21] text-lg">
-              {badge.nome}
-            </h3>
+            <div>
 
-            <p className="text-sm text-gray-500 mt-1 leading-snug">
-              {badge.descrizione}
-            </p>
+              <h3 className="font-black text-[#5C3A21] text-lg">
+                {badge.nome}
+              </h3>
+
+              <p className="text-sm text-gray-500 mt-1 leading-snug">
+                {badge.descrizione}
+              </p>
+
+            </div>
 
           </div>
 
@@ -801,9 +805,9 @@ const sfondo = contradaId
   </div>
 )}
 
-      </section>
+</section>
 
-    </main>
-      </>
-  );
+</main>
+</>
+);
 }
