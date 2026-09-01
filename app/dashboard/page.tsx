@@ -64,6 +64,7 @@ export default function DashboardPage() {
   const [eightContradePosition, setEightContradePosition] = useState(0);
 
   const [loading, setLoading] = useState(true);
+  const [badges, setBadges] = useState<any[]>([]);
 
   useEffect(() => {
     async function loadDashboard() {
@@ -82,6 +83,47 @@ export default function DashboardPage() {
           setLoading(false);
           return;
         }
+
+        /* =========================
+   BADGE UTENTE
+========================= */
+
+const { data: userBadgeAssignments, error: badgesError } =
+  await supabase
+    .from("badge")
+    .select("badge_id")
+    .eq("user_id", user.id);
+
+if (badgesError) {
+  console.error("Errore badge:", badgesError);
+  setBadges([]);
+} else if (userBadgeAssignments?.length) {
+
+  const badgeIds = userBadgeAssignments
+    .map((b) => b.badge_id)
+    .filter(Boolean);
+
+  const { data: badgeDefinitions, error: badgeDefinitionsError } =
+    await supabase
+      .from("badge")
+      .select("id, nome, descrizione, icona, punti")
+      .in("id", badgeIds)
+      .is("user_id", null)
+      .is("badge_id", null);
+
+  if (badgeDefinitionsError) {
+    console.error(
+      "Errore definizioni badge:",
+      badgeDefinitionsError
+    );
+    setBadges([]);
+  } else {
+    setBadges(badgeDefinitions ?? []);
+  }
+
+} else {
+  setBadges([]);
+}
 
         /* =========================
            PROFILO
@@ -691,6 +733,73 @@ const sfondo = contradaId
           </Link>
 
         </div>
+
+        {/* =========================
+    I MIEI BADGE
+========================= */}
+
+{badges.length > 0 && (
+  <div className="mt-8">
+
+    <div className="bg-white rounded-3xl shadow-xl p-6 md:p-7">
+
+      <div className="flex items-center gap-3 mb-6">
+
+        <div className="text-3xl">
+          🏅
+        </div>
+
+        <div>
+          <p className="text-sm font-bold uppercase tracking-wide text-gray-500">
+            I miei
+          </p>
+
+          <h2 className="text-2xl font-black text-[#5C3A21]">
+            Badge
+          </h2>
+        </div>
+
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+
+        {badges.map((badge) => (
+
+          <div
+            key={badge.id}
+            className="rounded-2xl bg-[#F8F5F0] p-4 text-center border border-[#E8DED3]"
+          >
+
+            <div className="flex justify-center mb-3">
+
+              <Image
+                src={badge.icona}
+                alt={badge.nome}
+                width={110}
+                height={110}
+                className="object-contain"
+              />
+
+            </div>
+
+            <h3 className="font-black text-[#5C3A21] text-lg">
+              {badge.nome}
+            </h3>
+
+            <p className="text-sm text-gray-500 mt-1 leading-snug">
+              {badge.descrizione}
+            </p>
+
+          </div>
+
+        ))}
+
+      </div>
+
+    </div>
+
+  </div>
+)}
 
       </section>
 
