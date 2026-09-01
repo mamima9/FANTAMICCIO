@@ -761,7 +761,7 @@ const sfondo = contradaId
 
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <div className="flex flex-col gap-4">
 
         {badges.map((badge) => (
 
