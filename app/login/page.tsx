@@ -16,7 +16,6 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // PASSWORD DIMENTICATA
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotLoading, setForgotLoading] = useState(false);
@@ -39,7 +38,20 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/dashboard");
+    // Make sure the browser has the authenticated session before navigating.
+    // This is especially important on mobile browsers, where navigation can
+    // race with cookie/session persistence.
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      alert("Accesso effettuato, ma la sessione non è stata ancora registrata. Riprova.");
+      return;
+    }
+
+    router.replace("/dashboard");
+    router.refresh();
   };
 
   const handleForgotPassword = async () => {
@@ -79,27 +91,19 @@ export default function LoginPage() {
 
       <main className="min-h-screen bg-gradient-to-b from-amber-50 via-white to-amber-100">
         <section className="max-w-md mx-auto px-6 py-20">
-
           <div className="text-center mb-10">
             <h1 className="text-5xl font-extrabold text-amber-900">
               Bentornato!
             </h1>
-
             <p className="mt-4 text-lg text-gray-700">
               Accedi al tuo account FantaMiccio e continua la tua avventura.
             </p>
           </div>
 
           <div className="rounded-3xl bg-white shadow-2xl p-8">
-
             <div className="space-y-6">
-
-              {/* EMAIL */}
               <div>
-                <label className="block font-semibold mb-2">
-                  Email
-                </label>
-
+                <label className="block font-semibold mb-2">Email</label>
                 <input
                   type="email"
                   placeholder="nome@email.it"
@@ -109,29 +113,21 @@ export default function LoginPage() {
                 />
               </div>
 
-              {/* PASSWORD */}
               <div>
-                <label className="block font-semibold mb-2">
-                  Password
-                </label>
-
+                <label className="block font-semibold mb-2">Password</label>
                 <input
                   type="password"
                   placeholder="********"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleLogin();
-                    }
+                    if (e.key === "Enter") handleLogin();
                   }}
                   className="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-amber-500"
                 />
               </div>
-
             </div>
 
-            {/* PASSWORD DIMENTICATA */}
             <div className="mt-4 text-right">
               <button
                 type="button"
@@ -147,7 +143,6 @@ export default function LoginPage() {
               </button>
             </div>
 
-            {/* LOGIN */}
             <button
               onClick={handleLogin}
               className="mt-8 w-full rounded-2xl bg-[#D4AF37] py-4 text-xl font-bold text-[#5C3A21] transition hover:scale-[1.02]"
@@ -155,12 +150,8 @@ export default function LoginPage() {
               Accedi
             </button>
 
-            {/* REGISTRAZIONE */}
             <div className="mt-8 border-t pt-6 text-center">
-              <p className="text-gray-600">
-                Non hai ancora un account?
-              </p>
-
+              <p className="text-gray-600">Non hai ancora un account?</p>
               <Link
                 href="/registrazione"
                 className="mt-3 inline-block font-bold text-amber-700 hover:underline"
@@ -168,16 +159,11 @@ export default function LoginPage() {
                 Registrati gratuitamente
               </Link>
             </div>
-
           </div>
         </section>
       </main>
 
       <Footer />
-
-      {/* ================================================== */}
-      {/* MODALE PASSWORD DIMENTICATA */}
-      {/* ================================================== */}
 
       {showForgotPassword && (
         <div
@@ -188,25 +174,20 @@ export default function LoginPage() {
             className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-
-            {/* TITOLO */}
             <div className="text-center">
               <h2 className="text-3xl font-extrabold text-[#5C3A21]">
                 Password dimenticata?
               </h2>
-
               <p className="mt-3 text-gray-600">
                 Inserisci l&apos;email del tuo account e ti invieremo un link
                 per creare una nuova password.
               </p>
             </div>
 
-            {/* EMAIL */}
             <div className="mt-6">
               <label className="mb-2 block font-semibold text-[#5C3A21]">
                 Email
               </label>
-
               <input
                 type="email"
                 placeholder="nome@email.it"
@@ -216,33 +197,27 @@ export default function LoginPage() {
               />
             </div>
 
-            {/* SUCCESSO */}
             {forgotMessage && (
               <div className="mt-4 rounded-xl bg-green-50 p-4 text-sm font-medium text-green-700">
                 {forgotMessage}
               </div>
             )}
 
-            {/* ERRORE */}
             {forgotError && (
               <div className="mt-4 rounded-xl bg-red-50 p-4 text-sm font-medium text-red-700">
                 {forgotError}
               </div>
             )}
 
-            {/* INVIA */}
             <button
               type="button"
               onClick={handleForgotPassword}
               disabled={forgotLoading}
               className="mt-6 w-full rounded-2xl bg-[#D4AF37] py-4 font-bold text-[#5C3A21] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {forgotLoading
-                ? "Invio in corso..."
-                : "Invia link di recupero"}
+              {forgotLoading ? "Invio in corso..." : "Invia link di recupero"}
             </button>
 
-            {/* CHIUDI */}
             <button
               type="button"
               onClick={() => setShowForgotPassword(false)}
@@ -250,7 +225,6 @@ export default function LoginPage() {
             >
               Annulla
             </button>
-
           </div>
         </div>
       )}
