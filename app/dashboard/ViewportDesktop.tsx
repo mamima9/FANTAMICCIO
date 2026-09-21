@@ -21,7 +21,7 @@ export default function ViewportDesktop() {
     const previousContent = viewport.content;
 
     viewport.content =
-      "width=980, initial-scale=0.4, maximum-scale=1";
+      "width=1030, initial-scale=0.4, maximum-scale=1";
 
     return () => {
       viewport!.content =
