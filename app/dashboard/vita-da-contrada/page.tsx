@@ -112,7 +112,7 @@ export default function VitaDiContrada() {
     <>
     <ViewportDesktop />
     <main
-  className="relative min-h-screen bg-cover bg-center bg-fixed overflow-x-hidden"
+  className="relative min-h-screen bg-cover bg-center bg-fixed overflow-x-hidden translate-x-[8px] md:translate-x-0"
       style={{
         backgroundImage: sfondo
           ? `url(${sfondo})`

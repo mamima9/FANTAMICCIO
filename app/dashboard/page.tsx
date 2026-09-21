@@ -402,7 +402,7 @@ const sfondo = contradaId
       <>
     <ViewportDesktop />
   <main
-  className="relative min-h-screen bg-cover bg-center bg-fixed"
+  className="relative min-h-screen bg-cover bg-center bg-fixed translate-x-[8px] md:translate-x-0"
   style={{
     backgroundImage: sfondo
       ? `url(${sfondo})`
