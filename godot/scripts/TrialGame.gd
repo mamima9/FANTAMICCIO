@@ -127,7 +127,7 @@ func _setup_trial() -> void:
             player_pos = Vector2(350,460)
             memory_symbols.clear()
             for i in 4:
-                memory_symbols.append(rng.randi_range(0,3))
+                memory_symbols.append(i)
             state = 1
         "lucertola":
             time_limit = 75.0
@@ -211,7 +211,7 @@ func _movement() -> Vector2:
 func _update_cervia(delta: float) -> void:
     var v := _movement()
     if v.length() > 0.05:
-    player_pos += v * 190.0 * delta
+        player_pos += v * 190.0 * delta
     player_pos.x = clamp(player_pos.x, 45.0, 700.0)
     player_pos.y = clamp(player_pos.y, 80.0, 510.0)
     for beam in beams:
@@ -262,7 +262,7 @@ func _update_ponte(delta: float) -> void:
     if bridge_tiles[bridge_index].grow(18).has_point(player_pos):
         bridge_index += 1
         message.text = "Tavola sicura! %d/9" % bridge_index
-    if player_pos.x > bridge_tiles[bridge_index if bridge_index < bridge_tiles.size() else bridge_tiles.size()-1].end.x + 30.0 and bridge_index < bridge_tiles.size():
+    if bridge_index < bridge_tiles.size() and player_pos.x > bridge_tiles[bridge_index].end.x + 30.0:
         _fail("La tavola è crollata.")
 
 func _update_madonnina(_delta: float) -> void:
