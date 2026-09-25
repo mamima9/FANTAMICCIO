@@ -45,7 +45,7 @@ export default function TreguaGame(){
       physics:{default:"arcade",arcade:{debug:false}},
       scene:{
         preload(this:Phaser.Scene){
-          this.load.spritesheet("tiles","/game/rpg-tileset.svg",{frameWidth:32,frameHeight:32});
+          this.load.image("tiles","/game/rpg-tileset.svg");
           ["cervia","leondoro","lucertola","madonnina","ponte","pozzo","quercia","ranocchio"].forEach(id=>this.load.image(`player-${id}`,`/game/player-${id}.svg`));
           this.load.image("npc","/game/npc.svg");
           BENIAMINI_MAPPA.forEach(b=>this.load.image(`beni-${b.id}`,b.image));
@@ -59,7 +59,9 @@ export default function TreguaGame(){
           // Rendering diretto dei tile per evitare incompatibilita del Tilemap con SVG.
           const ground=scene.add.container(0,0).setDepth(0);
           (ground as any).putTileAt=(tile:number,x:number,y:number)=>{
-            const img=scene.add.image(x*TILE+TILE/2,y*TILE+TILE/2,"tiles",tile).setOrigin(.5);
+            const img=scene.add.image(x*TILE+TILE/2,y*TILE+TILE/2,"tiles").setOrigin(.5);
+            const tx=(tile%8)*TILE, ty=Math.floor(tile/8)*TILE;
+            img.setCrop(tx,ty,TILE,TILE);
             ground.add(img);
             return img;
           };
