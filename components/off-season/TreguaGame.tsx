@@ -212,13 +212,17 @@ export default function TreguaGame() {
           const miniScaleX=(miniW-18)/(COLS-1);
           const miniScaleY=(miniH-28)/(ROWS-1);
           mapDots.forEach(([name,x,y])=>{
-            const dot=scene.add.circle(-miniW/2+9+x*miniScaleX,-miniH/2+20+y*miniScaleY,3,0xf4cf64,1);
+            const id=name==="Leon d'Oro"?"leondoro":name.toLowerCase().replace(/\s+/g,"");
+            const cfg=contradaConfig[id];
+            const secondary=cfg ? Phaser.Display.Color.HexStringToColor(cfg.secondary).color : 0xf4cf64;
+            const dot=scene.add.circle(-miniW/2+9+x*miniScaleX,-miniH/2+20+y*miniScaleY,3.5,secondary,1).setStrokeStyle(1,0xffffff,.8);
             mini.add(dot);
-            const label=scene.add.text(dot.x+5,dot.y-5,name,{fontFamily:"Arial",fontSize:isMobile?"7px":"8px",color:"#fff"});
+            const label=scene.add.text(dot.x+5,dot.y-5,name,{fontFamily:"Arial",fontSize:isMobile?"7px":"8px",color:"#fff",fontStyle:"bold"});
             mini.add(label);
           });
-          const playerDot=scene.add.circle(0,0,5,0xffffff,1);
+          const playerDot=scene.add.circle(0,0,5,0xffffff,1).setStrokeStyle(2,0x5c3a21,1);
           mini.add(playerDot);
+          scene.tweens.add({targets:playerDot,scaleX:1.35,scaleY:1.35,alpha:.65,duration:650,yoyo:true,repeat:-1,ease:"Sine.easeInOut"});
           const updateMini=()=>{
             playerDot.setPosition(-miniW/2+9+(player.x/TILE)*miniScaleX,-miniH/2+20+(player.y/TILE)*miniScaleY);
           };
