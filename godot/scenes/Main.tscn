@@ -72,6 +72,9 @@ drag_horizontal_enabled = true
 drag_vertical_enabled = true
 
 
+[node name="ChallengeManager" type="Node" parent="."]
+script = null
+
 [node name="NPCs" type="Node2D" parent="."]
 
 [node name="CustodeDelleQuerce" type="Area2D" parent="NPCs"]
@@ -121,6 +124,8 @@ text = "E  •  PARLA"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(1,0.92,0.68,1)
 theme_override_font_sizes/font_size = 12
+
+[node name="ChallengeManager" type="Node" parent="."]
 
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("5")
