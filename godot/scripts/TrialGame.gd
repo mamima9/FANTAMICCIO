@@ -206,7 +206,7 @@ func _input(event: InputEvent) -> void:
 
 func _movement() -> Vector2:
     var v := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-    var joystick = get_tree().current_scene.get_node_or_null("MobileJoystick")
+    var joystick = get_tree().current_scene.get_node_or_null("MobileJoystick/JoystickSurface")
     if joystick and joystick.has_method("get_axis"):
         var j := joystick.get_axis()
         if j.length() > v.length():
