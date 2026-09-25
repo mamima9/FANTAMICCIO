@@ -4,6 +4,7 @@ extends Control
 @export var knob_radius := 30.0
 @export var deadzone := 0.12
 @export var margin := 34.0
+@export var touch_zone_radius := 240.0
 
 var touch_id := -1
 var center := Vector2.ZERO
@@ -13,6 +14,7 @@ var axis := Vector2.ZERO
 func _ready() -> void:
     process_mode = Node.PROCESS_MODE_ALWAYS
     mouse_filter = Control.MOUSE_FILTER_IGNORE
+    set_process_input(true)
     _reposition()
     queue_redraw()
 
@@ -29,14 +31,13 @@ func _reposition() -> void:
 func _input(event: InputEvent) -> void:
     if event is InputEventScreenTouch:
         if event.pressed:
-            if touch_id == -1 and event.position.distance_to(center) <= radius * 1.45:
+            if touch_id == -1 and event.position.distance_to(center) <= touch_zone_radius:
                 touch_id = event.index
                 _update_stick(event.position)
                 get_viewport().set_input_as_handled()
         elif event.index == touch_id:
             _release()
             get_viewport().set_input_as_handled()
-
     elif event is InputEventScreenDrag and event.index == touch_id:
         _update_stick(event.position)
         get_viewport().set_input_as_handled()
