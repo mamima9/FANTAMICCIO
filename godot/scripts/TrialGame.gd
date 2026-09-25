@@ -28,6 +28,13 @@ var beams: Array[Rect2] = []
 var hazards: Array[Vector2] = []
 var hazard_vel: Array[Vector2] = []
 var lotus := Vector2.ZERO
+var golden_signs: Array[Vector2] = []
+var sign_found: Array[bool] = []
+var ancient_tree := Vector2.ZERO
+var bridge_tiles: Array[Rect2] = []
+var bridge_index := 0
+var memory_symbols: Array[int] = []
+var route_fork := 0
 
 @onready var root: Control = $Root
 @onready var title: Label = $Root/Panel/Title
@@ -91,6 +98,46 @@ func _setup_trial() -> void:
             for i in range(5):
                 hazards.append(Vector2(120 + rng.randf_range(0, 460), 130 + rng.randf_range(0, 340)))
                 hazard_vel.append(Vector2.from_angle(rng.randf_range(0.0, TAU)) * rng.randf_range(90.0, 150.0))
+        "quercia":
+            time_limit = 90.0
+            target = 3
+            title.text = "LA CORSA TRA LE QUERCE"
+            objective.text = "Trova i 3 segni dorati e raggiungi la Quercia Antica."
+            message.text = "Il sentiero più corto non è quello giusto."
+            player_pos = Vector2(80, 470)
+            golden_signs = [Vector2(180,390), Vector2(360,250), Vector2(540,360)]
+            sign_found = [false, false, false]
+            ancient_tree = Vector2(650,140)
+        "ponte":
+            time_limit = 55.0
+            target = 1
+            title.text = "IL PONTE DI TAVOLE"
+            objective.text = "Attraversa le tavole seguendo il ritmo sicuro."
+            message.text = "Scegli la tavola sicura in ogni passo."
+            player_pos = Vector2(80,300)
+            bridge_index = 0
+            bridge_tiles = []
+            for i in 9:
+                bridge_tiles.append(Rect2(100 + i * 65, 250 + ((i % 3) - 1) * 45, 52, 34))
+        "madonnina":
+            time_limit = 90.0
+            target = 1
+            title.text = "IL PAGLIAIO PERDUTO"
+            objective.text = "Memorizza il simbolo e ritrovalo tra i covoni."
+            message.text = "Osserva il simbolo: sparirà presto."
+            player_pos = Vector2(350,460)
+            memory_symbols.clear()
+            for i in 4:
+                memory_symbols.append(rng.randi_range(0,3))
+            state = 1
+        "lucertola":
+            time_limit = 75.0
+            target = 1
+            title.text = "LA VIA DELLA RIPA"
+            objective.text = "Raggiungi il bivio e scegli la strada indicata dalle pietre."
+            message.text = "La strada più luminosa è un inganno."
+            player_pos = Vector2(90,450)
+            route_fork = 0
         "ranocchio":
             time_limit = 60.0
             target = 1
@@ -121,6 +168,14 @@ func _process(delta: float) -> void:
         _update_ranocchio(delta)
     elif id == "pozzo":
         _update_pozzo(delta)
+    elif id == "quercia":
+        _update_quercia(delta)
+    elif id == "ponte":
+        _update_ponte(delta)
+    elif id == "madonnina":
+        _update_madonnina(delta)
+    elif id == "lucertola":
+        _update_lucertola(delta)
     timer_label.text = "TEMPO  %02d" % max(0, int(ceil(time_limit - elapsed)))
     arena.queue_redraw()
     if elapsed >= time_limit and active:
@@ -141,6 +196,12 @@ func _input(event: InputEvent) -> void:
             _click_clue(p)
         elif id == "ranocchio":
             _jump_to_lily(p)
+        elif id == "ponte":
+            _bridge_click(p)
+        elif id == "madonnina":
+            _memory_click(p)
+        elif id == "lucertola":
+            _route_click(p)
 
 func _movement() -> Vector2:
     var v := Input.get_vector("move_left", "move_right", "move_up", "move_down")
@@ -179,6 +240,49 @@ func _update_leon(delta: float) -> void:
     if elapsed >= 30.0:
         _win()
 
+func _update_quercia(delta: float) -> void:
+    var v := _movement()
+    player_pos += v * 190.0 * delta
+    player_pos.x = clamp(player_pos.x, 45.0, 700.0)
+    player_pos.y = clamp(player_pos.y, 80.0, 510.0)
+    for i in golden_signs.size():
+        if not sign_found[i] and player_pos.distance_to(golden_signs[i]) < 42.0:
+            sign_found[i] = true
+            score += 1
+            message.text = "Segno dorato %d/3 trovato." % score
+    if score == 3 and player_pos.distance_to(ancient_tree) < 55.0:
+        _win()
+
+func _update_ponte(delta: float) -> void:
+    if bridge_index >= bridge_tiles.size():
+        _win()
+        return
+    var v := _movement()
+    player_pos += v * 185.0 * delta
+    player_pos.x = clamp(player_pos.x, 45.0, 700.0)
+    player_pos.y = clamp(player_pos.y, 80.0, 510.0)
+    if bridge_tiles[bridge_index].grow(18).has_point(player_pos):
+        bridge_index += 1
+        message.text = "Tavola sicura! %d/9" % bridge_index
+    if player_pos.x > bridge_tiles[bridge_index if bridge_index < bridge_tiles.size() else bridge_tiles.size()-1].end.x + 30.0 and bridge_index < bridge_tiles.size():
+        _fail("La tavola è crollata.")
+
+func _update_madonnina(_delta: float) -> void:
+    if state == 1 and elapsed > 4.0:
+        state = 2
+        message.text = "Ora è nascosto. Trova il simbolo che hai memorizzato."
+
+func _update_lucertola(delta: float) -> void:
+    var v := _movement()
+    player_pos += v * 180.0 * delta
+    player_pos.x = clamp(player_pos.x, 45.0, 700.0)
+    player_pos.y = clamp(player_pos.y, 80.0, 510.0)
+    if route_fork == 0 and player_pos.x > 330.0:
+        route_fork = 1
+        message.text = "BIVIO! Le pietre indicano la strada meno luminosa."
+    elif route_fork == 2 and player_pos.x > 660.0:
+        _win()
+
 func _update_ranocchio(_delta: float) -> void:
     if player_pos.distance_to(lotus) < 45.0:
         _win()
@@ -207,6 +311,33 @@ func _jump_to_lily(point: Vector2) -> void:
     message.text = "La ninfea affonda! Continua!"
     if nearest == lily_positions.size() - 1:
         player_pos = lotus
+
+func _bridge_click(point: Vector2) -> void:
+    if bridge_index >= bridge_tiles.size():
+        return
+    if bridge_tiles[bridge_index].grow(45).has_point(point):
+        bridge_index += 1
+        message.text = "Tavola sicura! %d/9" % bridge_index
+    elif point.x > 80.0:
+        _fail("Hai scelto una tavola instabile.")
+
+func _memory_click(point: Vector2) -> void:
+    if state != 2:
+        return
+    var slot := int(clamp(floor((point.x - 100.0) / 150.0), 0.0, 3.0))
+    if memory_symbols[slot] == memory_symbols[0]:
+        _win()
+    else:
+        _fail("Simbolo sbagliato.")
+
+func _route_click(point: Vector2) -> void:
+    if route_fork != 1:
+        return
+    if point.x < 520.0:
+        _fail("La strada più luminosa era l'inganno.")
+    else:
+        route_fork = 2
+        message.text = "La pietra giusta! Continua."
 
 func _click_clue(point: Vector2) -> void:
     var positions = [Vector2(160,200),Vector2(350,200),Vector2(540,200)]
