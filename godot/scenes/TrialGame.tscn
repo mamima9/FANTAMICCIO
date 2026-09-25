@@ -1,0 +1,72 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/TrialGame.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/TrialArena.gd" id="2"]
+
+[node name="TrialGame" type="CanvasLayer"]
+script = ExtResource("1")
+layer = 100
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+visible = false
+
+[node name="Panel" type="Panel" parent="Root"]
+offset_left = 110.0
+offset_top = 40.0
+offset_right = 1042.0
+offset_bottom = 620.0
+
+[node name="Title" type="Label" parent="Root/Panel"]
+offset_left = 28.0
+offset_top = 18.0
+offset_right = 700.0
+offset_bottom = 55.0
+theme_override_font_sizes/font_size = 25
+text = "PROVA"
+
+[node name="Objective" type="Label" parent="Root/Panel"]
+offset_left = 30.0
+offset_top = 60.0
+offset_right = 720.0
+offset_bottom = 88.0
+theme_override_font_sizes/font_size = 15
+text = "Obiettivo"
+
+[node name="Timer" type="Label" parent="Root/Panel"]
+offset_left = 755.0
+offset_top = 22.0
+offset_right = 885.0
+offset_bottom = 52.0
+horizontal_alignment = 2
+theme_override_font_sizes/font_size = 20
+text = "TEMPO"
+
+[node name="Arena" type="Control" parent="Root"]
+offset_left = 145.0
+offset_top = 125.0
+offset_right = 865.0
+offset_bottom = 665.0
+script = ExtResource("2")
+
+[node name="Message" type="Label" parent="Root/Panel"]
+offset_left = 30.0
+offset_top = 510.0
+offset_right = 680.0
+offset_bottom = 545.0
+theme_override_font_sizes/font_size = 16
+text = "Messaggio"
+
+[node name="Retry" type="Button" parent="Root/Panel"]
+offset_left = 730.0
+offset_top = 505.0
+offset_right = 885.0
+offset_bottom = 550.0
+text = "RIPROVA"
+visible = false
