@@ -263,10 +263,14 @@ export default function TreguaGame() {
             joyX = 0; joyY = 0; joystickPointerId = null;
             joyKnob.setPosition(0,0);
           };
-          joyBase.setInteractive(new Phaser.Geom.Circle(0,0,68), Phaser.Geom.Circle.Contains);
-          joyBase.on("pointerdown",(pointer: Phaser.Input.Pointer)=>{
-            joystickPointerId = pointer.id;
-            setJoystick(pointer);
+          scene.input.on("pointerdown",(pointer: Phaser.Input.Pointer)=>{
+            if(!isMobile) return;
+            const dx = pointer.x - mobile.x;
+            const dy = pointer.y - mobile.y;
+            if(Math.hypot(dx,dy) <= 82){
+              joystickPointerId = pointer.id;
+              setJoystick(pointer);
+            }
           });
           scene.input.on("pointermove",(pointer: Phaser.Input.Pointer)=>{
             if(pointer.id === joystickPointerId) setJoystick(pointer);
@@ -274,10 +278,13 @@ export default function TreguaGame() {
           scene.input.on("pointerup",(pointer: Phaser.Input.Pointer)=>{
             if(pointer.id === joystickPointerId) resetJoystick();
           });
+          scene.input.on("pointerupoutside",(pointer: Phaser.Input.Pointer)=>{
+            if(pointer.id === joystickPointerId) resetJoystick();
+          });
           actionBg.on("pointerdown",()=>void interact());
 
 
-          scene.events.on("update",(_t:number,delta:number)=>{const dt=Math.min(delta,32)/1000; if(!keys)return; let x=0,y=0;if(keys.A.isDown||keys.LEFT.isDown)x--;if(keys.D.isDown||keys.RIGHT.isDown)x++;if(keys.W.isDown||keys.UP.isDown)y--;if(keys.S.isDown||keys.DOWN.isDown)y++;const len=Math.hypot(x,y);if(len>1){x/=len;y/=len;}const speed=keys.SHIFT.isDown?190:135;player.setVelocity(x*speed,y*speed);if(Math.abs(x)+Math.abs(y)>.05){if(Math.abs(x)>Math.abs(y)){player.anims.play("walk-side",true);player.setFlipX(x<0);}else player.anims.play(y>0?"walk-down":"walk-up",true);}else player.anims.stop();player.setDepth(player.y); updatePlayerLabel(); updateMini(); if(Phaser.Input.Keyboard.JustDown(keys.E)||Phaser.Input.Keyboard.JustDown(keys.SPACE))void interact();});
+          scene.events.on("update",(_t:number,delta:number)=>{const dt=Math.min(delta,32)/1000; if(!keys)return; let x=joyX,y=joyY;if(keys.A.isDown||keys.LEFT.isDown)x--;if(keys.D.isDown||keys.RIGHT.isDown)x++;if(keys.W.isDown||keys.UP.isDown)y--;if(keys.S.isDown||keys.DOWN.isDown)y++;const len=Math.hypot(x,y);if(len>1){x/=len;y/=len;}const speed=keys.SHIFT.isDown?190:135;player.setVelocity(x*speed,y*speed);if(Math.abs(x)+Math.abs(y)>.05){if(Math.abs(x)>Math.abs(y)){player.anims.play("walk-side",true);player.setFlipX(x<0);}else player.anims.play(y>0?"walk-down":"walk-up",true);}else player.anims.stop();player.setDepth(player.y); updatePlayerLabel(); updateMini(); if(Phaser.Input.Keyboard.JustDown(keys.E)||Phaser.Input.Keyboard.JustDown(keys.SPACE))void interact();});
           const resize=()=>{
             hud.setPosition(18,18);
             tregua.setPosition(scene.scale.width/2,18);
