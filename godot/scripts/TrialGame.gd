@@ -1,5 +1,5 @@
 extends CanvasLayer
-## Real mini-game controller for the first four Beniamini trials.
+## Real mini-game controller for all eight Beniamini trials.
 ## Each trial has its own mechanic; this is the gameplay layer, not a placeholder timer.
 
 signal won(id: String)
@@ -34,6 +34,7 @@ var bridge_tiles: Array[Rect2] = []
 var bridge_index := 0
 var memory_symbols: Array[int] = []
 var route_fork := 0
+var memory_target_slot := 0
 
 @onready var root: Control = $Root
 @onready var title: Label = $Root/Panel/Title
@@ -128,6 +129,7 @@ func _setup_trial() -> void:
             memory_symbols.clear()
             for i in 4:
                 memory_symbols.append(i)
+            memory_target_slot = rng.randi_range(0, 3)
             state = 1
         "lucertola":
             time_limit = 75.0
@@ -204,6 +206,11 @@ func _input(event: InputEvent) -> void:
 
 func _movement() -> Vector2:
     var v := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+    var joystick = get_tree().current_scene.get_node_or_null("MobileJoystick")
+    if joystick and joystick.has_method("get_axis"):
+        var j := joystick.get_axis()
+        if j.length() > v.length():
+            v = j
     if v.length() > 1.0:
         v = v.normalized()
     return v
@@ -323,7 +330,7 @@ func _memory_click(point: Vector2) -> void:
     if state != 2:
         return
     var slot := int(clamp(floor((point.x - 100.0) / 150.0), 0.0, 3.0))
-    if memory_symbols[slot] == memory_symbols[0]:
+    if slot == memory_target_slot:
         _win()
     else:
         _fail("Simbolo sbagliato.")
