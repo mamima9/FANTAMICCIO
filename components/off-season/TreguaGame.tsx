@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import Phaser from "phaser";
 
+import { createClient } from "@/lib/supabase/client";
+
 import { CONTRADE_MAPPA } from "@/data/offseasonMap";
 import {
   BENIAMINI_MAPPA,
@@ -14,6 +16,8 @@ export default function TreguaGame() {
 
   useEffect(() => {
     if (!gameRef.current) return;
+
+    const supabase = createClient();
 
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
@@ -59,6 +63,13 @@ export default function TreguaGame() {
 
         create() {
           const scene = this;
+
+          // =====================================================
+          // AUTENTICAZIONE
+          // =====================================================
+
+          let currentUserId: string | null = null;
+          let beniLoaded = false;
 
           // =====================================================
           // WORLD
@@ -529,8 +540,7 @@ export default function TreguaGame() {
                     fontFamily: "Arial",
                     fontSize: "18px",
                     color: "#ffffff",
-                    backgroundColor:
-                      "#5b3a22",
+                    backgroundColor: "#5b3a22",
                     padding: {
                       x: 7,
                       y: 4,
@@ -610,20 +620,15 @@ export default function TreguaGame() {
                     y + 45,
                     beni.nome,
                     {
-                      fontFamily:
-                        "Arial",
-                      fontSize:
-                        "15px",
-                      color:
-                        "#ffffff",
-                      backgroundColor:
-                        "#5b3a22",
+                      fontFamily: "Arial",
+                      fontSize: "15px",
+                      color: "#ffffff",
+                      backgroundColor: "#5b3a22",
                       padding: {
                         x: 5,
                         y: 3,
                       },
-                      fontStyle:
-                        "bold",
+                      fontStyle: "bold",
                     }
                   )
                   .setOrigin(0.5)
@@ -639,6 +644,79 @@ export default function TreguaGame() {
               );
             }
           );
+
+          // =====================================================
+          // HUD
+          // =====================================================
+
+          const hud =
+            scene.add
+              .container(
+                18,
+                18
+              )
+              .setScrollFactor(0)
+              .setDepth(1000);
+
+          const hudBg =
+            scene.add
+              .rectangle(
+                0,
+                0,
+                235,
+                92,
+                0x49301f,
+                0.92
+              )
+              .setOrigin(0);
+
+          const title =
+            scene.add
+              .text(
+                15,
+                12,
+                "TREGUA TRA CONTRADE",
+                {
+                  fontFamily: "Arial",
+                  fontSize: "17px",
+                  color: "#ffe9a8",
+                  fontStyle: "bold",
+                }
+              );
+
+          const progressText =
+            scene.add
+              .text(
+                15,
+                42,
+                "BENIAMINI 0 / 8",
+                {
+                  fontFamily: "Arial",
+                  fontSize: "19px",
+                  color: "#ffffff",
+                  fontStyle: "bold",
+                }
+              );
+
+          const objectiveText =
+            scene.add
+              .text(
+                15,
+                68,
+                "Trova i Beniamini",
+                {
+                  fontFamily: "Arial",
+                  fontSize: "13px",
+                  color: "#d9d0c5",
+                }
+              );
+
+          hud.add([
+            hudBg,
+            title,
+            progressText,
+            objectiveText,
+          ]);
 
           // =====================================================
           // NPC
@@ -699,14 +777,10 @@ export default function TreguaGame() {
                 y + 34,
                 npc.nome,
                 {
-                  fontFamily:
-                    "Arial",
-                  fontSize:
-                    "12px",
-                  color:
-                    "#ffffff",
-                  backgroundColor:
-                    "#49301f",
+                  fontFamily: "Arial",
+                  fontSize: "12px",
+                  color: "#ffffff",
+                  backgroundColor: "#49301f",
                   padding: {
                     x: 4,
                     y: 2,
@@ -820,9 +894,7 @@ export default function TreguaGame() {
 
           body.setSize(30, 38);
           body.setOffset(-15, -2);
-          body.setCollideWorldBounds(
-            true
-          );
+          body.setCollideWorldBounds(true);
 
           // =====================================================
           // COLLISIONI CASE
@@ -848,20 +920,15 @@ export default function TreguaGame() {
                 player.y - 62,
                 "TU",
                 {
-                  fontFamily:
-                    "Arial",
-                  fontSize:
-                    "14px",
-                  color:
-                    "#ffffff",
-                  backgroundColor:
-                    "#49301f",
+                  fontFamily: "Arial",
+                  fontSize: "14px",
+                  color: "#ffffff",
+                  backgroundColor: "#49301f",
                   padding: {
                     x: 6,
                     y: 3,
                   },
-                  fontStyle:
-                    "bold",
+                  fontStyle: "bold",
                 }
               )
               .setOrigin(0.5)
@@ -877,90 +944,6 @@ export default function TreguaGame() {
             0.12,
             0.12
           );
-
-          // =====================================================
-          // HUD
-          // =====================================================
-
-          const hud =
-            scene.add
-              .container(
-                18,
-                18
-              )
-              .setScrollFactor(0)
-              .setDepth(1000);
-
-          const hudBg =
-            scene.add
-              .rectangle(
-                0,
-                0,
-                235,
-                92,
-                0x49301f,
-                0.92
-              )
-              .setOrigin(0);
-
-          const title =
-            scene.add
-              .text(
-                15,
-                12,
-                "TREGUA TRA CONTRADE",
-                {
-                  fontFamily:
-                    "Arial",
-                  fontSize:
-                    "17px",
-                  color:
-                    "#ffe9a8",
-                  fontStyle:
-                    "bold",
-                }
-              );
-
-          const progressText =
-            scene.add
-              .text(
-                15,
-                42,
-                "BENIAMINI 0 / 8",
-                {
-                  fontFamily:
-                    "Arial",
-                  fontSize:
-                    "19px",
-                  color:
-                    "#ffffff",
-                  fontStyle:
-                    "bold",
-                }
-              );
-
-          const objectiveText =
-            scene.add
-              .text(
-                15,
-                68,
-                "Trova i Beniamini",
-                {
-                  fontFamily:
-                    "Arial",
-                  fontSize:
-                    "13px",
-                  color:
-                    "#d9d0c5",
-                }
-              );
-
-          hud.add([
-            hudBg,
-            title,
-            progressText,
-            objectiveText,
-          ]);
 
           // =====================================================
           // DIALOG
@@ -1001,14 +984,10 @@ export default function TreguaGame() {
                 -42,
                 "",
                 {
-                  fontFamily:
-                    "Arial",
-                  fontSize:
-                    "18px",
-                  color:
-                    "#ffe5a0",
-                  fontStyle:
-                    "bold",
+                  fontFamily: "Arial",
+                  fontSize: "18px",
+                  color: "#ffe5a0",
+                  fontStyle: "bold",
                 }
               );
 
@@ -1019,12 +998,9 @@ export default function TreguaGame() {
                 -12,
                 "",
                 {
-                  fontFamily:
-                    "Arial",
-                  fontSize:
-                    "15px",
-                  color:
-                    "#ffffff",
+                  fontFamily: "Arial",
+                  fontSize: "15px",
+                  color: "#ffffff",
                   wordWrap: {
                     width: 620,
                   },
@@ -1038,12 +1014,9 @@ export default function TreguaGame() {
                 42,
                 "E / SPAZIO",
                 {
-                  fontFamily:
-                    "Arial",
-                  fontSize:
-                    "11px",
-                  color:
-                    "#d9c6a4",
+                  fontFamily: "Arial",
+                  fontSize: "11px",
+                  color: "#d9c6a4",
                 }
               );
 
@@ -1060,96 +1033,243 @@ export default function TreguaGame() {
             name: string,
             text: string
           ) => {
-            dialogName.setText(
-              name
-            );
+            dialogName.setText(name);
+            dialogText.setText(text);
 
-            dialogText.setText(
-              text
-            );
-
-            dialog.setVisible(
-              true
-            );
+            dialog.setVisible(true);
 
             dialogOpen = true;
           };
 
           const closeDialog = () => {
-            dialog.setVisible(
-              false
-            );
-
+            dialog.setVisible(false);
             dialogOpen = false;
           };
+
+          // =====================================================
+          // CARICAMENTO BENIAMINI DA SUPABASE
+          // =====================================================
+
+          const loadSavedBeniamini =
+            async () => {
+              const {
+                data: userData,
+                error: userError,
+              } = await supabase.auth.getUser();
+
+              if (
+                userError ||
+                !userData.user
+              ) {
+                console.error(
+                  "Utente non autenticato:",
+                  userError
+                );
+
+                beniLoaded = true;
+
+                openDialog(
+                  "ACCESSO RICHIESTO",
+                  "Devi essere autenticato per partecipare alla Tregua tra Contrade."
+                );
+
+                return;
+              }
+
+              currentUserId =
+                userData.user.id;
+
+              const {
+                data,
+                error,
+              } = await supabase
+                .from("user_beniamini")
+                .select("beniamino_id")
+                .eq(
+                  "user_id",
+                  currentUserId
+                );
+
+              if (error) {
+                console.error(
+                  "Errore caricamento Beniamini:",
+                  error
+                );
+
+                beniLoaded = true;
+
+                return;
+              }
+
+              data?.forEach(
+                (row) => {
+                  collectedBeniamini.add(
+                    row.beniamino_id
+                  );
+
+                  const objects =
+                    beniObjects.get(
+                      row.beniamino_id
+                    );
+
+                  if (objects) {
+                    objects.sprite.setVisible(
+                      false
+                    );
+
+                    objects.label.setVisible(
+                      false
+                    );
+
+                    objects.glow.setVisible(
+                      false
+                    );
+                  }
+                }
+              );
+
+              const count =
+                collectedBeniamini.size;
+
+              progressText.setText(
+                `BENIAMINI ${count} / 8`
+              );
+
+              if (count === 8) {
+                objectiveText.setText(
+                  "Hai tutti gli 8! Trova un'altra Contrada."
+                );
+              } else {
+                objectiveText.setText(
+                  `Beniamini raccolti: ${count} / 8`
+                );
+              }
+
+              beniLoaded = true;
+            };
 
           // =====================================================
           // RACCOLTA BENIAMINO
           // =====================================================
 
-          const collectBeniamino = (
-            beni: (typeof BENIAMINI_MAPPA)[number]
-          ) => {
-            if (
-              collectedBeniamini.has(
-                beni.id
-              )
-            ) {
-              return;
-            }
+          const collectBeniamino =
+            async (
+              beni: (typeof BENIAMINI_MAPPA)[number]
+            ) => {
+              if (!beniLoaded) {
+                return;
+              }
 
-            collectedBeniamini.add(
-              beni.id
-            );
+              if (
+                collectedBeniamini.has(
+                  beni.id
+                )
+              ) {
+                return;
+              }
 
-            const objects =
-              beniObjects.get(
-                beni.id
+              if (!currentUserId) {
+                openDialog(
+                  "ACCESSO RICHIESTO",
+                  "Devi essere autenticato per salvare i Beniamini."
+                );
+
+                return;
+              }
+
+              const {
+                error,
+              } = await supabase
+                .from("user_beniamini")
+                .insert({
+                  user_id:
+                    currentUserId,
+                  beniamino_id:
+                    beni.id,
+                });
+
+              if (error) {
+                // 23505 = elemento già presente
+                if (
+                  error.code ===
+                  "23505"
+                ) {
+                  collectedBeniamini.add(
+                    beni.id
+                  );
+                } else {
+                  console.error(
+                    "Errore salvataggio Beniamino:",
+                    error
+                  );
+
+                  openDialog(
+                    "ERRORE",
+                    "Non è stato possibile salvare il Beniamino. Riprova."
+                  );
+
+                  return;
+                }
+              } else {
+                collectedBeniamini.add(
+                  beni.id
+                );
+              }
+
+              const objects =
+                beniObjects.get(
+                  beni.id
+                );
+
+              if (objects) {
+                objects.sprite.setVisible(
+                  false
+                );
+
+                objects.label.setVisible(
+                  false
+                );
+
+                objects.glow.setVisible(
+                  false
+                );
+              }
+
+              const collectedCount =
+                collectedBeniamini.size;
+
+              progressText.setText(
+                `BENIAMINI ${collectedCount} / 8`
               );
 
-            if (objects) {
-              objects.sprite.setVisible(
-                false
-              );
+              if (
+                collectedCount === 8
+              ) {
+                objectiveText.setText(
+                  "Hai tutti gli 8! Trova un'altra Contrada."
+                );
 
-              objects.label.setVisible(
-                false
-              );
+                openDialog(
+                  "TREGUA COMPLETATA",
+                  "Hai raccolto tutti gli 8 Beniamini!\n\nOra devi trovare un giocatore di un'altra Contrada per ottenere il Barone."
+                );
+              } else {
+                objectiveText.setText(
+                  `Beniamini raccolti: ${collectedCount} / 8`
+                );
 
-              objects.glow.setVisible(
-                false
-              );
-            }
+                openDialog(
+                  beni.nome,
+                  `Hai trovato il Beniamino ${beni.nome}!\n\n${collectedCount} / 8 Beniamini raccolti.`
+                );
+              }
+            };
 
-            const collectedCount =
-              collectedBeniamini.size;
+          // =====================================================
+          // AVVIO CARICAMENTO DATI UTENTE
+          // =====================================================
 
-            progressText.setText(
-              `BENIAMINI ${collectedCount} / 8`
-            );
-
-            if (
-              collectedCount === 8
-            ) {
-              objectiveText.setText(
-                "Hai tutti gli 8! Trova un'altra Contrada."
-              );
-
-              openDialog(
-                "TREGUA COMPLETATA",
-                "Hai raccolto tutti gli 8 Beniamini!\n\nOra devi trovare un giocatore di un'altra Contrada per ottenere il Barone."
-              );
-            } else {
-              objectiveText.setText(
-                `Beniamini raccolti: ${collectedCount} / 8`
-              );
-
-              openDialog(
-                beni.nome,
-                `Hai trovato il Beniamino ${beni.nome}!\n\n${collectedCount} / 8 Beniamini raccolti.`
-              );
-            }
-          };
+          loadSavedBeniamini();
 
           // =====================================================
           // INTERAZIONE
@@ -1269,7 +1389,7 @@ export default function TreguaGame() {
               closestBeni &&
               beniDistance < 100
             ) {
-              collectBeniamino(
+              void collectBeniamino(
                 closestBeni
               );
             }
@@ -1324,8 +1444,7 @@ export default function TreguaGame() {
           let joystickX = 0;
           let joystickY = 0;
 
-          const joystickCenterX =
-            100;
+          const joystickCenterX = 100;
 
           const getJoystickCenterY =
             () =>
@@ -1465,14 +1584,10 @@ export default function TreguaGame() {
                 scene.scale.height - 82,
                 "A",
                 {
-                  fontFamily:
-                    "Arial",
-                  fontSize:
-                    "25px",
-                  color:
-                    "#ffffff",
-                  fontStyle:
-                    "bold",
+                  fontFamily: "Arial",
+                  fontSize: "25px",
+                  color: "#ffffff",
+                  fontStyle: "bold",
                 }
               )
               .setOrigin(0.5)
@@ -1509,17 +1624,13 @@ export default function TreguaGame() {
               }
 
               interactButton.setPosition(
-                scene.scale.width -
-                  82,
-                scene.scale.height -
-                  82
+                scene.scale.width - 82,
+                scene.scale.height - 82
               );
 
               interactButtonText.setPosition(
-                scene.scale.width -
-                  82,
-                scene.scale.height -
-                  82
+                scene.scale.width - 82,
+                scene.scale.height - 82
               );
 
               dialog.setPosition(
@@ -1562,32 +1673,28 @@ export default function TreguaGame() {
                   cursors.left.isDown ||
                   keys.A.isDown
                 ) {
-                  velocityX =
-                    -speed;
+                  velocityX = -speed;
                 }
 
                 if (
                   cursors.right.isDown ||
                   keys.D.isDown
                 ) {
-                  velocityX =
-                    speed;
+                  velocityX = speed;
                 }
 
                 if (
                   cursors.up.isDown ||
                   keys.W.isDown
                 ) {
-                  velocityY =
-                    -speed;
+                  velocityY = -speed;
                 }
 
                 if (
                   cursors.down.isDown ||
                   keys.S.isDown
                 ) {
-                  velocityY =
-                    speed;
+                  velocityY = speed;
                 }
               }
 
@@ -1608,13 +1715,11 @@ export default function TreguaGame() {
                   );
 
                 velocityX =
-                  (velocityX /
-                    length) *
+                  (velocityX / length) *
                   speed;
 
                 velocityY =
-                  (velocityY /
-                    length) *
+                  (velocityY / length) *
                   speed;
               }
 
@@ -1633,8 +1738,7 @@ export default function TreguaGame() {
               ) {
                 const walking =
                   Math.sin(
-                    scene.time.now /
-                      90
+                    scene.time.now / 90
                   ) * 3;
 
                 legLeft.y =
