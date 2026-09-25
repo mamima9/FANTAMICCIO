@@ -8,6 +8,11 @@ func show_toast(message: String) -> void:
     toast.visible = true
     toast_time = 3.0
 
+func show_dialogue(speaker: String, message: String) -> void:
+    toast.text = speaker + "  •  " + message
+    toast.visible = true
+    toast_time = 6.0
+
 func _process(delta: float) -> void:
     if toast_time > 0.0:
         toast_time -= delta
