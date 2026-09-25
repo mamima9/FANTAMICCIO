@@ -52,6 +52,7 @@ export default function TreguaGame(){
         },
         create(this:Phaser.Scene){
           const scene=this, WORLD_W=COLS*TILE, WORLD_H=ROWS*TILE;
+          const FONT="Trebuchet MS, Arial, sans-serif";
           const mobile=window.innerWidth<768||"ontouchstart"in window||navigator.maxTouchPoints>0||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
           scene.physics.world.setBounds(0,0,WORLD_W,WORLD_H);
           scene.cameras.main.setBounds(0,0,WORLD_W,WORLD_H).setZoom(mobile?1.85:2);
@@ -101,7 +102,7 @@ export default function TreguaGame(){
             if(id==="quercia"){tileRect(T.flowerPatch,8,3,8,5);tileRect(T.darkGrass,22,16,8,6);}
             const blocked=new Set<string>();
             const block=(x:number,y:number,w:number,h:number)=>{for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)blocked.add(xx+","+yy);};
-            const contradaBanner=(x:number,y:number,label:string)=>{              const c=scene.add.container(x*TILE,y*TILE).setDepth(y*TILE+80);              c.add(scene.add.rectangle(0,0,4,42,0x6b4933));              c.add(scene.add.rectangle(15,10,26,18,def.primary).setStrokeStyle(2,def.accent,.9));              c.add(scene.add.rectangle(15,10,26,6,def.secondary,.9));              c.add(scene.add.text(15,10,label,{fontFamily:"Arial",fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5));              c.add(scene.add.triangle(28,10,0,18,10,0,18,18,def.accent).setOrigin(.5));            };            const stoneMarker=(x:number,y:number)=>{              scene.add.ellipse(x*TILE,y*TILE+10,28,14,0x77746d,.9).setStrokeStyle(2,def.secondary,.8).setDepth(y*TILE+20);              scene.add.ellipse(x*TILE,y*TILE+6,21,9,0xa7a39a,.95).setDepth(y*TILE+21);            };            const marbleBlock=(x:number,y:number)=>{              scene.add.rectangle(x*TILE,y*TILE,28,42,0xc9c5b9,.98).setStrokeStyle(2,0x77746d,.8).setDepth(y*TILE+20);              scene.add.rectangle(x*TILE-3,y*TILE-13,34,6,0xe1ded5).setDepth(y*TILE+21);              scene.add.line(x*TILE,y*TILE,0,0,20,38,0x9a978f,.7).setLineWidth(2).setDepth(y*TILE+22);            };            const path=(x:number,y:number,w:number,h:number)=>{
+            const contradaBanner=(x:number,y:number,label:string)=>{              const c=scene.add.container(x*TILE,y*TILE).setDepth(y*TILE+80);              c.add(scene.add.rectangle(0,0,4,42,0x6b4933));              c.add(scene.add.rectangle(15,10,26,18,def.primary).setStrokeStyle(2,def.accent,.9));              c.add(scene.add.rectangle(15,10,26,6,def.secondary,.9));              c.add(scene.add.text(15,10,label,{fontFamily:FONT,fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5));              c.add(scene.add.triangle(28,10,0,18,10,0,18,18,def.accent).setOrigin(.5));            };            const stoneMarker=(x:number,y:number)=>{              scene.add.ellipse(x*TILE,y*TILE+10,28,14,0x77746d,.9).setStrokeStyle(2,def.secondary,.8).setDepth(y*TILE+20);              scene.add.ellipse(x*TILE,y*TILE+6,21,9,0xa7a39a,.95).setDepth(y*TILE+21);            };            const marbleBlock=(x:number,y:number)=>{              scene.add.rectangle(x*TILE,y*TILE,28,42,0xc9c5b9,.98).setStrokeStyle(2,0x77746d,.8).setDepth(y*TILE+20);              scene.add.rectangle(x*TILE-3,y*TILE-13,34,6,0xe1ded5).setDepth(y*TILE+21);              scene.add.line(x*TILE,y*TILE,0,0,20,38,0x9a978f,.7).setLineWidth(2).setDepth(y*TILE+22);            };            const path=(x:number,y:number,w:number,h:number)=>{
               scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE,h*TILE,0xd9c79f,.96).setDepth(1);
               scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE-6,h*TILE-6,0xe7d6b1,.22).setDepth(2);
               if(w>h){
@@ -135,7 +136,7 @@ export default function TreguaGame(){
               // Porta.
               scene.add.rectangle(px,(y+h*.69)*TILE,14,25,0x74492f).setDepth(y*TILE+12);
               scene.add.rectangle(px-2,(y+h*.67)*TILE,3,3,0xd4af37).setDepth(y*TILE+13);
-              if(label)scene.add.text(px,(y-20)*TILE,label,{fontFamily:"Arial",fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:4}).setOrigin(.5).setDepth(y*TILE+20);
+              if(label)scene.add.text(px,(y-20)*TILE,label,{fontFamily:FONT,fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:4}).setOrigin(.5).setDepth(y*TILE+20);
               const hit=scene.add.rectangle(px,py,w*TILE-8,h*TILE-4,0xffffff,0);
               scene.physics.add.existing(hit,true);scene.physics.add.collider(player,hit);mapCollisionObjects.push(hit);block(x,y,w,h);
             };
@@ -154,45 +155,45 @@ export default function TreguaGame(){
             const roofs=[def.secondary,def.accent,0x9b6845];
             if(id==="quercia"){
               house(3,3,6,4,roofs[0],"BORGO");house(23,3,6,4,roofs[1],"BOTTEGA");house(3,18,6,4,roofs[2],"OSTERIA");house(23,18,6,4,def.secondary,"SEDE");
-              path(4,7,24,2);path(7,14,18,2);fence(1,17,5,4);bench(9,11);              scene.add.circle(17*TILE,12*TILE,30,0x355f3e,.85).setStrokeStyle(3,def.primary,.9).setDepth(5);              scene.add.rectangle(17*TILE,14*TILE,10,34,0x765036).setDepth(6);              scene.add.text(17*TILE,9*TILE,"QUERCIA", {fontFamily:"Arial",fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);
+              path(4,7,24,2);path(7,14,18,2);fence(1,17,5,4);bench(9,11);              scene.add.circle(17*TILE,12*TILE,30,0x355f3e,.85).setStrokeStyle(3,def.primary,.9).setDepth(5);              scene.add.rectangle(17*TILE,14*TILE,10,34,0x765036).setDepth(6);              scene.add.text(17*TILE,9*TILE,"QUERCIA", {fontFamily:FONT,fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);
             } else if(id==="ranocchio"){
               house(3,3,6,4,roofs[0],"CASA");house(23,3,6,4,roofs[1],"FIENILE");house(4,18,6,4,roofs[2],"CASCINA");
               path(6,7,20,2);path(8,14,16,2);fence(22,17,7,4);bench(11,11);
               scene.add.ellipse(7*TILE,17*TILE,70,42,0x79a95d,.7).setStrokeStyle(3,def.secondary,.6).setDepth(3);
-              scene.add.circle(7*TILE,17*TILE,10,0x3d7d45).setDepth(4);              scene.add.ellipse(17*TILE,19*TILE,120,42,0x739f54,.72).setDepth(2);              scene.add.text(17*TILE,19*TILE,"CUGNIA", {fontFamily:"Arial",fontSize:"9px",fontStyle:"bold",color:"#fff",stroke:"#31502b",strokeThickness:4}).setOrigin(.5).setDepth(4);              contradaBanner(16,17,"RANOCCHIO");
+              scene.add.circle(7*TILE,17*TILE,10,0x3d7d45).setDepth(4);              scene.add.ellipse(17*TILE,19*TILE,120,42,0x739f54,.72).setDepth(2);              scene.add.text(17*TILE,19*TILE,"CUGNIA", {fontFamily:FONT,fontSize:"9px",fontStyle:"bold",color:"#fff",stroke:"#31502b",strokeThickness:4}).setOrigin(.5).setDepth(4);              contradaBanner(16,17,"RANOCCHIO");
             } else if(id==="leondoro"){
               house(3,3,6,4,roofs[0],"CAFAGGIO");house(23,3,6,4,roofs[1],"MARZOCCHINO");house(3,18,6,4,roofs[2],"BOTTEGA");
               path(6,7,20,2);path(8,14,16,2);fence(22,17,7,4);bench(11,11);
-              for(let i=0;i<4;i++)marbleBlock(8+i*5,17);              stoneMarker(13,12);stoneMarker(18,12);              scene.add.text(15*TILE,12*TILE,"BARAGLINO", {fontFamily:"Arial",fontSize:"8px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:4}).setOrigin(.5).setDepth(6);
+              for(let i=0;i<4;i++)marbleBlock(8+i*5,17);              stoneMarker(13,12);stoneMarker(18,12);              scene.add.text(15*TILE,12*TILE,"BARAGLINO", {fontFamily:FONT,fontSize:"8px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:4}).setOrigin(.5).setDepth(6);
             } else if(id==="lucertola"){
               house(3,3,6,4,roofs[0],"RIPA");house(23,3,6,4,roofs[1],"MARGINETTA");house(4,18,6,4,roofs[2],"CASA");
               path(6,7,20,2);path(8,14,16,2);fence(1,17,7,4);bench(23,12);
               scene.add.rectangle(25*TILE,14*TILE,48,10,0xc4b08d,.9).setDepth(5).setStrokeStyle(2,def.primary,.7);
-              scene.add.text(25*TILE,14*TILE,"RIPA",{fontFamily:"Arial",fontSize:"8px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(6);              scene.add.circle(16*TILE,18*TILE,20,0xe6d8b7).setStrokeStyle(3,def.secondary).setDepth(5);              scene.add.triangle(16*TILE,14*TILE,0,22,12,0,24,22,def.primary).setOrigin(.5).setDepth(6);              scene.add.text(16*TILE,19*TILE,"MARGINETTA",{fontFamily:"Arial",fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);
+              scene.add.text(25*TILE,14*TILE,"RIPA",{fontFamily:FONT,fontSize:"8px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(6);              scene.add.circle(16*TILE,18*TILE,20,0xe6d8b7).setStrokeStyle(3,def.secondary).setDepth(5);              scene.add.triangle(16*TILE,14*TILE,0,22,12,0,24,22,def.primary).setOrigin(.5).setDepth(6);              scene.add.text(16*TILE,19*TILE,"MARGINETTA",{fontFamily:FONT,fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);
             } else if(id==="pozzo"){
               house(3,3,6,4,roofs[0],"POZZI");house(23,3,6,4,roofs[1],"BOTTEGA");house(4,18,6,4,roofs[2],"CASA");
               path(6,7,20,2);path(8,14,16,2);bench(11,11);fence(22,17,7,4);
               scene.add.ellipse(25*TILE,17*TILE,52,28,0xb7b1a5,.95).setStrokeStyle(4,def.secondary).setDepth(5);
               scene.add.ellipse(25*TILE,16*TILE,35,14,0x304a55,.9).setDepth(6);
-              scene.add.text(25*TILE,18*TILE,"POZZO",{fontFamily:"Arial",fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);              scene.add.rectangle(25*TILE,13*TILE,4,38,0x765036).setDepth(7);              scene.add.rectangle(22*TILE,13*TILE,10,4,0x765036).setDepth(7);
+              scene.add.text(25*TILE,18*TILE,"POZZO",{fontFamily:FONT,fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);              scene.add.rectangle(25*TILE,13*TILE,4,38,0x765036).setDepth(7);              scene.add.rectangle(22*TILE,13*TILE,10,4,0x765036).setDepth(7);
             } else if(id==="madonnina"){
               house(3,3,6,4,roofs[0],"PAGLIAIO");house(23,3,6,4,roofs[1],"BORGO");house(3,18,6,4,roofs[2],"CASA");house(23,18,6,4,def.secondary,"CHIESINA");
               path(6,7,20,2);path(8,14,16,2);bench(11,11);fence(17,18,4,4);
               scene.add.circle(25*TILE,17*TILE,22,0xe6d8b7).setStrokeStyle(3,def.secondary).setDepth(5);
-              scene.add.triangle(25*TILE,14*TILE,0,25,14,0,28,25,def.primary).setOrigin(.5).setDepth(6);              for(let i=0;i<5;i++)scene.add.rectangle((11+i)*TILE,18*TILE,10,28,0xd5b26c,.8).setDepth(4);              scene.add.text(25*TILE,18*TILE,"CHIESINA",{fontFamily:"Arial",fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);
+              scene.add.triangle(25*TILE,14*TILE,0,25,14,0,28,25,def.primary).setOrigin(.5).setDepth(6);              for(let i=0;i<5;i++)scene.add.rectangle((11+i)*TILE,18*TILE,10,28,0xd5b26c,.8).setDepth(4);              scene.add.text(25*TILE,18*TILE,"CHIESINA",{fontFamily:FONT,fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);
             } else if(id==="cervia"){
               house(3,3,6,4,roofs[0],"MONTISCENDI");house(23,3,6,4,roofs[1],"TORRE");house(18,18,7,4,roofs[2],"SEDE");
               path(6,7,20,2);path(8,14,16,2);fence(1,17,8,4);bench(11,11);
               scene.add.rectangle(8*TILE,15*TILE,18,55,0x8b6a48).setDepth(5).setStrokeStyle(3,def.secondary);
               scene.add.rectangle(8*TILE,10*TILE,46,20,0xd8d0bd).setDepth(6);
-              scene.add.text(8*TILE,10*TILE,"PORTA BELTRAME",{fontFamily:"Arial",fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);              scene.add.rectangle(27*TILE,14*TILE,24,70,0xb7a88f).setDepth(5).setStrokeStyle(3,def.secondary);              scene.add.triangle(27*TILE,8*TILE,0,20,12,0,24,20,def.secondary).setOrigin(.5).setDepth(6);              scene.add.text(27*TILE,17*TILE,"TORRE MEDICEA",{fontFamily:"Arial",fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);
+              scene.add.text(8*TILE,10*TILE,"PORTA BELTRAME",{fontFamily:FONT,fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);              scene.add.rectangle(27*TILE,14*TILE,24,70,0xb7a88f).setDepth(5).setStrokeStyle(3,def.secondary);              scene.add.triangle(27*TILE,8*TILE,0,20,12,0,24,20,def.secondary).setOrigin(.5).setDepth(6);              scene.add.text(27*TILE,17*TILE,"TORRE MEDICEA",{fontFamily:FONT,fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);
             } else {
               house(3,3,6,4,roofs[0],"VAIANA");house(23,3,6,4,roofs[1],"MAGAZZENO");house(19,18,7,4,roofs[2],"SEDE");
               path(6,7,20,2);path(8,14,16,2);bench(11,11);fence(1,17,7,4);
               scene.add.rectangle(25*TILE,10*TILE,70,12,0x765036).setDepth(5);
               scene.add.rectangle(25*TILE,9*TILE,58,6,def.primary).setDepth(6);
               scene.add.rectangle(25*TILE,11*TILE,58,6,def.secondary).setDepth(6);
-              scene.add.text(25*TILE,8*TILE,"PONTE DI TAVOLE",{fontFamily:"Arial",fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);              scene.add.rectangle(8*TILE,17*TILE,18*TILE,3*TILE,0x4d91ad,.65).setDepth(2);              for(let i=0;i<6;i++)scene.add.rectangle((3+i*5)*TILE,17*TILE,4,10,0x8fd0dc,.7).setDepth(3);
+              scene.add.text(25*TILE,8*TILE,"PONTE DI TAVOLE",{fontFamily:FONT,fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);              scene.add.rectangle(8*TILE,17*TILE,18*TILE,3*TILE,0x4d91ad,.65).setDepth(2);              for(let i=0;i<6;i++)scene.add.rectangle((3+i*5)*TILE,17*TILE,4,10,0x8fd0dc,.7).setDepth(3);
             }
 
             const trees:Array<[number,number]>=[[1,1],[10,2],[28,1],[1,22],[12,22],[29,21]];
@@ -226,7 +227,7 @@ export default function TreguaGame(){
             currentNpcs=npcs.map((npc)=>{
               const [nx,ny]=npc.position;
               const img=scene.add.image(nx*TILE+16,ny*TILE+10,`player-${id}`).setScale(.58).setDepth(ny*TILE+30);
-              const tag=scene.add.text(img.x,img.y-38,npc.nome,{fontFamily:"Arial",fontSize:"8px",fontStyle:"bold",color:"#fff",backgroundColor:"#241812",padding:{x:4,y:3}}).setOrigin(.5).setDepth(1000);
+              const tag=scene.add.text(img.x,img.y-38,npc.nome,{fontFamily:FONT,fontSize:"8px",fontStyle:"bold",color:"#fff",backgroundColor:"#241812",padding:{x:4,y:3}}).setOrigin(.5).setDepth(1000);
               scene.tweens.add({targets:[img,tag],y:"-=2",duration:900,yoyo:true,repeat:-1,ease:"Sine.easeInOut"});
               img.setData("npcId",npc.id);
               return img;
@@ -240,43 +241,48 @@ export default function TreguaGame(){
             def.exits.forEach((e)=>{
               const g=scene.add.container(e.x*TILE+16,e.y*TILE+16).setDepth(5000);
               g.add(scene.add.rectangle(0,0,42,26,def.accent,.25).setStrokeStyle(2,def.accent,.8));
-              g.add(scene.add.text(0,-1,"➜",{fontFamily:"Arial",fontSize:"16px",color:"#fff",fontStyle:"bold"}).setOrigin(.5));
+              g.add(scene.add.text(0,-1,"➜",{fontFamily:FONT,fontSize:"16px",color:"#fff",fontStyle:"bold"}).setOrigin(.5));
               g.setData("exit",e);
             });
             scene.cameras.main.setBounds(0,0,WORLD_W,WORLD_H);
             scene.cameras.main.startFollow(player,true,.12,.12);
             mapTitle.setText(def.label.toUpperCase());
             locationText.setText(def.place);
+            const zone=scene.add.container(WORLD_W/2,34).setDepth(7000);
+            zone.add(scene.add.rectangle(0,0,430,52,0x241812,.88).setStrokeStyle(2,def.accent,.9));
+            zone.add(scene.add.text(0,-7,def.label.toUpperCase(),{fontFamily:FONT,fontSize:"22px",fontStyle:"bold",color:"#f7e7b0",stroke:"#241812",strokeThickness:5}).setOrigin(.5));
+            zone.add(scene.add.text(0,13,def.place.toUpperCase(),{fontFamily:FONT,fontSize:"10px",fontStyle:"bold",letterSpacing:2,color:"#ffffff",stroke:"#241812",strokeThickness:3}).setOrigin(.5));
+            scene.tweens.add({targets:zone,alpha:0,duration:900,delay:3500,ease:"Sine.easeInOut"});
             if(currentBeni)currentBeni.setData("map",id);
           };
 
           player=scene.physics.add.sprite(MAPS.quercia.spawn.x*TILE,MAPS.quercia.spawn.y*TILE,"player-quercia");
           player.setScale(.72).setCollideWorldBounds(true);
           const body=player.body as Phaser.Physics.Arcade.Body;body.setSize(22,18).setOffset(13,40);
-          usernameText=scene.add.text(player.x,player.y-55,username,{fontFamily:"Arial",fontSize:mobile?"11px":"12px",color:"#fff",fontStyle:"bold",stroke:"#241812",strokeThickness:4}).setOrigin(.5).setDepth(20000);
+          usernameText=scene.add.text(player.x,player.y-55,username,{fontFamily:FONT,fontSize:mobile?"11px":"12px",color:"#fff",fontStyle:"bold",stroke:"#241812",strokeThickness:4}).setOrigin(.5).setDepth(20000);
 
           const hud=scene.add.container(18,18).setScrollFactor(0).setDepth(9000);
           hud.add(scene.add.rectangle(0,0,300,104,0x2b1c14,.94).setOrigin(0).setStrokeStyle(2,0xd4af37));
-          hud.add(scene.add.text(15,10,"TREGUA TRA CONTRADE",{fontFamily:"Arial",fontSize:"15px",color:"#f4cf64",fontStyle:"bold"}));
-          progress=scene.add.text(15,36,"BENIAMINI 0 / 8",{fontFamily:"Arial",fontSize:"21px",color:"#fff",fontStyle:"bold"});hud.add(progress);
-          mapTitle=scene.add.text(15,67,"LA QUERCIA",{fontFamily:"Arial",fontSize:"12px",color:"#f4cf64",fontStyle:"bold"});hud.add(mapTitle);
-          locationText=scene.add.text(105,67,"Querceta",{fontFamily:"Arial",fontSize:"12px",color:"#eadfce"});hud.add(locationText);
-          hud.add(scene.add.text(15,87,mobile?"🕹️ Muovi · E interagisci":"WASD / FRECCE · E per interagire",{fontFamily:"Arial",fontSize:"10px",color:"#eadfce"}));
+          hud.add(scene.add.text(15,10,"TREGUA TRA CONTRADE",{fontFamily:FONT,fontSize:"15px",color:"#f4cf64",fontStyle:"bold"}));
+          progress=scene.add.text(15,36,"BENIAMINI 0 / 8",{fontFamily:FONT,fontSize:"21px",color:"#fff",fontStyle:"bold"});hud.add(progress);
+          mapTitle=scene.add.text(15,67,"LA QUERCIA",{fontFamily:FONT,fontSize:"12px",color:"#f4cf64",fontStyle:"bold"});hud.add(mapTitle);
+          locationText=scene.add.text(105,67,"Querceta",{fontFamily:FONT,fontSize:"12px",color:"#eadfce"});hud.add(locationText);
+          hud.add(scene.add.text(15,87,mobile?"🕹️ Muovi · E interagisci":"WASD / FRECCE · E per interagire",{fontFamily:FONT,fontSize:"10px",color:"#eadfce"}));
 
           const world=scene.add.container(scene.scale.width-118,92).setScrollFactor(0).setDepth(11000);
           world.add(scene.add.rectangle(0,0,210,125,0x16251b,.92).setStrokeStyle(2,0xd4af37));
-          world.add(scene.add.text(-95,-52,"8 TERRITORI",{fontFamily:"Arial",fontSize:"11px",color:"#f4cf64",fontStyle:"bold"}));
+          world.add(scene.add.text(-95,-52,"8 TERRITORI",{fontFamily:FONT,fontSize:"11px",color:"#f4cf64",fontStyle:"bold"}));
           const pts:Record<MapId,[number,number]>={quercia:[0,0],ranocchio:[-35,-35],leondoro:[35,-35],lucertola:[70,-5],pozzo:[80,35],madonnina:[35,45],cervia:[-10,70],ponte:[-65,45]};
-          (Object.keys(pts) as MapId[]).forEach(id=>{const [x,y]=pts[id],d=MAPS[id];world.add(scene.add.circle(x,y,6,d.secondary).setStrokeStyle(2,d.primary));world.add(scene.add.text(x,y+9,d.label.replace("Il ","").replace("La ",""),{fontFamily:"Arial",fontSize:"7px",color:"#fff"}).setOrigin(.5));});
+          (Object.keys(pts) as MapId[]).forEach(id=>{const [x,y]=pts[id],d=MAPS[id];world.add(scene.add.circle(x,y,6,d.secondary).setStrokeStyle(2,d.primary));world.add(scene.add.text(x,y+9,d.label.replace("Il ","").replace("La ",""),{fontFamily:FONT,fontSize:"7px",color:"#fff"}).setOrigin(.5));});
           worldDots=world;
 
           dialog=scene.add.container(scene.scale.width/2,scene.scale.height-78).setScrollFactor(0).setDepth(12000).setVisible(false);
           dialog.add(scene.add.rectangle(0,0,760,108,0x241812,.97).setStrokeStyle(3,0xd4af37));
-          dialog.add(scene.add.text(-350,-38,"",{fontFamily:"Arial",fontSize:"15px",color:"#fff",wordWrap:{width:700},lineSpacing:5}));
+          dialog.add(scene.add.text(-350,-38,"",{fontFamily:FONT,fontSize:"15px",color:"#fff",wordWrap:{width:700},lineSpacing:5}));
 
           tregua=scene.add.container(scene.scale.width/2,18).setScrollFactor(0).setDepth(9500).setVisible(false);
           const tb=scene.add.rectangle(0,0,250,42,0xd4af37).setStrokeStyle(2,0x5c3a21).setInteractive({useHandCursor:true});
-          tregua.add(tb);tregua.add(scene.add.text(0,0,"🤝 CERCA IL BARONE",{fontFamily:"Arial",fontSize:"15px",color:"#3b2617",fontStyle:"bold"}).setOrigin(.5));tb.on("pointerdown",()=>window.location.href="/tregua");
+          tregua.add(tb);tregua.add(scene.add.text(0,0,"🤝 CERCA IL BARONE",{fontFamily:FONT,fontSize:"15px",color:"#3b2617",fontStyle:"bold"}).setOrigin(.5));tb.on("pointerdown",()=>window.location.href="/tregua");
 
           const transition=async(id:MapId,spawn?:{x:number;y:number})=>{
             if(current===id)return;
@@ -322,7 +328,7 @@ export default function TreguaGame(){
           const mobileUi=scene.add.container(92,scene.scale.height-195).setScrollFactor(0).setDepth(50000).setVisible(mobile);
           const jb=scene.add.circle(0,0,70,0x171717,.82).setStrokeStyle(3,0xffffff,.5).setInteractive(),jk=scene.add.circle(0,0,30,0xd4af37,.95).setStrokeStyle(2,0xffffff,.7);mobileUi.add([jb,jk]);
           const act=scene.add.container(scene.scale.width-90,scene.scale.height-190).setScrollFactor(0).setDepth(50000).setVisible(mobile);
-          const ab=scene.add.circle(0,0,42,0x8b3f2f,.9).setStrokeStyle(3,0xffffff,.35).setInteractive();act.add([ab,scene.add.text(0,0,"E",{fontFamily:"Arial",fontSize:"24px",color:"#fff",fontStyle:"bold"}).setOrigin(.5)]);ab.on("pointerdown",()=>void interact());
+          const ab=scene.add.circle(0,0,42,0x8b3f2f,.9).setStrokeStyle(3,0xffffff,.35).setInteractive();act.add([ab,scene.add.text(0,0,"E",{fontFamily:FONT,fontSize:"24px",color:"#fff",fontStyle:"bold"}).setOrigin(.5)]);ab.on("pointerdown",()=>void interact());
 
           jb.on("pointerdown",(p:Phaser.Input.Pointer)=>{if(!mobile)return;joyPointer=p.id;scene.input.setPollAlways();const dx=p.x-mobileUi.x,dy=p.y-mobileUi.y,l=Math.hypot(dx,dy),m=50,s=l>m?m/l:1;joyX=dx*s/m;joyY=dy*s/m;jk.setPosition(dx*s,dy*s);});
           scene.input.on("pointermove",(p:Phaser.Input.Pointer)=>{if(p.id!==joyPointer)return;const dx=p.x-mobileUi.x,dy=p.y-mobileUi.y,l=Math.hypot(dx,dy),m=50,s=l>m?m/l:1;joyX=dx*s/m;joyY=dy*s/m;jk.setPosition(dx*s,dy*s);});
