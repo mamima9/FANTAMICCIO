@@ -96,6 +96,9 @@ export default function TreguaGame(){
 
           const drawMap=(id:MapId)=>{
             const def=MAPS[id]; current=id;
+            // Il container del terreno viene riutilizzato tra i territori:
+            // svuotarlo evita che le mappe precedenti restino sovrapposte.
+            ground.removeAll(true);
             mapCollisionObjects.forEach(o=>o.destroy());
             mapCollisionObjects=[];
             // Base del villaggio: tutto viene costruito con il tileset pixel-art.
