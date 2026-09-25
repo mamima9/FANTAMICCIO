@@ -338,7 +338,7 @@ export default function TreguaGame(){
           const keys=scene.input.keyboard?.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,SHIFT") as Record<string,Phaser.Input.Keyboard.Key>|undefined;
           const mobileUi=scene.add.container(92,scene.scale.height-105).setScrollFactor(0).setDepth(50000).setVisible(mobile);
           const jb=scene.add.circle(0,0,70,0x171717,.72).setStrokeStyle(3,0xffffff,.4),jk=scene.add.circle(0,0,30,0xd4af37,.95).setStrokeStyle(2,0xffffff,.7);mobileUi.add([jb,jk]);
-          const act=scene.add.container(scene.scale.width-90,scene.scale.height-98).setScrollFactor(0).setDepth(13000).setVisible(mobile);
+          const act=scene.add.container(scene.scale.width-90,scene.scale.height-150).setScrollFactor(0).setDepth(50000).setVisible(mobile);
           const ab=scene.add.circle(0,0,42,0x8b3f2f,.9).setStrokeStyle(3,0xffffff,.35).setInteractive();act.add([ab,scene.add.text(0,0,"E",{fontFamily:"Arial",fontSize:"24px",color:"#fff",fontStyle:"bold"}).setOrigin(.5)]);ab.on("pointerdown",()=>void interact());
 
           scene.input.on("pointerdown",(p:Phaser.Input.Pointer)=>{if(!mobile)return;const dx=p.x-mobileUi.x,dy=p.y-mobileUi.y;if(Math.hypot(dx,dy)<=82){joyPointer=p.id;const l=Math.hypot(dx,dy),m=50,s=l>m?m/l:1;joyX=dx*s/m;joyY=dy*s/m;jk.setPosition(dx*s,dy*s);}});
@@ -364,7 +364,7 @@ export default function TreguaGame(){
             (data??[]).forEach((r:{beniamino_id:string})=>{if(MAPS[r.beniamino_id as MapId])collected.add(r.beniamino_id);});
             updateProgress();drawMap("quercia");scene.cameras.main.fadeIn(400,0,0,0);
           };
-          const resize=()=>{tregua.setPosition(scene.scale.width/2,18);dialog.setPosition(scene.scale.width/2,scene.scale.height-78);mobileUi.setPosition(92,scene.scale.height-155);act.setPosition(scene.scale.width-90,scene.scale.height-98);world.setPosition(scene.scale.width-118,92);};
+          const resize=()=>{tregua.setPosition(scene.scale.width/2,18);dialog.setPosition(scene.scale.width/2,scene.scale.height-78);mobileUi.setPosition(92,scene.scale.height-155);act.setPosition(scene.scale.width-90,scene.scale.height-150);world.setPosition(scene.scale.width-118,92);};
           scene.scale.on("resize",resize);resize();void load();
         }
       }
