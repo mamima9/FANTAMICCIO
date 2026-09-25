@@ -1272,128 +1272,118 @@ export default function TreguaGame() {
           loadSavedBeniamini();
 
           // =====================================================
-          // INTERAZIONE
-          // =====================================================
+// INTERAZIONE
+// =====================================================
 
-          const interact = () => {
-            if (dialogOpen) {
-              closeDialog();
-              return;
-            }
+const interact = () => {
+  if (dialogOpen) {
+    closeDialog();
+    return;
+  }
 
-            // -------------------------------------------------
-            // NPC PIÙ VICINO
-            // -------------------------------------------------
+  // -------------------------------------------------
+  // NPC PIÙ VICINO
+  // -------------------------------------------------
 
-            let closestNpc:
-              | (typeof NPCS)[number]
-              | null = null;
+  let closestNpcIndex = -1;
+  let closestDistance = Infinity;
 
-            let closestDistance =
-              Infinity;
+  NPCS.forEach((npc, index) => {
+    const nx = mapX(
+      npc.coordinates[1]
+    );
 
-            NPCS.forEach(
-              (npc) => {
-                const nx = mapX(
-                  npc.coordinates[1]
-                );
+    const ny = mapY(
+      npc.coordinates[0]
+    );
 
-                const ny = mapY(
-                  npc.coordinates[0]
-                );
+    const distance =
+      Phaser.Math.Distance.Between(
+        player.x,
+        player.y,
+        nx,
+        ny
+      );
 
-                const distance =
-                  Phaser.Math.Distance.Between(
-                    player.x,
-                    player.y,
-                    nx,
-                    ny
-                  );
+    if (
+      distance < closestDistance
+    ) {
+      closestDistance = distance;
+      closestNpcIndex = index;
+    }
+  });
 
-                if (
-                  distance <
-                  closestDistance
-                ) {
-                  closestDistance =
-                    distance;
+  if (
+    closestNpcIndex !== -1 &&
+    closestDistance < 100
+  ) {
+    const closestNpc =
+      NPCS[closestNpcIndex];
 
-                  closestNpc =
-                    npc;
-                }
-              }
-            );
+    openDialog(
+      closestNpc.nome,
+      `${closestNpc.text}\n\n${closestNpc.clue}`
+    );
 
-            if (
-              closestNpc &&
-              closestDistance < 100
-            ) {
-              openDialog(
-                closestNpc.nome,
-                `${closestNpc.text}\n\n${closestNpc.clue}`
-              );
+    return;
+  }
 
-              return;
-            }
+  // -------------------------------------------------
+  // BENIAMINO PIÙ VICINO
+  // -------------------------------------------------
 
-            // -------------------------------------------------
-            // BENIAMINO PIÙ VICINO
-            // -------------------------------------------------
+  let closestBeniIndex = -1;
+  let beniDistance = Infinity;
 
-            let closestBeni:
-              | (typeof BENIAMINI_MAPPA)[number]
-              | null = null;
+  BENIAMINI_MAPPA.forEach(
+    (beni, index) => {
+      if (
+        collectedBeniamini.has(
+          beni.id
+        )
+      ) {
+        return;
+      }
 
-            let beniDistance =
-              Infinity;
+      const bx = mapX(
+        beni.coordinates[1]
+      );
 
-            BENIAMINI_MAPPA.forEach(
-              (beni) => {
-                if (
-                  collectedBeniamini.has(
-                    beni.id
-                  )
-                ) {
-                  return;
-                }
+      const by = mapY(
+        beni.coordinates[0]
+      );
 
-                const bx = mapX(
-                  beni.coordinates[1]
-                );
+      const distance =
+        Phaser.Math.Distance.Between(
+          player.x,
+          player.y,
+          bx,
+          by
+        );
 
-                const by = mapY(
-                  beni.coordinates[0]
-                );
+      if (
+        distance < beniDistance
+      ) {
+        beniDistance = distance;
+        closestBeniIndex = index;
+      }
+    }
+  );
 
-                const distance =
-                  Phaser.Math.Distance.Between(
-                    player.x,
-                    player.y,
-                    bx,
-                    by
-                  );
+  if (
+    closestBeniIndex !== -1 &&
+    beniDistance < 100
+  ) {
+    const closestBeni =
+      BENIAMINI_MAPPA[
+        closestBeniIndex
+      ];
 
-                if (
-                  distance <
-                  beniDistance
-                ) {
-                  beniDistance =
-                    distance;
-
-                  closestBeni =
-                    beni;
-                }
-              }
-            );
-
-            if (
-              closestBeni &&
-              beniDistance < 100
-            ) {
-              void collectBeniamino(
-                closestBeni
-              );
-            }
-          };
+    void collectBeniamino(
+      closestBeni
+    );
+  }
+};
 
           // =====================================================
           // TASTIERA
