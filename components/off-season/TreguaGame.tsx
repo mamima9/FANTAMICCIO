@@ -111,22 +111,9 @@ export default function TreguaGame(){
             if(id==="quercia"){tileRect(T.flowerPatch,8,3,8,5);tileRect(T.darkGrass,22,16,8,6);}
             const blocked=new Set<string>();
             const block=(x:number,y:number,w:number,h:number)=>{for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)blocked.add(xx+","+yy);};
-            const contradaBanner=(x:number,y:number,label:string)=>{              const c=scene.add.container(x*TILE,y*TILE).setDepth(y*TILE+80);              c.add(scene.add.rectangle(0,0,4,42,0x6b4933));              c.add(scene.add.rectangle(15,10,26,18,def.primary).setStrokeStyle(2,def.accent,.9));              c.add(scene.add.rectangle(15,10,26,6,def.secondary,.9));              c.add(scene.add.text(15,10,label,{fontFamily:FONT,fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5));              c.add(scene.add.triangle(28,10,0,18,10,0,18,18,def.accent).setOrigin(.5));            };            const stoneMarker=(x:number,y:number)=>{              scene.add.ellipse(x*TILE,y*TILE+10,28,14,0x77746d,.9).setStrokeStyle(2,def.secondary,.8).setDepth(y*TILE+20);              scene.add.ellipse(x*TILE,y*TILE+6,21,9,0xa7a39a,.95).setDepth(y*TILE+21);            };            const marbleBlock=(x:number,y:number)=>{              scene.add.rectangle(x*TILE,y*TILE,28,42,0xc9c5b9,.98).setStrokeStyle(2,0x77746d,.8).setDepth(y*TILE+20);              scene.add.rectangle(x*TILE-3,y*TILE-13,34,6,0xe1ded5).setDepth(y*TILE+21);              scene.add.line(x*TILE,y*TILE,0,0,20,38,0x9a978f,.7).setLineWidth(2).setDepth(y*TILE+22);            };            const path=(x:number,y:number,w:number,h:number)=>{
-              scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE,h*TILE,0xd9c79f,.96).setDepth(1);
-              scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE-6,h*TILE-6,0xe7d6b1,.22).setDepth(2);
-              if(w>h){
-                for(let xx=x;xx<x+w;xx+=2){
-                  scene.add.rectangle((xx+.5)*TILE,(y+h/2)*TILE,15,2,0xa58c66,.26).setDepth(3);
-                }
-              } else {
-                for(let yy=y;yy<y+h;yy+=2)scene.add.rectangle((x+w/2)*TILE,(yy+.5)*TILE,2,15,0xa58c66,.22).setDepth(3);
-              }
-            };
-            const plaza=(x:number,y:number,w:number,h:number)=>{
-              scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE,h*TILE,0xe1d2ad,.96).setDepth(1);
-              scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE-10,h*TILE-10,0xd2bd91,.35).setDepth(2).setStrokeStyle(2,0xb3986c,.55);
-            };
-            const house=(x:number,y:number,w:number,h:number,roof:number,label?:string)=>{
+            const contradaBanner=(x:number,y:number,label:string)=>{              const c=scene.add.container(x*TILE,y*TILE).setDepth(y*TILE+80);              c.add(scene.add.rectangle(0,0,4,42,0x6b4933));              c.add(scene.add.rectangle(15,10,26,18,def.primary).setStrokeStyle(2,def.accent,.9));              c.add(scene.add.rectangle(15,10,26,6,def.secondary,.9));              c.add(scene.add.text(15,10,label,{fontFamily:FONT,fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5));              c.add(scene.add.triangle(28,10,0,18,10,0,18,18,def.accent).setOrigin(.5));            };            const stoneMarker=(x:number,y:number)=>{              scene.add.ellipse(x*TILE,y*TILE+10,28,14,0x77746d,.9).setStrokeStyle(2,def.secondary,.8).setDepth(y*TILE+20);              scene.add.ellipse(x*TILE,y*TILE+6,21,9,0xa7a39a,.95).setDepth(y*TILE+21);            };            const marbleBlock=(x:number,y:number)=>{              scene.add.rectangle(x*TILE,y*TILE,28,42,0xc9c5b9,.98).setStrokeStyle(2,0x77746d,.8).setDepth(y*TILE+20);              scene.add.rectangle(x*TILE-3,y*TILE-13,34,6,0xe1ded5).setDepth(y*TILE+21);              scene.add.line(x*TILE,y*TILE,0,0,20,38,0x9a978f,.7).setLineWidth(2).setDepth(y*TILE+22);            };            const path=(_x:number,_y:number,_w:number,_h:number)=>{};
+                        const plaza=(_x:number,_y:number,_w:number,_h:number)=>{};
+                        const house=(x:number,y:number,w:number,h:number,roof:number,label?:string)=>{
               const px=(x+w/2)*TILE,py=(y+h/2)*TILE;
               const key=label==="OSTERIA"?"house-osteria":"house-borgo";
               const img=scene.add.image(px,py+6,key).setOrigin(.5,1).setDepth((y+h)*TILE);
@@ -135,11 +122,8 @@ export default function TreguaGame(){
               const hit=scene.add.rectangle(px,py+8,w*TILE-8,h*TILE-8,0xffffff,0);
               scene.physics.add.existing(hit,true);scene.physics.add.collider(player,hit);mapCollisionObjects.push(hit);block(x,y,w,h);
             };
-            const fence=(x:number,y:number,w:number,h:number)=>{
-              for(let yy=y;yy<y+h;yy+=2)scene.add.rectangle(x*TILE+10,(yy+.5)*TILE,4,24,0x765036).setDepth(yy*TILE+10);
-              for(let xx=x;xx<x+w;xx+=2)scene.add.rectangle((xx+.5)*TILE,y*TILE+10,24,4,0x765036).setDepth(y*TILE+10);
-            };
-            const bench=(x:number,y:number)=>{
+            const fence=(x:number,y:number,w:number,h:number)=>{ for(let yy=y;yy<y+h;yy++) ground.putTileAt(T.fence,x,yy); for(let xx=x;xx<x+w;xx++) ground.putTileAt(T.fence,xx,y); };
+                        const bench=(x:number,y:number)=>{
               scene.add.rectangle(x*TILE,y*TILE,34,7,0x765036).setDepth(y*TILE+10);
               scene.add.rectangle(x*TILE-9,y*TILE+10,4,14,0x5d402d).setDepth(y*TILE+9);
               scene.add.rectangle(x*TILE+9,y*TILE+10,4,14,0x5d402d).setDepth(y*TILE+9);
