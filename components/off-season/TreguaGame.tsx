@@ -1047,6 +1047,51 @@ export default function TreguaGame() {
           };
 
           // =====================================================
+          // PULSANTE TREGUA
+          // =====================================================
+
+          let treguaButton:
+            Phaser.GameObjects.Text | null = null;
+
+          const showTreguaButton = () => {
+            if (treguaButton) {
+              return;
+            }
+
+            treguaButton = scene.add
+              .text(
+                scene.scale.width / 2,
+                scene.scale.height - 35,
+                "🤝 CERCA IL BARONE",
+                {
+                  fontFamily: "Arial",
+                  fontSize: "17px",
+                  color: "#ffffff",
+                  backgroundColor: "#49301f",
+                  padding: {
+                    x: 16,
+                    y: 10,
+                  },
+                  fontStyle: "bold",
+                }
+              )
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(2100)
+              .setInteractive({
+                useHandCursor: true,
+              });
+
+            treguaButton.on(
+              "pointerdown",
+              () => {
+                window.location.href =
+                  "/tregua";
+              }
+            );
+          };
+
+          // =====================================================
           // CARICAMENTO BENIAMINI DA SUPABASE
           // =====================================================
 
@@ -1055,7 +1100,8 @@ export default function TreguaGame() {
               const {
                 data: userData,
                 error: userError,
-              } = await supabase.auth.getUser();
+              } =
+                await supabase.auth.getUser();
 
               if (
                 userError ||
@@ -1129,7 +1175,12 @@ export default function TreguaGame() {
               );
 
               const count =
-                collectedBeniamini.size;
+                BENIAMINI_MAPPA.filter(
+                  (beni) =>
+                    collectedBeniamini.has(
+                      beni.id
+                    )
+                ).length;
 
               progressText.setText(
                 `BENIAMINI ${count} / 8`
@@ -1137,8 +1188,10 @@ export default function TreguaGame() {
 
               if (count === 8) {
                 objectiveText.setText(
-                  "Hai tutti gli 8! Trova un'altra Contrada."
+                  "8/8! Trova un giocatore di un'altra Contrada."
                 );
+
+                showTreguaButton();
               } else {
                 objectiveText.setText(
                   `Beniamini raccolti: ${count} / 8`
@@ -1236,7 +1289,12 @@ export default function TreguaGame() {
               }
 
               const collectedCount =
-                collectedBeniamini.size;
+                BENIAMINI_MAPPA.filter(
+                  (item) =>
+                    collectedBeniamini.has(
+                      item.id
+                    )
+                ).length;
 
               progressText.setText(
                 `BENIAMINI ${collectedCount} / 8`
@@ -1246,13 +1304,15 @@ export default function TreguaGame() {
                 collectedCount === 8
               ) {
                 objectiveText.setText(
-                  "Hai tutti gli 8! Trova un'altra Contrada."
+                  "8/8! Trova un giocatore di un'altra Contrada."
                 );
 
                 openDialog(
-                  "TREGUA COMPLETATA",
-                  "Hai raccolto tutti gli 8 Beniamini!\n\nOra devi trovare un giocatore di un'altra Contrada per ottenere il Barone."
+                  "🤝 8/8 BENIAMINI!",
+                  "Hai trovato tutti gli 8 Beniamini!\n\nOra devi trovare un Fantacontradaiolo di un'altra Contrada per completare la Tregua e ottenere il Barone."
                 );
+
+                showTreguaButton();
               } else {
                 objectiveText.setText(
                   `Beniamini raccolti: ${collectedCount} / 8`
@@ -1272,118 +1332,118 @@ export default function TreguaGame() {
           loadSavedBeniamini();
 
           // =====================================================
-// INTERAZIONE
-// =====================================================
+          // INTERAZIONE
+          // =====================================================
 
-const interact = () => {
-  if (dialogOpen) {
-    closeDialog();
-    return;
-  }
+          const interact = () => {
+            if (dialogOpen) {
+              closeDialog();
+              return;
+            }
 
-  // -------------------------------------------------
-  // NPC PIÙ VICINO
-  // -------------------------------------------------
+            // -------------------------------------------------
+            // NPC PIÙ VICINO
+            // -------------------------------------------------
 
-  let closestNpcIndex = -1;
-  let closestDistance = Infinity;
+            let closestNpcIndex = -1;
+            let closestDistance = Infinity;
 
-  NPCS.forEach((npc, index) => {
-    const nx = mapX(
-      npc.coordinates[1]
-    );
+            NPCS.forEach((npc, index) => {
+              const nx = mapX(
+                npc.coordinates[1]
+              );
 
-    const ny = mapY(
-      npc.coordinates[0]
-    );
+              const ny = mapY(
+                npc.coordinates[0]
+              );
 
-    const distance =
-      Phaser.Math.Distance.Between(
-        player.x,
-        player.y,
-        nx,
-        ny
-      );
+              const distance =
+                Phaser.Math.Distance.Between(
+                  player.x,
+                  player.y,
+                  nx,
+                  ny
+                );
 
-    if (
-      distance < closestDistance
-    ) {
-      closestDistance = distance;
-      closestNpcIndex = index;
-    }
-  });
+              if (
+                distance < closestDistance
+              ) {
+                closestDistance = distance;
+                closestNpcIndex = index;
+              }
+            });
 
-  if (
-    closestNpcIndex !== -1 &&
-    closestDistance < 100
-  ) {
-    const closestNpc =
-      NPCS[closestNpcIndex];
+            if (
+              closestNpcIndex !== -1 &&
+              closestDistance < 100
+            ) {
+              const closestNpc =
+                NPCS[closestNpcIndex];
 
-    openDialog(
-      closestNpc.nome,
-      `${closestNpc.text}\n\n${closestNpc.clue}`
-    );
+              openDialog(
+                closestNpc.nome,
+                `${closestNpc.text}\n\n${closestNpc.clue}`
+              );
 
-    return;
-  }
+              return;
+            }
 
-  // -------------------------------------------------
-  // BENIAMINO PIÙ VICINO
-  // -------------------------------------------------
+            // -------------------------------------------------
+            // BENIAMINO PIÙ VICINO
+            // -------------------------------------------------
 
-  let closestBeniIndex = -1;
-  let beniDistance = Infinity;
+            let closestBeniIndex = -1;
+            let beniDistance = Infinity;
 
-  BENIAMINI_MAPPA.forEach(
-    (beni, index) => {
-      if (
-        collectedBeniamini.has(
-          beni.id
-        )
-      ) {
-        return;
-      }
+            BENIAMINI_MAPPA.forEach(
+              (beni, index) => {
+                if (
+                  collectedBeniamini.has(
+                    beni.id
+                  )
+                ) {
+                  return;
+                }
 
-      const bx = mapX(
-        beni.coordinates[1]
-      );
+                const bx = mapX(
+                  beni.coordinates[1]
+                );
 
-      const by = mapY(
-        beni.coordinates[0]
-      );
+                const by = mapY(
+                  beni.coordinates[0]
+                );
 
-      const distance =
-        Phaser.Math.Distance.Between(
-          player.x,
-          player.y,
-          bx,
-          by
-        );
+                const distance =
+                  Phaser.Math.Distance.Between(
+                    player.x,
+                    player.y,
+                    bx,
+                    by
+                  );
 
-      if (
-        distance < beniDistance
-      ) {
-        beniDistance = distance;
-        closestBeniIndex = index;
-      }
-    }
-  );
+                if (
+                  distance < beniDistance
+                ) {
+                  beniDistance = distance;
+                  closestBeniIndex = index;
+                }
+              }
+            );
 
-  if (
-    closestBeniIndex !== -1 &&
-    beniDistance < 100
-  ) {
-    const closestBeni =
-      BENIAMINI_MAPPA[
-        closestBeniIndex
-      ];
+            if (
+              closestBeniIndex !== -1 &&
+              beniDistance < 100
+            ) {
+              const closestBeni =
+                BENIAMINI_MAPPA[
+                  closestBeniIndex
+                ];
 
-    void collectBeniamino(
-      closestBeni
-    );
-  }
-};
+              void collectBeniamino(
+                closestBeni
+              );
+            }
+          };
 
           // =====================================================
           // TASTIERA
@@ -1627,6 +1687,13 @@ const interact = () => {
                 scene.scale.width / 2,
                 scene.scale.height - 115
               );
+
+              if (treguaButton) {
+                treguaButton.setPosition(
+                  scene.scale.width / 2,
+                  scene.scale.height - 35
+                );
+              }
             }
           );
 
