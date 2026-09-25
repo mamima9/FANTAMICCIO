@@ -49,7 +49,7 @@ export default function TreguaGame() {
           scene.cameras.main.setZoom(2);
 
           const map = scene.make.tilemap({ tileWidth: TILE, tileHeight: TILE, width: COLS, height: ROWS });
-          const tiles = map.addTilesetImage("rpg-tileset", "tiles", TILE, TILE, 0, 0, 0);
+          const tiles = map.addTilesetImage("rpg-tileset", "tiles", TILE, TILE, 0, 0, 1);
           if (!tiles) return;
 
           const ground = map.createBlankLayer("ground", tiles, 0, 0, COLS, ROWS, TILE, TILE);
@@ -106,7 +106,10 @@ export default function TreguaGame() {
           player.setScale(.72);
           player.setCollideWorldBounds(true);
           player.setDepth(player.y);
-          player.body.setSize(22, 18).setOffset(13, 40);
+          const playerBody = player.body;
+          if (playerBody) {
+            playerBody.setSize(22, 18).setOffset(13, 40);
+          }
           scene.cameras.main.startFollow(player, true, .12, .12);
 
           const anim = (key:string, frames:string[]) => {
@@ -121,7 +124,7 @@ export default function TreguaGame() {
             const b = BENIAMINI_MAPPA[i];
             const x = Math.round((b?.coordinates[1] ?? 10.2) * 1000) % (COLS-4) * TILE;
             const y = Math.round((b?.coordinates[0] ?? 43.97) * 1000) % (ROWS-4) * TILE;
-            const sprite = scene.add.image(Math.max(48,x), Math.max(48,y), "npc").setScale(.72).setDepth(y);
+            const sprite = scene.add.image(Math.max(48,x), Math.max(48,y), "npc").setScale(.72).setDepth(Math.max(48,y));
             return { npc, sprite };
           });
 
