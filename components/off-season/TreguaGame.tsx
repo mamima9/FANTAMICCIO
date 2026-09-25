@@ -300,18 +300,29 @@ export default function TreguaGame(){
             if(p.event && "preventDefault" in p.event) (p.event as any).preventDefault();
             updateJoystick(p);
           });
-          scene.input.on("pointermove",updateJoystick);
+          scene.input.on("pointermove",(p:Phaser.Input.Pointer)=>{if(p.id===joyPointer)updateJoystick(p);});
           scene.input.on("pointerup",releaseJoystick);
           scene.input.on("pointerupoutside",releaseJoystick);
 
           const setPlayer=(id:string)=>{contradaId=MAPS[id as MapId]?id:"quercia";player.setTexture(`player-${contradaId}`);};
           scene.events.on("update",(_t:number,delta:number)=>{
-            Math.min(delta,32);if(!keys)return;let x=joyX,y=joyY;
-            if(keys.A.isDown||keys.LEFT.isDown)x--;if(keys.D.isDown||keys.RIGHT.isDown)x++;if(keys.W.isDown||keys.UP.isDown)y--;if(keys.S.isDown||keys.DOWN.isDown)y++;
-            const l=Math.hypot(x,y);if(l>1){x/=l;y/=l;}const moving=Math.abs(x)+Math.abs(y)>.05;player.setVelocity(x*(keys.SHIFT.isDown?190:135),y*(keys.SHIFT.isDown?190:135));
+            const dt=Math.min(delta,32);
+            let x=joyX,y=joyY;
+            if(!keys && !mobile)return;
+
+            if(keys){
+              if(keys.A.isDown||keys.LEFT.isDown)x--;
+              if(keys.D.isDown||keys.RIGHT.isDown)x++;
+              if(keys.W.isDown||keys.UP.isDown)y--;
+              if(keys.S.isDown||keys.DOWN.isDown)y++;
+            }
+            const l=Math.hypot(x,y);if(l>1){x/=l;y/=l;}
+            const moving=Math.abs(x)+Math.abs(y)>.05;
+            const sprint=keys && keys.SHIFT.isDown;
+            player.setVelocity(x*(sprint?190:135),y*(sprint?190:135));
             player.setDepth(player.y);usernameText.setPosition(player.x,player.y-55);
             if(moving){player.setScale(.72,.69);if(Math.abs(x)>Math.abs(y))player.setFlipX(x<0);else player.setFlipX(false);}else{player.setScale(.72);player.setFlipX(false);}
-            if(Phaser.Input.Keyboard.JustDown(keys.E)||Phaser.Input.Keyboard.JustDown(keys.SPACE))void interact();
+            if(keys && (Phaser.Input.Keyboard.JustDown(keys.E)||Phaser.Input.Keyboard.JustDown(keys.SPACE)))void interact();
             const def=MAPS[current];for(const e of def.exits){const ex=e.x*TILE+16,ey=e.y*TILE+16;if(Phaser.Math.Distance.Between(player.x,player.y,ex,ey)<42){say(`➜ ${e.label}. Premi E.`);break;}}
           });
 
