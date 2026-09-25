@@ -49,7 +49,7 @@ export default function TreguaGame() {
 
           scene.physics.world.setBounds(0, 0, WORLD_W, WORLD_H);
           scene.cameras.main.setBounds(0, 0, WORLD_W, WORLD_H);
-          const isMobile = window.innerWidth < 768;
+          const isMobile = window.innerWidth < 768 || "ontouchstart" in window || navigator.maxTouchPoints > 0;
           scene.cameras.main.setZoom(isMobile ? 2.6 : 2);
 
           const map = scene.make.tilemap({ tileWidth: TILE, tileHeight: TILE, width: COLS, height: ROWS });
@@ -238,13 +238,13 @@ export default function TreguaGame() {
           let joyX = 0;
           let joyY = 0;
           let joystickPointerId: number | null = null;
-          const mobile = scene.add.container(112, scene.scale.height - 112).setScrollFactor(0).setDepth(12000);
+          const mobile = scene.add.container(112, scene.scale.height - 112).setScrollFactor(0).setDepth(12000).setVisible(isMobile);
           const joyBase = scene.add.circle(0, 0, 62, 0x171717, 0.58).setStrokeStyle(3, 0xffffff, 0.22);
           const joyRing = scene.add.circle(0, 0, 45, 0x000000, 0.16).setStrokeStyle(2, 0xffffff, 0.18);
           const joyKnob = scene.add.circle(0, 0, 27, 0xd4af37, 0.88).setStrokeStyle(2, 0xffffff, 0.5);
           mobile.add([joyBase, joyRing, joyKnob]);
 
-          const action = scene.add.container(scene.scale.width - 92, scene.scale.height - 105).setScrollFactor(0).setDepth(12000);
+          const action = scene.add.container(scene.scale.width - 92, scene.scale.height - 105).setScrollFactor(0).setDepth(12000).setVisible(isMobile);
           const actionBg = scene.add.circle(0, 0, 42, 0x8b3f2f, 0.9).setStrokeStyle(3, 0xffffff, 0.35).setInteractive();
           const actionText = scene.add.text(0, 0, "E", {fontFamily:"Arial",fontSize:"24px",color:"#fff",fontStyle:"bold"}).setOrigin(.5);
           action.add([actionBg, actionText]);
