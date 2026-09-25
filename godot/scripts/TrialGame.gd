@@ -11,7 +11,6 @@ var elapsed := 0.0
 var time_limit := 0.0
 var player_pos := Vector2.ZERO
 var player_velocity := Vector2.ZERO
-var facing := Vector2.RIGHT
 var state := 0
 var score := 0
 var target := 0
@@ -212,7 +211,6 @@ func _movement() -> Vector2:
 func _update_cervia(delta: float) -> void:
     var v := _movement()
     if v.length() > 0.05:
-        facing = v.normalized()
     player_pos += v * 190.0 * delta
     player_pos.x = clamp(player_pos.x, 45.0, 700.0)
     player_pos.y = clamp(player_pos.y, 80.0, 510.0)
@@ -377,5 +375,3 @@ func _fail(reason: String) -> void:
     retry_button.visible = true
     failed.emit(id)
 
-func _draw() -> void:
-    pass
