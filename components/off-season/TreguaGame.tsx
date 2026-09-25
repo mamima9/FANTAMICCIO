@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Phaser from "phaser";
+import { CONTRADE_MAPPA } from "@/data/offseasonMap";
 
 export default function TreguaGame() {
   const gameRef = useRef<HTMLDivElement>(null);
