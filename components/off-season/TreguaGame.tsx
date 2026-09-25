@@ -119,11 +119,20 @@ export default function TreguaGame() {
           anim("walk-up", ["player-up-1","player-up-2"]);
           anim("walk-side", ["player-side-1","player-side-2"]);
 
-          const npcObjects = NPCS.map((npc, i) => {
-            const b = BENIAMINI_MAPPA[i];
-            const x = Math.round((b?.coordinates[1] ?? 10.2) * 1000) % (COLS-4) * TILE;
-            const y = Math.round((b?.coordinates[0] ?? 43.97) * 1000) % (ROWS-4) * TILE;
-            const sprite = scene.add.image(Math.max(48,x), Math.max(48,y), "npc").setScale(.72).setDepth(Math.max(48,y));
+          const npcPositions: Record<string,{x:number;y:number}> = {
+            "vecchio-contradaiolo": {x:23,y:12},
+            "contadino-ranocchio": {x:12,y:12},
+            "storico-leon": {x:36,y:8},
+            "custode-madonnina": {x:27,y:12},
+            "viandante-cervia": {x:7,y:24},
+            "abitante-ripa": {x:42,y:12},
+            "guardiano-ponte": {x:6,y:20},
+            "guardiano-pozzi": {x:38,y:19}
+          };
+
+          const npcObjects = NPCS.map((npc) => {
+            const p = npcPositions[npc.id] ?? {x:24,y:17};
+            const sprite = scene.add.image(p.x*TILE+16,p.y*TILE+10,"npc").setScale(.72).setDepth(p.y*TILE+20);
             return { npc, sprite };
           });
 
