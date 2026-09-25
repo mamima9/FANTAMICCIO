@@ -51,6 +51,7 @@ export default function TreguaGame(){
           this.load.image("house-borgo","/game/house-borgo.svg");
           this.load.image("house-osteria","/game/house-osteria.svg");
           this.load.image("tree-large","/game/tree-large.svg");
+            Object.keys(MAPS).forEach((mapId)=>this.load.image(`map-${mapId}`,`/game/map-${mapId}.svg`));
           BENIAMINI_MAPPA.forEach(b=>this.load.image(`beni-${b.id}`,b.image));
         },
         create(this:Phaser.Scene){
@@ -129,52 +130,9 @@ export default function TreguaGame(){
               scene.add.rectangle(x*TILE+9,y*TILE+10,4,14,0x5d402d).setDepth(y*TILE+9);
             };
 
-            path(14,0,4,24);path(0,10,32,4);plaza(11,8,10,8);            contradaBanner(10,7,def.label.replace("La ","").replace("Il ","").slice(0,8));            contradaBanner(22,13,def.label.replace("La ","").replace("Il ","").slice(0,8));
-
-            const roofs=[def.secondary,def.accent,0x9b6845];
-            if(id==="quercia"){
-              house(3,3,6,4,roofs[0],"BORGO");house(23,3,6,4,roofs[1],"BOTTEGA");house(3,18,6,4,roofs[2],"OSTERIA");house(23,18,6,4,def.secondary,"SEDE");
-              path(4,7,24,2);path(7,14,18,2);fence(1,17,5,4);bench(9,11);              scene.add.circle(17*TILE,12*TILE,30,0x355f3e,.85).setStrokeStyle(3,def.primary,.9).setDepth(5);              scene.add.rectangle(17*TILE,14*TILE,10,34,0x765036).setDepth(6);              scene.add.text(17*TILE,9*TILE,"QUERCIA", {fontFamily:FONT,fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);
-            } else if(id==="ranocchio"){
-              house(3,3,6,4,roofs[0],"CASA");house(23,3,6,4,roofs[1],"FIENILE");house(4,18,6,4,roofs[2],"CASCINA");
-              path(6,7,20,2);path(8,14,16,2);fence(22,17,7,4);bench(11,11);
-              scene.add.ellipse(7*TILE,17*TILE,70,42,0x79a95d,.7).setStrokeStyle(3,def.secondary,.6).setDepth(3);
-              scene.add.circle(7*TILE,17*TILE,10,0x3d7d45).setDepth(4);              scene.add.ellipse(17*TILE,19*TILE,120,42,0x739f54,.72).setDepth(2);              scene.add.text(17*TILE,19*TILE,"CUGNIA", {fontFamily:FONT,fontSize:"9px",fontStyle:"bold",color:"#fff",stroke:"#31502b",strokeThickness:4}).setOrigin(.5).setDepth(4);              contradaBanner(16,17,"RANOCCHIO");
-            } else if(id==="leondoro"){
-              house(3,3,6,4,roofs[0],"CAFAGGIO");house(23,3,6,4,roofs[1],"MARZOCCHINO");house(3,18,6,4,roofs[2],"BOTTEGA");
-              path(6,7,20,2);path(8,14,16,2);fence(22,17,7,4);bench(11,11);
-              for(let i=0;i<4;i++)marbleBlock(8+i*5,17);              stoneMarker(13,12);stoneMarker(18,12);              scene.add.text(15*TILE,12*TILE,"BARAGLINO", {fontFamily:FONT,fontSize:"8px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:4}).setOrigin(.5).setDepth(6);
-            } else if(id==="lucertola"){
-              house(3,3,6,4,roofs[0],"RIPA");house(23,3,6,4,roofs[1],"MARGINETTA");house(4,18,6,4,roofs[2],"CASA");
-              path(6,7,20,2);path(8,14,16,2);fence(1,17,7,4);bench(23,12);
-              scene.add.rectangle(25*TILE,14*TILE,48,10,0xc4b08d,.9).setDepth(5).setStrokeStyle(2,def.primary,.7);
-              scene.add.text(25*TILE,14*TILE,"RIPA",{fontFamily:FONT,fontSize:"8px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(6);              scene.add.circle(16*TILE,18*TILE,20,0xe6d8b7).setStrokeStyle(3,def.secondary).setDepth(5);              scene.add.triangle(16*TILE,14*TILE,0,22,12,0,24,22,def.primary).setOrigin(.5).setDepth(6);              scene.add.text(16*TILE,19*TILE,"MARGINETTA",{fontFamily:FONT,fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);
-            } else if(id==="pozzo"){
-              house(3,3,6,4,roofs[0],"POZZI");house(23,3,6,4,roofs[1],"BOTTEGA");house(4,18,6,4,roofs[2],"CASA");
-              path(6,7,20,2);path(8,14,16,2);bench(11,11);fence(22,17,7,4);
-              scene.add.ellipse(25*TILE,17*TILE,52,28,0xb7b1a5,.95).setStrokeStyle(4,def.secondary).setDepth(5);
-              scene.add.ellipse(25*TILE,16*TILE,35,14,0x304a55,.9).setDepth(6);
-              scene.add.text(25*TILE,18*TILE,"POZZO",{fontFamily:FONT,fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);              scene.add.rectangle(25*TILE,13*TILE,4,38,0x765036).setDepth(7);              scene.add.rectangle(22*TILE,13*TILE,10,4,0x765036).setDepth(7);
-            } else if(id==="madonnina"){
-              house(3,3,6,4,roofs[0],"PAGLIAIO");house(23,3,6,4,roofs[1],"BORGO");house(3,18,6,4,roofs[2],"CASA");house(23,18,6,4,def.secondary,"CHIESINA");
-              path(6,7,20,2);path(8,14,16,2);bench(11,11);fence(17,18,4,4);
-              scene.add.circle(25*TILE,17*TILE,22,0xe6d8b7).setStrokeStyle(3,def.secondary).setDepth(5);
-              scene.add.triangle(25*TILE,14*TILE,0,25,14,0,28,25,def.primary).setOrigin(.5).setDepth(6);              for(let i=0;i<5;i++)scene.add.rectangle((11+i)*TILE,18*TILE,10,28,0xd5b26c,.8).setDepth(4);              scene.add.text(25*TILE,18*TILE,"CHIESINA",{fontFamily:FONT,fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);
-            } else if(id==="cervia"){
-              house(3,3,6,4,roofs[0],"MONTISCENDI");house(23,3,6,4,roofs[1],"TORRE");house(18,18,7,4,roofs[2],"SEDE");
-              path(6,7,20,2);path(8,14,16,2);fence(1,17,8,4);bench(11,11);
-              scene.add.rectangle(8*TILE,15*TILE,18,55,0x8b6a48).setDepth(5).setStrokeStyle(3,def.secondary);
-              scene.add.rectangle(8*TILE,10*TILE,46,20,0xd8d0bd).setDepth(6);
-              scene.add.text(8*TILE,10*TILE,"PORTA BELTRAME",{fontFamily:FONT,fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);              scene.add.rectangle(27*TILE,14*TILE,24,70,0xb7a88f).setDepth(5).setStrokeStyle(3,def.secondary);              scene.add.triangle(27*TILE,8*TILE,0,20,12,0,24,20,def.secondary).setOrigin(.5).setDepth(6);              scene.add.text(27*TILE,17*TILE,"TORRE MEDICEA",{fontFamily:FONT,fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);
-            } else {
-              house(3,3,6,4,roofs[0],"VAIANA");house(23,3,6,4,roofs[1],"MAGAZZENO");house(19,18,7,4,roofs[2],"SEDE");
-              path(6,7,20,2);path(8,14,16,2);bench(11,11);fence(1,17,7,4);
-              scene.add.rectangle(25*TILE,10*TILE,70,12,0x765036).setDepth(5);
-              scene.add.rectangle(25*TILE,9*TILE,58,6,def.primary).setDepth(6);
-              scene.add.rectangle(25*TILE,11*TILE,58,6,def.secondary).setDepth(6);
-              scene.add.text(25*TILE,8*TILE,"PONTE DI TAVOLE",{fontFamily:FONT,fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);              scene.add.rectangle(8*TILE,17*TILE,18*TILE,3*TILE,0x4d91ad,.65).setDepth(2);              for(let i=0;i<6;i++)scene.add.rectangle((3+i*5)*TILE,17*TILE,4,10,0x8fd0dc,.7).setDepth(3);
-            }
-
+            // Mappa completa in pixel-art: un unico asset coerente, invece di primitive sparse.
+            const mapBg=scene.add.image(WORLD_W/2,WORLD_H/2,`map-${id}`).setOrigin(.5).setDepth(1);
+            mapBg.setDisplaySize(WORLD_W,WORLD_H);
             const trees:Array<[number,number]>=[[1,1],[10,2],[28,1],[1,22],[12,22],[29,21]];
             if(id==="cervia"||id==="ranocchio")trees.push([16,2],[27,22]);
             if(id==="lucertola")trees.push([12,6],[28,16]);
