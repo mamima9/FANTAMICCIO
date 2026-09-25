@@ -132,7 +132,7 @@ export default function TreguaGame() {
             ponte:{x:5,y:18}, pozzo:{x:39,y:18}, quercia:{x:22,y:13}, ranocchio:{x:11,y:11}
           };
 
-          const objects = new Map<string, Phaser.GameObjects.GameObject>();
+          const objects = new Map<string, Phaser.GameObjects.Image>();
           BENIAMINI_MAPPA.forEach(b => {
             const p = positions[b.id];
             const sprite = scene.add.image(p.x*TILE+16,p.y*TILE+10,`beni-${b.id}`).setDisplaySize(54,54).setDepth(p.y*TILE+20);
