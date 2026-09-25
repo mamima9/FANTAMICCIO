@@ -45,7 +45,7 @@ export default function TreguaGame(){
       physics:{default:"arcade",arcade:{debug:false}},
       scene:{
         preload(this:Phaser.Scene){
-          this.load.image("tiles","/game/rpg-tileset.svg");
+          this.load.spritesheet("tiles","/game/rpg-tileset.svg",{frameWidth:32,frameHeight:32});
           ["cervia","leondoro","lucertola","madonnina","ponte","pozzo","quercia","ranocchio"].forEach(id=>this.load.image(`player-${id}`,`/game/player-${id}.svg`));
           this.load.image("npc","/game/npc.svg");
           BENIAMINI_MAPPA.forEach(b=>this.load.image(`beni-${b.id}`,b.image));
@@ -56,10 +56,13 @@ export default function TreguaGame(){
           const mobile=window.innerWidth<768||"ontouchstart"in window||navigator.maxTouchPoints>0||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
           scene.physics.world.setBounds(0,0,WORLD_W,WORLD_H);
           scene.cameras.main.setBounds(0,0,WORLD_W,WORLD_H).setZoom(mobile?1.85:2);
-          const map=scene.make.tilemap({tileWidth:TILE,tileHeight:TILE,width:COLS,height:ROWS});
-          const tiles=map.addTilesetImage("tiles","tiles",TILE,TILE,0,0,1); if(!tiles)return;
-          const ground=map.createBlankLayer("ground",tiles,0,0,COLS,ROWS,TILE,TILE); if(!ground)return;
-          const T={grass:0,flowers:1,path:2,plaza:3,water:4,bridge:5,wall:6,roof:7,tree:8,fence:9,stone:10,darkGrass:11,dirt:12,goldRoof:13,darkTree:14,flowerPatch:15};
+          // Rendering diretto dei tile per evitare incompatibilita del Tilemap con SVG.
+          const ground=scene.add.container(0,0).setDepth(0);
+          (ground as any).putTileAt=(tile:number,x:number,y:number)=>{
+            const img=scene.add.image(x*TILE+TILE/2,y*TILE+TILE/2,"tiles",tile).setOrigin(.5);
+            ground.add(img);
+            return img;
+          };
 
           let userId:string|null=null,username="Contradaiolo",contradaId="quercia";
           const collected=new Set<string>();
