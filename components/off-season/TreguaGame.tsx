@@ -104,22 +104,41 @@ export default function TreguaGame(){
             const blocked=new Set<string>();
             const block=(x:number,y:number,w:number,h:number)=>{for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)blocked.add(xx+","+yy);};
             const path=(x:number,y:number,w:number,h:number)=>{
-              scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE,h*TILE,0xd7c59d,.92).setDepth(1);
-              if(w>h)for(let xx=x;xx<x+w;xx+=2)scene.add.rectangle((xx+.5)*TILE,(y+h/2)*TILE,18,3,0xb59c72,.28).setDepth(2);
+              scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE,h*TILE,0xd9c79f,.96).setDepth(1);
+              scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE-6,h*TILE-6,0xe7d6b1,.22).setDepth(2);
+              if(w>h){
+                for(let xx=x;xx<x+w;xx+=2){
+                  scene.add.rectangle((xx+.5)*TILE,(y+h/2)*TILE,15,2,0xa58c66,.26).setDepth(3);
+                }
+              } else {
+                for(let yy=y;yy<y+h;yy+=2)scene.add.rectangle((x+w/2)*TILE,(yy+.5)*TILE,2,15,0xa58c66,.22).setDepth(3);
+              }
             };
             const plaza=(x:number,y:number,w:number,h:number)=>{
               scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE,h*TILE,0xe1d2ad,.96).setDepth(1);
               scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE-10,h*TILE-10,0xd2bd91,.35).setDepth(2).setStrokeStyle(2,0xb3986c,.55);
             };
             const house=(x:number,y:number,w:number,h:number,roof:number,label?:string)=>{
-              scene.add.rectangle((x+w/2)*TILE,(y+h+.2)*TILE,w*TILE-8,10,0x3b2a20,.22).setDepth(y*TILE+1);
-              scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE-6,h*TILE-5,0xe7d3ad).setDepth(y*TILE+8);
-              scene.add.triangle((x+w/2)*TILE,(y-10)*TILE,0,36,w*TILE/2,0,w*TILE,36,roof).setOrigin(.5).setDepth(y*TILE+6);
-              scene.add.rectangle((x+w*.3)*TILE,(y+h*.55)*TILE,18,16,0x8ec5c7).setDepth(y*TILE+11);
-              scene.add.rectangle((x+w*.7)*TILE,(y+h*.55)*TILE,18,16,0x8ec5c7).setDepth(y*TILE+11);
-              scene.add.rectangle((x+w*.5)*TILE,(y+h*.65)*TILE,10,22,0x8a5b3b).setDepth(y*TILE+11);
-              if(label)scene.add.text((x+w/2)*TILE,(y-18)*TILE,label,{fontFamily:"Arial",fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(y*TILE+20);
-              const hit=scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE-8,h*TILE-4,0xffffff,0);
+              const px=(x+w/2)*TILE,py=(y+h/2)*TILE;
+              scene.add.ellipse(px,(y+h+.35)*TILE,w*TILE-4,13,0x241b16,.24).setDepth(y*TILE);
+              scene.add.rectangle(px,py,w*TILE-5,h*TILE-4,0xead9b9).setDepth(y*TILE+8);
+              scene.add.rectangle(px,py+5,w*TILE-9,h*TILE-11,0xd8c09b,.32).setDepth(y*TILE+9);
+              scene.add.triangle(px,(y-9)*TILE,0,38,w*TILE/2,0,w*TILE,38,roof).setOrigin(.5).setDepth(y*TILE+7);
+              scene.add.triangle(px,(y-5)*TILE,0,28,w*TILE/2,0,w*TILE,28,roof).setOrigin(.5).setAlpha(.28).setDepth(y*TILE+8);
+              // Tegole / bordo del tetto.
+              for(let i=0;i<w;i+=2)scene.add.rectangle((x+i+1)*TILE,(y+0.65)*TILE,18,3,0x5a3c2d,.45).setDepth(y*TILE+10);
+              // Finestre con cornice e riflesso.
+              for(const wx of [x+w*.3,x+w*.7]){
+                scene.add.rectangle(wx*TILE,(y+h*.5)*TILE,20,18,0x765036).setDepth(y*TILE+11);
+                scene.add.rectangle(wx*TILE,(y+h*.5)*TILE,15,13,0x9ed5d5).setDepth(y*TILE+12);
+                scene.add.rectangle(wx*TILE,(y+h*.5)*TILE,2,13,0x6c8e8f).setDepth(y*TILE+13);
+                scene.add.rectangle(wx*TILE,(y+h*.5)*TILE,15,2,0xdaf2e8,.7).setDepth(y*TILE+13);
+              }
+              // Porta.
+              scene.add.rectangle(px,(y+h*.69)*TILE,14,25,0x74492f).setDepth(y*TILE+12);
+              scene.add.rectangle(px-2,(y+h*.67)*TILE,3,3,0xd4af37).setDepth(y*TILE+13);
+              if(label)scene.add.text(px,(y-20)*TILE,label,{fontFamily:"Arial",fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:4}).setOrigin(.5).setDepth(y*TILE+20);
+              const hit=scene.add.rectangle(px,py,w*TILE-8,h*TILE-4,0xffffff,0);
               scene.physics.add.existing(hit,true);scene.physics.add.collider(player,hit);mapCollisionObjects.push(hit);block(x,y,w,h);
             };
             const fence=(x:number,y:number,w:number,h:number)=>{
@@ -191,6 +210,18 @@ export default function TreguaGame(){
               c.add(scene.add.circle(15,-8,19,i%2?0x2e7044:0x438a52));
             });
             for(let i=0;i<5;i++){const x=(3+i*6)%29+1,y=(5+i*4)%16+6;ground.putTileAt(i%2?10:14,x,y);}
+            // Piccoli dettagli ambientali: cespugli, fiori e pietre danno profondità alla mappa.
+            const flowerSpots:Array<[number,number]>=[[10,5],[21,6],[9,17],[22,17],[2,12],[29,12]];
+            flowerSpots.forEach(([x,y],i)=>{
+              const col=i%2?0xe8c85a:0xd86f7b;
+              scene.add.circle(x*TILE+9,y*TILE+20,3,col).setDepth(y*TILE+12);
+              scene.add.circle(x*TILE+15,y*TILE+18,3,col).setDepth(y*TILE+12);
+              scene.add.rectangle(x*TILE+12,y*TILE+25,2,9,0x4f8a4d).setDepth(y*TILE+11);
+            });
+            [[2,8],[29,7],[10,22],[22,22]].forEach(([x,y])=>{
+              scene.add.ellipse(x*TILE+16,y*TILE+25,22,10,0x817967,.7).setDepth(y*TILE+10);
+              scene.add.ellipse(x*TILE+12,y*TILE+23,9,4,0xc3bca9,.7).setDepth(y*TILE+11);
+            });
             scene.add.rectangle(16*TILE,12*TILE,7*TILE,5*TILE,def.secondary,.08).setDepth(2);
 
             // Landmark della Contrada, sempre nello stesso territorio.
