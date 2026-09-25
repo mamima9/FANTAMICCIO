@@ -57,6 +57,7 @@ export default function TreguaGame(){
           scene.physics.world.setBounds(0,0,WORLD_W,WORLD_H);
           scene.cameras.main.setBounds(0,0,WORLD_W,WORLD_H).setZoom(mobile?1.85:2);
           // Rendering diretto dei tile per evitare incompatibilita del Tilemap con SVG.
+          const T={grass:0,flowers:1,path:2,plaza:3,water:4,bridge:5,wall:6,roof:7,tree:8,fence:9,stone:10,darkGrass:11,dirt:12,goldRoof:13,darkTree:14,flowerPatch:15};
           const ground:any=scene.add.container(0,0).setDepth(0);
           (ground as any).putTileAt=(tile:number,x:number,y:number)=>{
             const img=scene.add.image(x*TILE+TILE/2,y*TILE+TILE/2,"tiles").setOrigin(.5);
