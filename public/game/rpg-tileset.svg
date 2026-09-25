@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="64" viewBox="0 0 256 64" shape-rendering="crispEdges">
+<defs>
+<pattern id="grass" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#6f9f58"/><rect x="3" y="4" width="2" height="2" fill="#83b868"/><rect x="12" y="10" width="2" height="2" fill="#5b8848"/><rect x="7" y="13" width="1" height="1" fill="#9bc879"/></pattern>
+<pattern id="path" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#c99b62"/><rect x="2" y="3" width="3" height="2" fill="#b78752"/><rect x="10" y="11" width="4" height="2" fill="#d9b27a"/><rect x="7" y="7" width="2" height="2" fill="#b98954"/></pattern>
+</defs>
+<!-- 0 grass --><rect width="32" height="32" fill="url(#grass)"/>
+<!-- 1 grass flowers --><rect x="32" width="32" height="32" fill="url(#grass)"/><rect x="40" y="8" width="3" height="3" fill="#f6e28b"/><rect x="55" y="21" width="3" height="3" fill="#f6e28b"/><rect x="47" y="25" width="2" height="2" fill="#e9c86b"/>
+<!-- 2 path --><rect x="64" width="32" height="32" fill="url(#path)"/>
+<!-- 3 plaza --><rect x="96" width="32" height="32" fill="#d9c18e"/><path d="M96 8h32M96 24h32M104 0v32M120 0v32" stroke="#c5a978" stroke-width="2"/>
+<!-- 4 water --><rect x="128" width="32" height="32" fill="#4f91a5"/><path d="M0 8h10l4 3 10-3h8M0 22h8l4-3 9 3 7-2 4 2" fill="none" stroke="#83c5d1" stroke-width="2"/>
+<!-- 5 bridge --><rect x="160" width="32" height="32" fill="#8f5c37"/><path d="M0 5h32M0 13h32M0 21h32M0 29h32" stroke="#d29a58" stroke-width="3"/><path d="M6 0v32M26 0v32" stroke="#6d432c" stroke-width="2"/>
+<!-- 6 building wall --><rect x="192" width="32" height="32" fill="#ead8b7"/><rect y="0" width="32" height="5" fill="#b47b55"/><path d="M0 13h32M0 22h32M8 5v8M24 5v8M8 22v10M24 22v10" stroke="#c9ae8c" stroke-width="2"/>
+<!-- 7 roof --><rect x="224" width="32" height="32" fill="#a74f43"/><path d="M0 6h32M0 14h32M0 22h32M0 30h32" stroke="#7d3935" stroke-width="3"/><path d="M5 0v32M16 0v32M27 0v32" stroke="#c26a54" stroke-width="2"/>
+<!-- 8 tree --><rect x="0" y="32" width="32" height="32" fill="#6f9f58"/><rect x="14" y="48" width="5" height="16" fill="#795039"/><rect x="7" y="39" width="19" height="17" rx="7" fill="#2f6b43"/><rect x="11" y="35" width="12" height="9" rx="5" fill="#397b49"/><rect x="5" y="47" width="7" height="7" rx="3" fill="#438852"/>
+<!-- 9 fence --><rect x="32" y="32" width="32" height="32" fill="url(#grass)"/><path d="M4 10v20M16 6v26M28 10v20M2 15h28M2 25h28" transform="translate(32 32)" stroke="#6d4b35" stroke-width="3"/>
+<!-- 10 stone --><rect x="64" y="32" width="32" height="32" fill="#9b9b91"/><path d="M2 8h11l5-5h10M3 24h7l5-5h14M20 32l4-6h6" stroke="#bdbdb0" stroke-width="3"/><path d="M0 16h8M18 15h14" stroke="#77776f" stroke-width="2"/>
+<!-- 11 dark grass --><rect x="96" y="32" width="32" height="32" fill="#557d48"/><rect x="4" y="5" width="2" height="7" fill="#41653a"/><rect x="23" y="16" width="2" height="8" fill="#41653a"/><rect x="12" y="25" width="2" height="5" fill="#41653a"/>
+<!-- 12 road --><rect x="128" y="32" width="32" height="32" fill="#a77c55"/><path d="M0 7h32M0 25h32" stroke="#c69b6c" stroke-width="2"/>
+<!-- 13 roof gold --><rect x="160" y="32" width="32" height="32" fill="#c08a42"/><path d="M0 7h32M0 16h32M0 25h32" stroke="#93652f" stroke-width="3"/>
+<!-- 14 tree dark/collision --><rect x="192" y="32" width="32" height="32" fill="#315f3c"/><rect x="14" y="47" width="5" height="17" fill="#65432f"/><circle cx="16" cy="43" r="12" fill="#244d32"/><circle cx="8" cy="49" r="7" fill="#2b5b38"/><circle cx="24" cy="49" r="7" fill="#2b5b38"/>
+<!-- 15 flowers --><rect x="224" y="32" width="32" height="32" fill="url(#grass)"/><circle cx="9" cy="10" r="2" fill="#f5c6d6"/><circle cx="23" cy="20" r="2" fill="#f6e08a"/><circle cx="13" cy="26" r="2" fill="#d5b5f2"/>
+</svg>
