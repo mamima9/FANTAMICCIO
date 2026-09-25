@@ -41,7 +41,8 @@ export default function TreguaGame(){
     const supabase=createClient();
     const config:Phaser.Types.Core.GameConfig={
       type:Phaser.AUTO,parent:root.current,width:960,height:540,pixelArt:true,backgroundColor:"#5f8f4e",
-      scale:{mode:Phaser.Scale.RESIZE,autoCenter:Phaser.Scale.CENTER_BOTH},render:{antialias:false,roundPixels:true},
+      scale:{mode:Phaser.Scale.RESIZE,autoCenter:Phaser.Scale.CENTER_BOTH},
+      input:{activePointers:3},render:{antialias:false,roundPixels:true},
       physics:{default:"arcade",arcade:{debug:false}},
       scene:{
         preload(this:Phaser.Scene){
@@ -262,14 +263,46 @@ export default function TreguaGame(){
           };
 
           const keys=scene.input.keyboard?.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,SHIFT") as Record<string,Phaser.Input.Keyboard.Key>|undefined;
+          // Joystick touch: il punto critico è usare coordinate SCHERMO, non coordinate
+          // trasformate dalla camera. Il controllo resta quindi stabile anche con resize/zoom.
           const mobileUi=scene.add.container(92,scene.scale.height-195).setScrollFactor(0).setDepth(50000).setVisible(mobile);
-          const jb=scene.add.circle(0,0,70,0x171717,.82).setStrokeStyle(3,0xffffff,.5).setInteractive(),jk=scene.add.circle(0,0,30,0xd4af37,.95).setStrokeStyle(2,0xffffff,.7);mobileUi.add([jb,jk]);
-          const act=scene.add.container(scene.scale.width-90,scene.scale.height-190).setScrollFactor(0).setDepth(50000).setVisible(mobile);
-          const ab=scene.add.circle(0,0,42,0x8b3f2f,.9).setStrokeStyle(3,0xffffff,.35).setInteractive();act.add([ab,scene.add.text(0,0,"E",{fontFamily:FONT,fontSize:"24px",color:"#fff",fontStyle:"bold"}).setOrigin(.5)]);ab.on("pointerdown",()=>void interact());
+          const jb=scene.add.circle(0,0,76,0x171717,.84).setStrokeStyle(3,0xffffff,.5);
+          const jk=scene.add.circle(0,0,30,0xd4af37,.98).setStrokeStyle(2,0xffffff,.75);
+          jb.setInteractive(new Phaser.Geom.Circle(0,0,76),Phaser.Geom.Circle.Contains);
+          mobileUi.add([jb,jk]);
 
-          jb.on("pointerdown",(p:Phaser.Input.Pointer)=>{if(!mobile)return;joyPointer=p.id;scene.input.setPollAlways();const dx=p.x-mobileUi.x,dy=p.y-mobileUi.y,l=Math.hypot(dx,dy),m=50,s=l>m?m/l:1;joyX=dx*s/m;joyY=dy*s/m;jk.setPosition(dx*s,dy*s);});
-          scene.input.on("pointermove",(p:Phaser.Input.Pointer)=>{if(p.id!==joyPointer)return;const dx=p.x-mobileUi.x,dy=p.y-mobileUi.y,l=Math.hypot(dx,dy),m=50,s=l>m?m/l:1;joyX=dx*s/m;joyY=dy*s/m;jk.setPosition(dx*s,dy*s);});
-          scene.input.on("pointerup",(p:Phaser.Input.Pointer)=>{if(p.id===joyPointer){joyPointer=null;joyX=joyY=0;jk.setPosition(0,0);}});
+          const act=scene.add.container(scene.scale.width-90,scene.scale.height-190).setScrollFactor(0).setDepth(50000).setVisible(mobile);
+          const ab=scene.add.circle(0,0,42,0x8b3f2f,.92).setStrokeStyle(3,0xffffff,.35).setInteractive();
+          act.add([ab,scene.add.text(0,0,"E",{fontFamily:FONT,fontSize:"24px",color:"#fff",fontStyle:"bold"}).setOrigin(.5)]);
+          ab.on("pointerdown",()=>void interact());
+
+          const updateJoystick=(p:Phaser.Input.Pointer)=>{
+            const dx=p.x-mobileUi.x;
+            const dy=p.y-mobileUi.y;
+            const max=50;
+            const len=Math.hypot(dx,dy);
+            const scale=len>max?max/len:1;
+            joyX=(dx*scale)/max;
+            joyY=(dy*scale)/max;
+            jk.setPosition(dx*scale,dy*scale);
+          };
+          const releaseJoystick=(p:Phaser.Input.Pointer)=>{
+            if(p.id!==joyPointer)return;
+            joyPointer=null;
+            joyX=0;
+            joyY=0;
+            jk.setPosition(0,0);
+          };
+
+          jb.on("pointerdown",(p:Phaser.Input.Pointer)=>{
+            if(!mobile || joyPointer!==null)return;
+            joyPointer=p.id;
+            if(p.event && "preventDefault" in p.event) (p.event as any).preventDefault();
+            updateJoystick(p);
+          });
+          scene.input.on("pointermove",updateJoystick);
+          scene.input.on("pointerup",releaseJoystick);
+          scene.input.on("pointerupoutside",releaseJoystick);
 
           const setPlayer=(id:string)=>{contradaId=MAPS[id as MapId]?id:"quercia";player.setTexture(`player-${contradaId}`);};
           scene.events.on("update",(_t:number,delta:number)=>{
@@ -296,6 +329,7 @@ export default function TreguaGame(){
       }
     };
     const game=new Phaser.Game(config);
+    game.canvas.style.touchAction="none";
     return()=>game.destroy(true);
   },[]);
   return <div ref={root} className="fixed inset-0 overflow-hidden bg-black"/>;
