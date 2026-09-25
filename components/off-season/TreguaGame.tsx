@@ -46,7 +46,8 @@ export default function TreguaGame() {
 
           scene.physics.world.setBounds(0, 0, WORLD_W, WORLD_H);
           scene.cameras.main.setBounds(0, 0, WORLD_W, WORLD_H);
-          scene.cameras.main.setZoom(2);
+          const isMobile = window.innerWidth < 768;
+          scene.cameras.main.setZoom(isMobile ? 2.6 : 2);
 
           const map = scene.make.tilemap({ tileWidth: TILE, tileHeight: TILE, width: COLS, height: ROWS });
           const tiles = map.addTilesetImage("rpg-tileset", "tiles", TILE, TILE, 0, 0, 1);
@@ -153,8 +154,35 @@ export default function TreguaGame() {
           const box = scene.add.rectangle(0,0,310,105,0x2b1c14,.94).setOrigin(0).setStrokeStyle(2,0xd4af37);
           const title = scene.add.text(16,10,"TREGUA TRA CONTRADE",{fontFamily:"Arial",fontSize:"16px",color:"#f4cf64",fontStyle:"bold"});
           const progress = scene.add.text(16,38,"BENIAMINI 0 / 8",{fontFamily:"Arial",fontSize:"22px",color:"#fff",fontStyle:"bold"});
-          const hint = scene.add.text(16,73,"WASD / FRECCE · E per interagire",{fontFamily:"Arial",fontSize:"12px",color:"#eadfce"});
+          const hint = scene.add.text(16,73,isMobile ? "🕹️ Muovi · tocca E per interagire" : "WASD / FRECCE · E per interagire",{fontFamily:"Arial",fontSize:"12px",color:"#eadfce"});
           hud.add([box,title,progress,hint]);
+
+          // Mobile orientation map: a compact overview of the whole village.
+          const mini = scene.add.container(scene.scale.width - (isMobile ? 92 : 145), isMobile ? 92 : 105)
+            .setScrollFactor(0).setDepth(11000);
+          const miniW = isMobile ? 150 : 190;
+          const miniH = isMobile ? 105 : 130;
+          const miniBg = scene.add.rectangle(0,0,miniW,miniH,0x16251b,.9).setOrigin(.5).setStrokeStyle(2,0xd4af37,.9);
+          const miniTitle = scene.add.text(-miniW/2+9,-miniH/2+6,"MAPPA",{fontFamily:"Arial",fontSize:isMobile?"10px":"11px",color:"#f4cf64",fontStyle:"bold"});
+          mini.add([miniBg,miniTitle]);
+
+          const mapDots = [
+            ["Cervia",6,25],["Leon d'Oro",37,7],["Lucertola",42,11],["Madonnina",26,11],
+            ["Ponte",5,18],["Pozzo",39,18],["Quercia",22,13],["Ranocchio",11,11]
+          ] as const;
+          const miniScaleX=(miniW-18)/(COLS-1);
+          const miniScaleY=(miniH-28)/(ROWS-1);
+          mapDots.forEach(([name,x,y])=>{
+            const dot=scene.add.circle(-miniW/2+9+x*miniScaleX,-miniH/2+20+y*miniScaleY,3,0xf4cf64,1);
+            mini.add(dot);
+            const label=scene.add.text(dot.x+5,dot.y-5,name,{fontFamily:"Arial",fontSize:isMobile?"7px":"8px",color:"#fff"});
+            mini.add(label);
+          });
+          const playerDot=scene.add.circle(0,0,5,0xffffff,1);
+          mini.add(playerDot);
+          const updateMini=()=>{
+            playerDot.setPosition(-miniW/2+9+(player.x/TILE)*miniScaleX,-miniH/2+20+(player.y/TILE)*miniScaleY);
+          };
 
           const dialog = scene.add.container(scene.scale.width/2,scene.scale.height-75).setScrollFactor(0).setDepth(10000).setVisible(false);
           const dbox = scene.add.rectangle(0,0,760,105,0x241812,.97).setStrokeStyle(3,0xd4af37);
@@ -217,13 +245,14 @@ export default function TreguaGame() {
           actionBg.on("pointerdown",()=>void interact());
 
           const keys=scene.input.keyboard?.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,SHIFT") as Record<string,Phaser.Input.Keyboard.Key>|undefined;
-          scene.events.on("update",(_t:number,delta:number)=>{const dt=Math.min(delta,32)/1000; if(!keys)return; let x=0,y=0;if(keys.A.isDown||keys.LEFT.isDown)x--;if(keys.D.isDown||keys.RIGHT.isDown)x++;if(keys.W.isDown||keys.UP.isDown)y--;if(keys.S.isDown||keys.DOWN.isDown)y++;const len=Math.hypot(x,y);if(len>1){x/=len;y/=len;}const speed=keys.SHIFT.isDown?190:135;player.setVelocity(x*speed,y*speed);if(Math.abs(x)+Math.abs(y)>.05){if(Math.abs(x)>Math.abs(y)){player.anims.play("walk-side",true);player.setFlipX(x<0);}else player.anims.play(y>0?"walk-down":"walk-up",true);}else player.anims.stop();player.setDepth(player.y); if(Phaser.Input.Keyboard.JustDown(keys.E)||Phaser.Input.Keyboard.JustDown(keys.SPACE))void interact();});
+          scene.events.on("update",(_t:number,delta:number)=>{const dt=Math.min(delta,32)/1000; if(!keys)return; let x=0,y=0;if(keys.A.isDown||keys.LEFT.isDown)x--;if(keys.D.isDown||keys.RIGHT.isDown)x++;if(keys.W.isDown||keys.UP.isDown)y--;if(keys.S.isDown||keys.DOWN.isDown)y++;const len=Math.hypot(x,y);if(len>1){x/=len;y/=len;}const speed=keys.SHIFT.isDown?190:135;player.setVelocity(x*speed,y*speed);if(Math.abs(x)+Math.abs(y)>.05){if(Math.abs(x)>Math.abs(y)){player.anims.play("walk-side",true);player.setFlipX(x<0);}else player.anims.play(y>0?"walk-down":"walk-up",true);}else player.anims.stop();player.setDepth(player.y); updateMini(); if(Phaser.Input.Keyboard.JustDown(keys.E)||Phaser.Input.Keyboard.JustDown(keys.SPACE))void interact();});
           const resize=()=>{
             hud.setPosition(18,18);
             tregua.setPosition(scene.scale.width/2,18);
             dialog.setPosition(scene.scale.width/2,scene.scale.height-75);
-            mobile.setPosition(105,scene.scale.height-105);
-            action.setPosition(scene.scale.width-90,scene.scale.height-95);
+            mobile.setPosition(isMobile ? 105 : -1000,scene.scale.height-(isMobile ? 108 : 105));
+            action.setPosition(isMobile ? scene.scale.width-90 : -1000,scene.scale.height-(isMobile ? 98 : 95));
+            mini.setPosition(scene.scale.width-(isMobile ? 92 : 145),isMobile ? 92 : 105);
           };
           scene.scale.on("resize",resize); resize(); void load(); scene.cameras.main.fadeIn(500,0,0,0);
         }
