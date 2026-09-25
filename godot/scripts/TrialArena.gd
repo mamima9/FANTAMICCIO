@@ -23,6 +23,14 @@ func _draw() -> void:
             _draw_leon(game)
         "ranocchio":
             _draw_ranocchio(game)
+        "quercia":
+            _draw_quercia(game)
+        "ponte":
+            _draw_ponte(game)
+        "madonnina":
+            _draw_madonnina(game)
+        "lucertola":
+            _draw_lucertola(game)
 
 func _draw_player(p: Vector2, c := Color("#f5d37a")) -> void:
     draw_circle(p, 15, Color("#1c1712"))
@@ -74,3 +82,47 @@ func _draw_ranocchio(g) -> void:
     draw_circle(g.lotus, 35, Color("#d4af37"))
     draw_circle(g.lotus, 23, Color("#fff0a8"))
     _draw_player(g.player_pos, Color("#7ed957"))
+
+
+func _draw_quercia(g) -> void:
+    for i in g.golden_signs.size():
+        var p: Vector2 = g.golden_signs[i]
+        draw_circle(p, 20, Color("#d4af37") if not g.sign_found[i] else Color("#6b5520"))
+        draw_circle(p, 12, Color("#fff0a8"))
+        draw_string(ThemeDB.fallback_font, p + Vector2(-5,6), str(i+1), HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#3a2a12"))
+    draw_circle(g.ancient_tree, 48, Color("#4b3020"))
+    draw_circle(g.ancient_tree + Vector2(0,-22), 62, Color("#42613a"))
+    draw_string(ThemeDB.fallback_font, g.ancient_tree + Vector2(-55,82), "QUERCIA ANTICA", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("#f7e7b0"))
+    _draw_player(g.player_pos, Color("#9fd37a"))
+
+func _draw_ponte(g) -> void:
+    draw_rect(Rect2(70,205,650,210), Color("#1c2b3a"), true)
+    for i in g.bridge_tiles.size():
+        var r: Rect2 = g.bridge_tiles[i]
+        var safe := i >= g.bridge_index
+        draw_rect(r, Color("#8b5a35") if safe else Color("#3b2b20"), true)
+        draw_rect(r, Color("#d4af37"), false, 2)
+        draw_string(ThemeDB.fallback_font, r.position + Vector2(20,23), str(i+1), HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("#f7e7b0"))
+    _draw_player(g.player_pos, Color("#c69cff"))
+
+func _draw_madonnina(g) -> void:
+    for i in 4:
+        var p := Vector2(120 + i * 150, 300)
+        draw_rect(Rect2(p - Vector2(48,65), Vector2(96,130)), Color("#b58b55"), true)
+        draw_rect(Rect2(p - Vector2(48,65), Vector2(96,130)), Color("#d4af37"), false, 3)
+        if g.state == 1:
+            var symbols = ["★","◆","●","✦"]
+            draw_string(ThemeDB.fallback_font, p + Vector2(-16,10), symbols[g.memory_symbols[i]], HORIZONTAL_ALIGNMENT_LEFT, -1, 30, Color("#fff0a8"))
+    if g.state == 2:
+        draw_string(ThemeDB.fallback_font, Vector2(275,160), "TROVA IL SIMBOLO MEMORIZZATO", HORIZONTAL_ALIGNMENT_LEFT, -1, 17, Color("#fff0a8"))
+    _draw_player(g.player_pos, Color("#e7b6ff"))
+
+func _draw_lucertola(g) -> void:
+    draw_rect(Rect2(70,180,640,250), Color("#3b4a35"), true)
+    draw_line(Vector2(90,390), Vector2(350,300), Color("#c0a77a"), 34)
+    draw_line(Vector2(350,300), Vector2(520,225), Color("#d8c18c"), 34)
+    draw_line(Vector2(350,300), Vector2(520,390), Color("#f4e8b7"), 34)
+    draw_circle(Vector2(350,300), 30, Color("#d4af37"))
+    draw_string(ThemeDB.fallback_font, Vector2(315,355), "BIVIO", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("#fff0a8"))
+    draw_circle(Vector2(665,225), 32, Color("#d4af37"))
+    _draw_player(g.player_pos, Color("#a8e6a1"))
