@@ -1,4 +1,4 @@
-extends Node
+extends Node\n\nclass_name Challenges
 ## FantaMiccio — otto prove pre-Beniamino.
 ## Ogni prova ha una meccanica diversa e una catena narrativa di indizi.
 
