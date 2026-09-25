@@ -1,0 +1,10 @@
+{
+  "quercia":{"intro":"Il sentiero della Quercia Antica è nascosto. Trova tre segni dorati: ognuno ti avvicina al Beniamino.","success":"I tre segni si illuminano. La Quercia Antica apre il passaggio.","fail":"Il bosco ti ha confuso. Torna dagli abitanti e ascolta meglio gli indizi."},
+  "cervia":{"intro":"La campana di Porta Beltrame è in cima alla torre. Le travi cadono: guarda in alto.","success":"La campana suona! Un bagliore appare tra le pietre della torre.","fail":"Sei caduto dalla torre. Le pietre custodiscono ancora il loro segreto."},
+  "pozzo":{"intro":"Tre indizi. Acqua, pietra e Miccio. Ricostruisci la sequenza prima di dare la risposta.","success":"Il mistero è ricomposto. Dal fondo del Pozzo compare il Beniamino.","fail":"La sequenza non torna. Gli indizi restano al loro posto."},
+  "leondoro":{"intro":"La tana si chiude. Hai trenta secondi. Il Leone vuole prenderti, non combatterti.","success":"Trenta secondi! Il Leone si ferma e riconosce il tuo coraggio.","fail":"Il Leone ti ha colpito. La tana si riapre."},
+  "ranocchio":{"intro":"Le ninfee affondano dopo essere state usate. Guarda sempre il prossimo salto.","success":"Hai raggiunto il Loto d'Oro!","fail":"Sei caduto nella palude. Il Loto torna a nascondersi."},
+  "ponte":{"intro":"Le tavole sicure seguono un ritmo. Osserva prima di attraversare.","success":"Sei dall'altra parte. Il Beniamino ti aspettava.","fail":"Una tavola ha ceduto. Riprova seguendo il ritmo."},
+  "madonnina":{"intro":"Osserva quattro simboli. Poi entrano nel pagliaio e dovrai ricordare quello giusto.","success":"Hai ricordato il simbolo. Il fieno si apre e mostra il Beniamino.","fail":"La memoria ti ha tradito. Guarda meglio gli indizi."},
+  "lucertola":{"intro":"La Ripa ha due strade. Una è una scorciatoia che riporta indietro.","success":"Hai scelto la via giusta. La Lucertola ti lascia passare.","fail":"Il sentiero ti ha riportato al bivio."}
+}
