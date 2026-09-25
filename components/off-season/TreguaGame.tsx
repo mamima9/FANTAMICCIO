@@ -201,8 +201,10 @@ export default function TreguaGame(){
             await new Promise(r=>scene.time.delayedCall(190,r));
             if(currentNpc)currentNpc.destroy(); currentNpc=null;
             if(currentBeni)currentBeni.destroy(); currentBeni=null;
-            // Clean all world objects except player/HUD/dialog/world.
-            scene.children.list.filter((o:any)=>o.getData?.("map")===current).forEach((o:any)=>o.destroy());
+            // Ogni territorio è una mappa separata: prima di caricare la nuova
+            // eliminiamo solo gli oggetti del mondo, mantenendo player e HUD.
+            const keep = new Set<any>([player, usernameText, hud, world, dialog, tregua, mobileUi, act, ground]);
+            scene.children.list.slice().forEach((o:any)=>{if(!keep.has(o))o.destroy();});
             current=id; const s=spawn||MAPS[id].spawn;
             player.setPosition(s.x*TILE+16,s.y*TILE+16);
             drawMap(id); player.setTexture(`player-${contradaId||"quercia"}`);
