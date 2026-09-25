@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1"]
 [ext_resource type="Texture2D" path="res://art/quercia-map.svg" id="2"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/HUD.gd" id="5"]
 [ext_resource type="Script" path="res://scripts/NPC.gd" id="6"]
 [ext_resource type="Script" path="res://scripts/ChallengeManager.gd" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/TrialGame.tscn" id="8"]
 
 [sub_resource type="RectangleShape2D" id="PlayerShape"]
 size = Vector2(34, 28)
@@ -81,6 +82,9 @@ script = ExtResource("6")
 npc_name = "Custode delle Querce"
 dialogue = ["Le querce non mostrano mai il loro segreto a chi corre senza guardare.", "Segui il sentiero con i segni dorati: il primo indizio è vicino alla quercia più antica.", "Quando il vento cambia, le prove cominciano."]
 
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NPCs/CustodeDelleQuerce"]
+shape = SubResource("NPCShape")
+
 [node name="Prompt" type="Label" parent="NPCs/CustodeDelleQuerce"]
 offset_left = -75.0
 offset_top = -55.0
@@ -96,6 +100,9 @@ position = Vector2(650, 365)
 script = ExtResource("6")
 npc_name = "Vecchio della Bottega"
 dialogue = ["Ho visto il simbolo del Miccio oltre la piazza, tra i sentieri delle querce.", "Non serve essere veloci: devi scegliere il percorso giusto.", "Cerca tre segni dorati. Quando li avrai trovati, saprai dove iniziare."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NPCs/VecchioDellaBottega"]
+shape = SubResource("NPCShape")
 
 [node name="Prompt" type="Label" parent="NPCs/VecchioDellaBottega"]
 offset_left = -75.0
@@ -113,6 +120,9 @@ script = ExtResource("6")
 npc_name = "Contradaiolo"
 dialogue = ["La prova della Quercia è una corsa, ma il bosco ti farà perdere la strada.", "Non fidarti del primo sentiero che vedi.", "Quando trovi la Quercia Antica, la prova sarà pronta."]
 
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NPCs/Contradaiolo"]
+shape = SubResource("NPCShape")
+
 [node name="Prompt" type="Label" parent="NPCs/Contradaiolo"]
 offset_left = -75.0
 offset_top = -55.0
@@ -125,6 +135,8 @@ theme_override_font_sizes/font_size = 12
 
 [node name="ChallengeManager" type="Node" parent="."]
 script = ExtResource("7")
+
+[node name="TrialGame" parent="." instance=ExtResource("8")]
 
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("5")
