@@ -10,8 +10,9 @@ export type OffSeasonBeniamino = {
 
 export type OffSeasonNpc = {
   id: string;
+  mapId: string;
   nome: string;
-  coordinates: Coordinates;
+  position: Coordinates;
   text: string;
   clue: string;
 };
