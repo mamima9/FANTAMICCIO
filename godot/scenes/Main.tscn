@@ -80,6 +80,7 @@ drag_vertical_enabled = true
 position = Vector2(720, 530)
 script = ExtResource("6")
 npc_name = "Custode delle Querce"
+trial_id = "quercia"
 dialogue = ["Le querce non mostrano mai il loro segreto a chi corre senza guardare.", "Segui il sentiero con i segni dorati: il primo indizio è vicino alla quercia più antica.", "Quando il vento cambia, le prove cominciano."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NPCs/CustodeDelleQuerce"]
@@ -99,6 +100,7 @@ theme_override_font_sizes/font_size = 12
 position = Vector2(650, 365)
 script = ExtResource("6")
 npc_name = "Vecchio della Bottega"
+trial_id = "quercia"
 dialogue = ["Ho visto il simbolo del Miccio oltre la piazza, tra i sentieri delle querce.", "Non serve essere veloci: devi scegliere il percorso giusto.", "Cerca tre segni dorati. Quando li avrai trovati, saprai dove iniziare."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NPCs/VecchioDellaBottega"]
@@ -118,6 +120,7 @@ theme_override_font_sizes/font_size = 12
 position = Vector2(1490, 710)
 script = ExtResource("6")
 npc_name = "Contradaiolo"
+trial_id = "quercia"
 dialogue = ["La prova della Quercia è una corsa, ma il bosco ti farà perdere la strada.", "Non fidarti del primo sentiero che vedi.", "Quando trovi la Quercia Antica, la prova sarà pronta."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NPCs/Contradaiolo"]
