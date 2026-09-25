@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="256" height="64" viewBox="0 0 256 64" shape-rendering="crispEdges">
 <defs>
-<pattern id="grass" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#6f9f58"/><rect x="3" y="4" width="2" height="2" fill="#83b868"/><rect x="12" y="10" width="2" height="2" fill="#5b8848"/><rect x="7" y="13" width="1" height="1" fill="#9bc879"/></pattern>
+<pattern id="grass" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#5f9852"/><rect x="2" y="3" width="2" height="2" fill="#76ad60"/><rect x="11" y="7" width="2" height="2" fill="#4c8145"/><rect x="6" y="13" width="1" height="2" fill="#8abd6d"/></pattern>
 <pattern id="path" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#c99b62"/><rect x="2" y="3" width="3" height="2" fill="#b78752"/><rect x="10" y="11" width="4" height="2" fill="#d9b27a"/><rect x="7" y="7" width="2" height="2" fill="#b98954"/></pattern>
 </defs>
 <!-- 0 grass --><rect width="32" height="32" fill="url(#grass)"/>
