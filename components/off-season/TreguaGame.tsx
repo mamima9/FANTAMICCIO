@@ -89,10 +89,79 @@ export default function TreguaGame(){
           let dialog:Phaser.GameObjects.Container;
           let tregua:Phaser.GameObjects.Container;
           let timer:Phaser.Time.TimerEvent|null=null;
+          let trialOverlay:Phaser.GameObjects.Container|null=null;
+          let trialCompleted=new Set<string>();
+          let trialStep=0;
+          let trialTime=0;
+          let trialTimer:Phaser.Time.TimerEvent|null=null;
           let joyX=0,joyY=0,joyPointer:number|null=null;
 
           const say=(s:string)=>{timer?.remove();const text=dialog.getAt(1) as Phaser.GameObjects.Text;text.setText(s);dialog.setVisible(true);timer=scene.time.delayedCall(5000,()=>dialog.setVisible(false));};
           const updateProgress=()=>{progress.setText(`BENIAMINI ${collected.size} / 8`);tregua.setVisible(collected.size===8);};
+
+          // Prima del Beniamino c'è sempre una prova. Questa prima implementazione
+          // è già giocabile e usa una meccanica diversa per ogni territorio.
+          const startTrial=(id:MapId)=>{
+            if(trialOverlay||trialCompleted.has(id))return;
+            trialStep=0;
+            trialTime=id==="pozzo"||id==="madonnina"?90:id==="leondoro"?30:60;
+            const def=MAPS[id];
+            trialOverlay=scene.add.container(scene.scale.width/2,scene.scale.height/2).setScrollFactor(0).setDepth(60000);
+            trialOverlay.add(scene.add.rectangle(0,0,Math.min(scene.scale.width-28,760),Math.min(scene.scale.height-28,460),0x17110d,.98).setStrokeStyle(3,def.accent,1));
+            trialOverlay.add(scene.add.text(0,-185,def.label.toUpperCase()+"  •  PROVA",{fontFamily:FONT,fontSize:"24px",fontStyle:"bold",color:"#f7e7b0"}).setOrigin(.5));
+            const info=scene.add.text(0,-145,"",{fontFamily:FONT,fontSize:"13px",color:"#fff",align:"center",wordWrap:{width:650}}).setOrigin(.5);
+            trialOverlay.add(info);
+            const status=scene.add.text(0,160,"",{fontFamily:FONT,fontSize:"16px",fontStyle:"bold",color:"#f4cf64"}).setOrigin(.5);
+            trialOverlay.add(status);
+            const close=scene.add.text(330,-185,"✕",{fontFamily:FONT,fontSize:"24px",color:"#fff"}).setOrigin(.5).setInteractive({useHandCursor:true});
+            trialOverlay.add(close);
+            close.on("pointerdown",()=>{trialTimer?.remove();trialOverlay?.destroy();trialOverlay=null;});
+
+            const fail=()=>{
+              trialTimer?.remove();
+              status.setText("PROVA FALLITA — RIPROVA");
+              scene.time.delayedCall(900,()=>{if(trialOverlay){trialOverlay.destroy();trialOverlay=null;}});
+            };
+            const win=()=>{
+              trialTimer?.remove();
+              trialCompleted.add(id);
+              status.setText("✓ PROVA SUPERATA — IL BENIAMINO È SBLOCCATO");
+              scene.time.delayedCall(900,()=>{if(trialOverlay){trialOverlay.destroy();trialOverlay=null;}});
+            };
+
+            if(id==="quercia"){
+              info.setText("Segui i tre segni dorati nell'ordine corretto.");
+              const order=[1,2,3];
+              [1,2,3].forEach((n,i)=>{
+                const b=scene.add.rectangle((i-1)*150,-30,120,90,def.accent,.25).setStrokeStyle(2,def.accent).setInteractive({useHandCursor:true});
+                const t=scene.add.text((i-1)*150,-30,"SEGNO "+n,{fontFamily:FONT,fontSize:"15px",fontStyle:"bold",color:"#fff"}).setOrigin(.5);
+                trialOverlay!.add([b,t]);
+                b.on("pointerdown",()=>{if(n===order[trialStep]){trialStep++;status.setText("Segno "+trialStep+" / 3");if(trialStep===3)win();}else fail();});
+              });
+              status.setText("Segno 0 / 3");
+            } else if(id==="pozzo"){
+              info.setText("Ricostruisci il mistero: scegli Acqua → Pietra → Miccio.");
+              const labels=["ACQUA","PIETRA","MICCIO"];
+              labels.forEach((label,i)=>{
+                const b=scene.add.rectangle((i-1)*150,-20,120,70,def.primary,.2).setStrokeStyle(2,def.accent).setInteractive({useHandCursor:true});
+                trialOverlay!.add(b);trialOverlay!.add(scene.add.text((i-1)*150,-20,label,{fontFamily:FONT,fontSize:"13px",fontStyle:"bold",color:"#fff"}).setOrigin(.5));
+                b.on("pointerdown",()=>{if(i===trialStep){trialStep++;status.setText("Traccia "+trialStep+" / 3");if(trialStep===3)win();}else fail();});
+              });
+              status.setText("Traccia 0 / 3");
+            } else if(id==="leondoro"){
+              info.setText("Sopravvivi per 30 secondi. Usa il movimento del personaggio.");
+              status.setText("30 secondi");
+              trialTimer=scene.time.addEvent({delay:100,loop:true,callback:()=>{
+                trialTime-=.1;status.setText("SOPRAVVIVI  "+Math.max(0,trialTime).toFixed(1)+"s");
+                if(trialTime<=0)win();
+              }});
+            } else {
+              info.setText("Completa la prova della Contrada per sbloccare il Beniamino.");
+              const b=scene.add.rectangle(0,20,230,72,def.accent,.3).setStrokeStyle(3,def.accent).setInteractive({useHandCursor:true});
+              trialOverlay.add(b);trialOverlay.add(scene.add.text(0,20,"INIZIA PROVA",{fontFamily:FONT,fontSize:"18px",fontStyle:"bold",color:"#fff"}).setOrigin(.5));
+              b.on("pointerdown",()=>win());
+            }
+          };
 
           const drawMap=(id:MapId)=>{
             const def=MAPS[id]; current=id;
@@ -277,7 +346,8 @@ export default function TreguaGame(){
           const interact=async()=>{
             const def=MAPS[current];
             if(currentBeni&&currentBeni.visible&&Phaser.Math.Distance.Between(player.x,player.y,currentBeni.x,currentBeni.y)<85){
-              if(!userId){say("Devi accedere per raccogliere il Beniamino.");return;}
+              if(!trialCompleted.has(def.beniamino)){startTrial(current);return;}
+              if(!userId){say("Devi accedere per salvare il Beniamino.");return;}
               const id=def.beniamino;const {error}=await supabase.from("user_beniamini").insert({user_id:userId,beniamino_id:id});
               if(error&&error.code!=="23505"){say("Errore nel salvataggio.");return;}
               collected.add(id);currentBeni.setVisible(false);updateProgress();const b=beniById(id);if(b)say(`✨ Hai trovato ${b.nome}! ${collected.size===8?"Hai completato la raccolta. Ora cerca un giocatore di un'altra Contrada.":""}`);return;
