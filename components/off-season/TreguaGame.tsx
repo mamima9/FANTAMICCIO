@@ -341,7 +341,7 @@ export default function TreguaGame(){
           const act=scene.add.container(scene.scale.width-90,scene.scale.height-190).setScrollFactor(0).setDepth(50000).setVisible(mobile);
           const ab=scene.add.circle(0,0,42,0x8b3f2f,.9).setStrokeStyle(3,0xffffff,.35).setInteractive();act.add([ab,scene.add.text(0,0,"E",{fontFamily:"Arial",fontSize:"24px",color:"#fff",fontStyle:"bold"}).setOrigin(.5)]);ab.on("pointerdown",()=>void interact());
 
-          jb.on("pointerdown",(p:Phaser.Input.Pointer)=>{if(!mobile)return;joyPointer=p.id;const dx=p.x-mobileUi.x,dy=p.y-mobileUi.y,l=Math.hypot(dx,dy),m=50,s=l>m?m/l:1;joyX=dx*s/m;joyY=dy*s/m;jk.setPosition(dx*s,dy*s);});
+          jb.on("pointerdown",(p:Phaser.Input.Pointer)=>{if(!mobile)return;joyPointer=p.id;scene.input.setPollAlways();const dx=p.x-mobileUi.x,dy=p.y-mobileUi.y,l=Math.hypot(dx,dy),m=50,s=l>m?m/l:1;joyX=dx*s/m;joyY=dy*s/m;jk.setPosition(dx*s,dy*s);});
           scene.input.on("pointermove",(p:Phaser.Input.Pointer)=>{if(p.id!==joyPointer)return;const dx=p.x-mobileUi.x,dy=p.y-mobileUi.y,l=Math.hypot(dx,dy),m=50,s=l>m?m/l:1;joyX=dx*s/m;joyY=dy*s/m;jk.setPosition(dx*s,dy*s);});
           scene.input.on("pointerup",(p:Phaser.Input.Pointer)=>{if(p.id===joyPointer){joyPointer=null;joyX=joyY=0;jk.setPosition(0,0);}});
 
