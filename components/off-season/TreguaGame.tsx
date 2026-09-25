@@ -532,7 +532,12 @@ CONTRADE_MAPPA.forEach((contrada) => {
               const speed = 220;
 
               body.setVelocity(0);
-
+if (joystickActive) {
+  body.setVelocity(
+    joystickX * speed,
+    joystickY * speed
+  );
+}
               if (
                 cursors.left.isDown ||
                 keys.A.isDown
