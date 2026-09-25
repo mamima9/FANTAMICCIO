@@ -77,7 +77,7 @@ export default function TreguaGame(){
           let timer:Phaser.Time.TimerEvent|null=null;
           let joyX=0,joyY=0,joyPointer:number|null=null;
 
-          const say=(s:string)=>{timer?.remove();dialog.getAt(1).setText(s);dialog.setVisible(true);timer=scene.time.delayedCall(5000,()=>dialog.setVisible(false));};
+          const say=(s:string)=>{timer?.remove();const text=dialog.getAt(1) as Phaser.GameObjects.Text;text.setText(s);dialog.setVisible(true);timer=scene.time.delayedCall(5000,()=>dialog.setVisible(false));};
           const updateProgress=()=>{progress.setText(`BENIAMINI ${collected.size} / 8`);tregua.setVisible(collected.size===8);};
 
           const drawMap=(id:MapId)=>{
