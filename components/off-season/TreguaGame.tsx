@@ -41,7 +41,63 @@ export default function TreguaGame() {
           // =====================================================
           // MONDO
           // =====================================================
+const mapMinLat = 43.950;
+const mapMaxLat = 43.990;
 
+const mapMinLng = 10.185;
+const mapMaxLng = 10.230;
+
+const mapX = (lng: number) => {
+  return (
+    ((lng - mapMinLng) /
+      (mapMaxLng - mapMinLng)) *
+    2600
+  );
+};
+
+const mapY = (lat: number) => {
+  return (
+    2000 -
+    ((lat - mapMinLat) /
+      (mapMaxLat - mapMinLat)) *
+      2000
+  );
+};
+
+CONTRADE_MAPPA.forEach((contrada) => {
+  const x = mapX(contrada.lng) + 200;
+  const y = mapY(contrada.lat) + 100;
+
+  scene.add
+    .circle(
+      x,
+      y,
+      18,
+      0xffffff
+    )
+    .setStrokeStyle(4, 0x5b3a22)
+    .setDepth(30);
+
+  scene.add
+    .text(
+      x,
+      y - 35,
+      contrada.nome,
+      {
+        fontFamily: "Arial",
+        fontSize: "18px",
+        color: "#ffffff",
+        backgroundColor: "#5b3a22",
+        padding: {
+          x: 5,
+          y: 3,
+        },
+        fontStyle: "bold",
+      }
+    )
+    .setOrigin(0.5)
+    .setDepth(31);
+});
           const worldWidth = 3200;
           const worldHeight = 2200;
 
