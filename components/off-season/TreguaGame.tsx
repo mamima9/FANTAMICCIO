@@ -111,7 +111,7 @@ export default function TreguaGame(){
             if(id==="madonnina"){house(20,17,7,4,def.secondary);}
             if(id==="cervia"){house(18,8,7,4,def.secondary);}
             if(id==="ponte"){house(19,16,7,4,def.secondary);}
-            const trees:[[number,number]]=[[1,1],[10,2],[28,1],[1,22],[12,22],[29,21]];
+            const trees:Array<[number,number]>=[[1,1],[10,2],[28,1],[1,22],[12,22],[29,21]];
             if(id==="cervia"||id==="ranocchio"){trees.push([16,2],[27,22]);}
             if(id==="lucertola"){trees.push([12,6],[28,16]);}
             trees.forEach(([x,y],i)=>{
@@ -233,7 +233,7 @@ export default function TreguaGame(){
 
           const setPlayer=(id:string)=>{contradaId=MAPS[id as MapId]?id:"quercia";player.setTexture(`player-${contradaId}`);};
           scene.events.on("update",(_t:number,delta:number)=>{
-            const dt=Math.min(delta,32)/1000;if(!keys)return;let x=joyX,y=joyY;
+            Math.min(delta,32);if(!keys)return;let x=joyX,y=joyY;
             if(keys.A.isDown||keys.LEFT.isDown)x--;if(keys.D.isDown||keys.RIGHT.isDown)x++;if(keys.W.isDown||keys.UP.isDown)y--;if(keys.S.isDown||keys.DOWN.isDown)y++;
             const l=Math.hypot(x,y);if(l>1){x/=l;y/=l;}const moving=Math.abs(x)+Math.abs(y)>.05;player.setVelocity(x*(keys.SHIFT.isDown?190:135),y*(keys.SHIFT.isDown?190:135));
             player.setDepth(player.y);usernameText.setPosition(player.x,player.y-55);
