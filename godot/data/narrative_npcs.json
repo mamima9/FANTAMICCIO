@@ -1,0 +1,42 @@
+{
+  "cervia": [
+    {"name":"Archivista di Porta Beltrame","lines":["La torre custodisce più di una campana.","Cerca i segni sulle pietre prima di salire.","Quando senti il vento forte, guarda sopra di te."]},
+    {"name":"Vecchio della Torre","lines":["Le travi si muovono quando qualcuno prova a salire.","La campana è il traguardo."]},
+    {"name":"Cantastorie del Palio","lines":["Chi arriva in cima trova ciò che la Cervia protegge."]}
+  ],
+  "pozzo": [
+    {"name":"Archeologo del Pozzo","lines":["Nel Pozzo è rimasta una storia che nessuno ha completato.","Ho trovato tre tracce, ma non so quale venga per prima."]},
+    {"name":"Custode del Vaso Etrusco","lines":["Una traccia parla di acqua. Una di pietra. Una del Miccio.","Metterle nell'ordine corretto è la vera prova."]},
+    {"name":"Cronista delle Gare","lines":["Quando avrai ricostruito il mistero, il Pozzo ti mostrerà il suo segreto."]}
+  ],
+  "leondoro": [
+    {"name":"Archeologo di Baraglino","lines":["Nella tana il Leone non attacca sempre nello stesso modo.","Trenta secondi. Non serve combatterlo: devi sopravvivere."]},
+    {"name":"Vecchio del Primo Palio","lines":["Non correre sempre nella stessa direzione.","Quando il Leone cambia passo, cambia anche tu."]},
+    {"name":"Cantastorie dei Medici","lines":["Chi resiste alla tana dimostra di meritare il simbolo del Leone."]}
+  ],
+  "ranocchio": [
+    {"name":"Vecchio del Ranocchiaio","lines":["Le ninfee portano dall'altra parte della palude.","Ma alcune non reggono un secondo salto."]},
+    {"name":"Pastore delle Apuane","lines":["Guarda sempre la prossima ninfea prima di saltare.","Il Loto d'Oro è al centro della palude."]},
+    {"name":"Custode di Eriberto","lines":["Se cadi, il loto scompare dalla vista. Riparti e osserva meglio."]}
+  ],
+  "quercia": [
+    {"name":"Custode delle Querce","lines":["Le querce non mostrano mai il loro segreto a chi corre senza guardare.","Segui i tre segni dorati."]},
+    {"name":"Vecchio del Comunello","lines":["Il sentiero più corto non è quello giusto.","Quando trovi il secondo segno, cambia direzione."]},
+    {"name":"Custode della Passione","lines":["La Quercia Antica custodisce il Beniamino. Arrivarci è la prova."]}
+  ],
+  "ponte": [
+    {"name":"Vecchio di Ponte di Tavole","lines":["Il ponte è cambiato molte volte, ma il suo ritmo è rimasto.","Osserva quali tavole cedono prima di attraversare."]},
+    {"name":"Guardiano del Fosso","lines":["Non saltare a caso. Le tavole sicure seguono un ritmo."]},
+    {"name":"Maestro dei Musici","lines":["Ascolta il passo dell'acqua: può aiutarti a trovare il tempo giusto."]}
+  ],
+  "madonnina": [
+    {"name":"Storico di Brancagliano","lines":["Nel pagliaio è nascosto qualcosa che non vuole essere trovato.","Prima memorizza i simboli."]},
+    {"name":"Ragazza del Pagliaio","lines":["Ogni indizio appare per poco. Non avere fretta."]},
+    {"name":"Custode della Chiesina","lines":["La memoria ti condurrà al Beniamino della Madonnina."]}
+  ],
+  "lucertola": [
+    {"name":"Vecchio di Ripa","lines":["La Ripa ha due strade. Solo una conosce la via del Beniamino.","Guarda i segni sulle pietre."]},
+    {"name":"Sentinella della Ripa","lines":["Il bivio inganna chi sceglie la strada più luminosa."]},
+    {"name":"Cantastorie della Lucertola","lines":["Quando riconosci il simbolo giusto, non voltarti indietro."]}
+  ]
+}
