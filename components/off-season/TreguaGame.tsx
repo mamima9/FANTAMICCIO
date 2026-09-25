@@ -865,20 +865,7 @@ export default function TreguaGame() {
               .setOrigin(0.5)
               .setDepth(110);
 
-          // =====================================================
-          // COLLISIONI
-          // =====================================================
-
-          const staticBodies =
-            scene.physics.world
-              .staticBodies;
-
-          staticBodies.iterate(
-            () => {
-              // placeholder per mantenere
-              // i corpi statici attivi
-            }
-          );
+        
 
           // =====================================================
           // CAMERA
