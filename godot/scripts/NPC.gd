@@ -8,6 +8,7 @@ var dialogue_index := 0
 func _ready() -> void:
     body_entered.connect(_on_body_entered)
     body_exited.connect(_on_body_exited)
+    $Prompt.visible = false
 
 func _process(_delta: float) -> void:
     if player_near and Input.is_action_just_pressed("interact"):
@@ -27,7 +28,7 @@ func _on_body_exited(body: Node) -> void:
 func interact() -> void:
     if dialogue.is_empty():
         return
-    var hud = get_node("../HUD")
+    var hud = get_tree().current_scene.get_node("HUD")
     if hud.has_method("show_dialogue"):
         hud.show_dialogue(npc_name, dialogue[dialogue_index])
     dialogue_index = (dialogue_index + 1) % dialogue.size()
