@@ -29,11 +29,13 @@ func _process(_delta: float) -> void:
         $Camera2D.position = player.position
 
 func start_trial(id: String) -> void:
-    if not Challenges.get_challenge(id).is_empty():
+    if id in ["cervia", "pozzo", "leondoro", "ranocchio"]:
         trial_game.start(id)
         player.visible = false
         player.set_physics_process(false)
         $Camera2D.enabled = false
+    elif not Challenges.get_challenge(id).is_empty():
+        challenge_manager.start(id)
 
 func start_quercia_trial() -> void:
     start_trial("quercia")
