@@ -1,6 +1,13 @@
 "use client";
 
-import TreguaGame from "@/components/off-season/TreguaGame";
+import dynamic from "next/dynamic";
+
+const TreguaGame = dynamic(
+  () => import("@/components/off-season/TreguaGame"),
+  {
+    ssr: false,
+  }
+);
 
 export default function OffSeasonPage() {
   return (
