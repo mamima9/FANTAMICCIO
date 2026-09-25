@@ -140,14 +140,6 @@ export default function TreguaGame() {
             usernameText.setText(username);
           };
 
-          const anim = (key:string, frames:string[]) => {
-            if (scene.anims.exists(key)) return;
-            scene.anims.create({ key, frames: frames.map(f=>({key:f})), frameRate:7, repeat:-1 });
-          };
-          anim("walk-down", ["player-down-1","player-down-2"]);
-          anim("walk-up", ["player-up-1","player-up-2"]);
-          anim("walk-side", ["player-side-1","player-side-2"]);
-
           const npcPositions: Record<string,{x:number;y:number}> = {
             "vecchio-contradaiolo": {x:23,y:12},
             "contadino-ranocchio": {x:12,y:12},
@@ -162,6 +154,11 @@ export default function TreguaGame() {
           const npcObjects = NPCS.map((npc) => {
             const p = npcPositions[npc.id] ?? {x:24,y:17};
             const sprite = scene.add.image(p.x*TILE+16,p.y*TILE+10,"npc").setScale(.72).setDepth(p.y*TILE+20);
+            const tag=scene.add.container(sprite.x,sprite.y-43).setDepth(p.y*TILE+90);
+            const tagBg=scene.add.rectangle(0,0,112,20,0x241812,0.86).setStrokeStyle(1,0xd4af37,0.55);
+            const tagText=scene.add.text(0,0,npc.nome,{fontFamily:"Arial",fontSize:"8px",fontStyle:"bold",color:"#fff"}).setOrigin(.5);
+            tag.add([tagBg,tagText]);
+            scene.tweens.add({targets:tag,y:tag.y-2,duration:900,yoyo:true,repeat:-1,ease:"Sine.easeInOut"});
             return { npc, sprite };
           });
 
@@ -169,6 +166,20 @@ export default function TreguaGame() {
             cervia:{x:6,y:25}, leondoro:{x:37,y:7}, lucertola:{x:42,y:11}, madonnina:{x:26,y:11},
             ponte:{x:5,y:18}, pozzo:{x:39,y:18}, quercia:{x:22,y:13}, ranocchio:{x:11,y:11}
           };
+
+          // Otto micro-zone: ogni area ha il nome della Contrada e un punto di riferimento visivo.
+          Object.entries(positions).forEach(([id,p])=>{
+            const cfg=contradaConfig[id];
+            if(!cfg) return;
+            const x=p.x*TILE+16, y=p.y*TILE+10;
+            const halo=scene.add.circle(x,y,25,Phaser.Display.Color.HexStringToColor(cfg.secondary).color,0.12).setDepth(p.y*TILE+1);
+            scene.tweens.add({targets:halo,scaleX:1.18,scaleY:1.18,alpha:0.05,duration:1100,yoyo:true,repeat:-1,ease:"Sine.easeInOut"});
+            const sign=scene.add.container(x,y-38).setDepth(p.y*TILE+80);
+            const flag=scene.add.rectangle(0,0,5,22,Phaser.Display.Color.HexStringToColor(cfg.secondary).color).setOrigin(.5);
+            const plate=scene.add.rectangle(8,0,86,22,0x241812,0.9).setStrokeStyle(1,Phaser.Display.Color.HexStringToColor(cfg.primary).color,0.75);
+            const label=scene.add.text(8,0,cfg.label.toUpperCase(),{fontFamily:"Arial",fontSize:"7px",fontStyle:"bold",color:"#fff"}).setOrigin(.5);
+            sign.add([flag,plate,label]);
+          });
 
           const objects = new Map<string, Phaser.GameObjects.Image>();
           BENIAMINI_MAPPA.forEach(b => {
@@ -284,7 +295,7 @@ export default function TreguaGame() {
           actionBg.on("pointerdown",()=>void interact());
 
 
-          scene.events.on("update",(_t:number,delta:number)=>{const dt=Math.min(delta,32)/1000; if(!keys)return; let x=joyX,y=joyY;if(keys.A.isDown||keys.LEFT.isDown)x--;if(keys.D.isDown||keys.RIGHT.isDown)x++;if(keys.W.isDown||keys.UP.isDown)y--;if(keys.S.isDown||keys.DOWN.isDown)y++;const len=Math.hypot(x,y);if(len>1){x/=len;y/=len;}const speed=keys.SHIFT.isDown?190:135;player.setVelocity(x*speed,y*speed);if(Math.abs(x)+Math.abs(y)>.05){if(Math.abs(x)>Math.abs(y)){player.anims.play("walk-side",true);player.setFlipX(x<0);}else player.anims.play(y>0?"walk-down":"walk-up",true);}else player.anims.stop();player.setDepth(player.y); updatePlayerLabel(); updateMini(); if(Phaser.Input.Keyboard.JustDown(keys.E)||Phaser.Input.Keyboard.JustDown(keys.SPACE))void interact();});
+          scene.events.on("update",(_t:number,delta:number)=>{const dt=Math.min(delta,32)/1000; if(!keys)return; let x=joyX,y=joyY;if(keys.A.isDown||keys.LEFT.isDown)x--;if(keys.D.isDown||keys.RIGHT.isDown)x++;if(keys.W.isDown||keys.UP.isDown)y--;if(keys.S.isDown||keys.DOWN.isDown)y++;const len=Math.hypot(x,y);if(len>1){x/=len;y/=len;}const moving=Math.abs(x)+Math.abs(y)>.05;const speed=keys.SHIFT.isDown?190:135;player.setVelocity(x*speed,y*speed);if(moving){player.setScale(0.72,0.69);if(Math.abs(x)>Math.abs(y))player.setFlipX(x<0);else player.setFlipX(false);}else{player.setScale(0.72,0.72);player.setFlipX(false);}player.setDepth(player.y); updatePlayerLabel(); updateMini(); if(Phaser.Input.Keyboard.JustDown(keys.E)||Phaser.Input.Keyboard.JustDown(keys.SPACE))void interact();});
           const resize=()=>{
             hud.setPosition(18,18);
             tregua.setPosition(scene.scale.width/2,18);
