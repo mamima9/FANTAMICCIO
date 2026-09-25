@@ -48,6 +48,9 @@ export default function TreguaGame(){
           this.load.image("tiles","/game/rpg-tileset.svg");
           ["cervia","leondoro","lucertola","madonnina","ponte","pozzo","quercia","ranocchio"].forEach(id=>this.load.image(`player-${id}`,`/game/player-${id}.svg`));
           this.load.image("npc","/game/npc.svg");
+          this.load.image("house-borgo","/game/house-borgo.svg");
+          this.load.image("house-osteria","/game/house-osteria.svg");
+          this.load.image("tree-large","/game/tree-large.svg");
           BENIAMINI_MAPPA.forEach(b=>this.load.image(`beni-${b.id}`,b.image));
         },
         create(this:Phaser.Scene){
@@ -125,25 +128,11 @@ export default function TreguaGame(){
             };
             const house=(x:number,y:number,w:number,h:number,roof:number,label?:string)=>{
               const px=(x+w/2)*TILE,py=(y+h/2)*TILE;
-              scene.add.ellipse(px,(y+h+.35)*TILE,w*TILE-4,13,0x241b16,.24).setDepth(y*TILE);
-              scene.add.rectangle(px,py,w*TILE-5,h*TILE-4,0xead9b9).setDepth(y*TILE+8);
-              scene.add.rectangle(px,py+5,w*TILE-9,h*TILE-11,0xd8c09b,.32).setDepth(y*TILE+9);
-              scene.add.triangle(px,(y-9)*TILE,0,38,w*TILE/2,0,w*TILE,38,roof).setOrigin(.5).setDepth(y*TILE+7);
-              scene.add.triangle(px,(y-5)*TILE,0,28,w*TILE/2,0,w*TILE,28,roof).setOrigin(.5).setAlpha(.28).setDepth(y*TILE+8);
-              // Tegole / bordo del tetto.
-              for(let i=0;i<w;i+=2)scene.add.rectangle((x+i+1)*TILE,(y+0.65)*TILE,18,3,0x5a3c2d,.45).setDepth(y*TILE+10);
-              // Finestre con cornice e riflesso.
-              for(const wx of [x+w*.3,x+w*.7]){
-                scene.add.rectangle(wx*TILE,(y+h*.5)*TILE,20,18,0x765036).setDepth(y*TILE+11);
-                scene.add.rectangle(wx*TILE,(y+h*.5)*TILE,15,13,0x9ed5d5).setDepth(y*TILE+12);
-                scene.add.rectangle(wx*TILE,(y+h*.5)*TILE,2,13,0x6c8e8f).setDepth(y*TILE+13);
-                scene.add.rectangle(wx*TILE,(y+h*.5)*TILE,15,2,0xdaf2e8,.7).setDepth(y*TILE+13);
-              }
-              // Porta.
-              scene.add.rectangle(px,(y+h*.69)*TILE,14,25,0x74492f).setDepth(y*TILE+12);
-              scene.add.rectangle(px-2,(y+h*.67)*TILE,3,3,0xd4af37).setDepth(y*TILE+13);
-              if(label)scene.add.text(px,(y-20)*TILE,label,{fontFamily:FONT,fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:4}).setOrigin(.5).setDepth(y*TILE+20);
-              const hit=scene.add.rectangle(px,py,w*TILE-8,h*TILE-4,0xffffff,0);
+              const key=label==="OSTERIA"?"house-osteria":"house-borgo";
+              const img=scene.add.image(px,py+6,key).setOrigin(.5,1).setDepth((y+h)*TILE);
+              img.setDisplaySize(w*TILE+8,h*TILE+18);
+              if(label)scene.add.text(px,(y-4)*TILE,label,{fontFamily:FONT,fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:4}).setOrigin(.5).setDepth((y+h)*TILE+20);
+              const hit=scene.add.rectangle(px,py+8,w*TILE-8,h*TILE-8,0xffffff,0);
               scene.physics.add.existing(hit,true);scene.physics.add.collider(player,hit);mapCollisionObjects.push(hit);block(x,y,w,h);
             };
             const fence=(x:number,y:number,w:number,h:number)=>{
@@ -207,8 +196,8 @@ export default function TreguaGame(){
             if(id==="lucertola")trees.push([12,6],[28,16]);
             if(id==="cervia")trees.push([12,18],[28,15]);
             trees.forEach(([x,y],i)=>{
-              ground.putTileAt(i%3===0?T.darkTree:T.tree,x,y);
-              ground.putTileAt(T.tree,x+1,y);
+              if(i<3) scene.add.image(x*TILE+TILE,y*TILE+TILE,"tree-large").setOrigin(.5,1).setDisplaySize(64,82).setDepth((y+2)*TILE);
+              else { ground.putTileAt(i%3===0?T.darkTree:T.tree,x,y); ground.putTileAt(T.tree,x+1,y); }
             });
             // Piccoli dettagli ambientali: cespugli, fiori e pietre danno profondità alla mappa.
             const flowerSpots:Array<[number,number]>=[[10,5],[21,6],[9,17],[22,17],[2,12],[29,12]];
