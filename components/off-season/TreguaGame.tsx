@@ -31,7 +31,7 @@ const MAPS:Record<MapId,MapDef> = {
     exits:[{x:31,y:7,target:"quercia",label:"Verso Querceta"},{x:0,y:17,target:"cervia",label:"Verso Cervia"}]},
 };
 
-const TILE=32, COLS=32, ROWS=24;
+const TILE=16, COLS=32, ROWS=24;
 const beniById=(id:string)=>BENIAMINI_MAPPA.find(b=>b.id===id);
 
 export default function TreguaGame(){
@@ -40,7 +40,7 @@ export default function TreguaGame(){
     if(!root.current)return;
     const supabase=createClient();
     const config:Phaser.Types.Core.GameConfig={
-      type:Phaser.AUTO,parent:root.current,width:960,height:540,pixelArt:true,backgroundColor:"#6f9f58",
+      type:Phaser.AUTO,parent:root.current,width:960,height:540,pixelArt:true,backgroundColor:"#5f8f4e",
       scale:{mode:Phaser.Scale.RESIZE,autoCenter:Phaser.Scale.CENTER_BOTH},render:{antialias:false,roundPixels:true},
       physics:{default:"arcade",arcade:{debug:false}},
       scene:{
@@ -55,7 +55,7 @@ export default function TreguaGame(){
           const FONT="Trebuchet MS, Arial, sans-serif";
           const mobile=window.innerWidth<768||"ontouchstart"in window||navigator.maxTouchPoints>0||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
           scene.physics.world.setBounds(0,0,WORLD_W,WORLD_H);
-          scene.cameras.main.setBounds(0,0,WORLD_W,WORLD_H).setZoom(mobile?1.85:2);
+          scene.cameras.main.setBounds(0,0,WORLD_W,WORLD_H).setZoom(mobile?2.9:3.1);
           const map=scene.make.tilemap({tileWidth:TILE,tileHeight:TILE,width:COLS,height:ROWS});
           const tiles=map.addTilesetImage("tiles","tiles",TILE,TILE,0,0,1); if(!tiles)return;
           const ground=map.createBlankLayer("ground",tiles,0,0,COLS,ROWS,TILE,TILE); if(!ground)return;
@@ -226,7 +226,7 @@ export default function TreguaGame(){
             currentNpcData=npcs;
             currentNpcs=npcs.map((npc)=>{
               const [nx,ny]=npc.position;
-              const img=scene.add.image(nx*TILE+16,ny*TILE+10,`player-${id}`).setScale(.58).setDepth(ny*TILE+30);
+              const img=scene.add.image(nx*TILE+16,ny*TILE+10,`player-${id}`).setScale(.42).setDepth(ny*TILE+30);
               const tag=scene.add.text(img.x,img.y-38,npc.nome,{fontFamily:FONT,fontSize:"8px",fontStyle:"bold",color:"#fff",backgroundColor:"#241812",padding:{x:4,y:3}}).setOrigin(.5).setDepth(1000);
               scene.tweens.add({targets:[img,tag],y:"-=2",duration:900,yoyo:true,repeat:-1,ease:"Sine.easeInOut"});
               img.setData("npcId",npc.id);
@@ -234,7 +234,7 @@ export default function TreguaGame(){
             });
             if(beni){
               const bx=Math.max(3,Math.min(28,def.spawn.x+7)),by=Math.max(3,Math.min(20,def.spawn.y+1));
-              currentBeni=scene.add.image(bx*TILE+16,by*TILE+10,`beni-${beni.id}`).setDisplaySize(54,54).setDepth(by*TILE+40);
+              currentBeni=scene.add.image(bx*TILE+16,by*TILE+10,`beni-${beni.id}`).setDisplaySize(34,34).setDepth(by*TILE+40);
               currentBeni.setVisible(!collected.has(beni.id));
               scene.tweens.add({targets:currentBeni,y:currentBeni.y-5,duration:700,yoyo:true,repeat:-1,ease:"Sine.easeInOut"});
             }
@@ -248,18 +248,18 @@ export default function TreguaGame(){
             scene.cameras.main.startFollow(player,true,.12,.12);
             mapTitle.setText(def.label.toUpperCase());
             locationText.setText(def.place);
-            const zone=scene.add.container(WORLD_W/2,34).setDepth(7000);
-            zone.add(scene.add.rectangle(0,0,430,52,0x241812,.88).setStrokeStyle(2,def.accent,.9));
-            zone.add(scene.add.text(0,-7,def.label.toUpperCase(),{fontFamily:FONT,fontSize:"22px",fontStyle:"bold",color:"#f7e7b0",stroke:"#241812",strokeThickness:5}).setOrigin(.5));
-            zone.add(scene.add.text(0,13,def.place.toUpperCase(),{fontFamily:FONT,fontSize:"10px",fontStyle:"bold",letterSpacing:2,color:"#ffffff",stroke:"#241812",strokeThickness:3}).setOrigin(.5));
+            const zone=scene.add.container(WORLD_W/2,22).setDepth(7000);
+            zone.add(scene.add.rectangle(0,0,260,40,0x241812,.88).setStrokeStyle(2,def.accent,.9));
+            zone.add(scene.add.text(0,-7,def.label.toUpperCase(),{fontFamily:FONT,fontSize:"14px",fontStyle:"bold",color:"#f7e7b0",stroke:"#241812",strokeThickness:5}).setOrigin(.5));
+            zone.add(scene.add.text(0,13,def.place.toUpperCase(),{fontFamily:FONT,fontSize:"7px",fontStyle:"bold",letterSpacing:1,color:"#ffffff",stroke:"#241812",strokeThickness:3}).setOrigin(.5));
             scene.tweens.add({targets:zone,alpha:0,duration:900,delay:3500,ease:"Sine.easeInOut"});
             if(currentBeni)currentBeni.setData("map",id);
           };
 
           player=scene.physics.add.sprite(MAPS.quercia.spawn.x*TILE,MAPS.quercia.spawn.y*TILE,"player-quercia");
-          player.setScale(.72).setCollideWorldBounds(true);
-          const body=player.body as Phaser.Physics.Arcade.Body;body.setSize(22,18).setOffset(13,40);
-          usernameText=scene.add.text(player.x,player.y-55,username,{fontFamily:FONT,fontSize:mobile?"11px":"12px",color:"#fff",fontStyle:"bold",stroke:"#241812",strokeThickness:4}).setOrigin(.5).setDepth(20000);
+          player.setScale(.9).setCollideWorldBounds(true);
+          const body=player.body as Phaser.Physics.Arcade.Body;body.setSize(18,14).setOffset(11,26);
+          usernameText=scene.add.text(player.x,player.y-30,username,{fontFamily:FONT,fontSize:mobile?"9px":"10px",color:"#fff",fontStyle:"bold",stroke:"#241812",strokeThickness:4}).setOrigin(.5).setDepth(20000);
 
           const hud=scene.add.container(18,18).setScrollFactor(0).setDepth(9000);
           hud.add(scene.add.rectangle(0,0,300,104,0x2b1c14,.94).setOrigin(0).setStrokeStyle(2,0xd4af37));
@@ -338,9 +338,9 @@ export default function TreguaGame(){
           scene.events.on("update",(_t:number,delta:number)=>{
             Math.min(delta,32);if(!keys)return;let x=joyX,y=joyY;
             if(keys.A.isDown||keys.LEFT.isDown)x--;if(keys.D.isDown||keys.RIGHT.isDown)x++;if(keys.W.isDown||keys.UP.isDown)y--;if(keys.S.isDown||keys.DOWN.isDown)y++;
-            const l=Math.hypot(x,y);if(l>1){x/=l;y/=l;}const moving=Math.abs(x)+Math.abs(y)>.05;player.setVelocity(x*(keys.SHIFT.isDown?190:135),y*(keys.SHIFT.isDown?190:135));
+            const l=Math.hypot(x,y);if(l>1){x/=l;y/=l;}const moving=Math.abs(x)+Math.abs(y)>.05;player.setVelocity(x*(keys.SHIFT.isDown?125:90),y*(keys.SHIFT.isDown?125:90));
             player.setDepth(player.y);usernameText.setPosition(player.x,player.y-55);
-            if(moving){player.setScale(.72,.69);if(Math.abs(x)>Math.abs(y))player.setFlipX(x<0);else player.setFlipX(false);}else{player.setScale(.72);player.setFlipX(false);}
+            if(moving){player.setScale(.9,.86);if(Math.abs(x)>Math.abs(y))player.setFlipX(x<0);else player.setFlipX(false);}else{player.setScale(.9);player.setFlipX(false);}
             if(Phaser.Input.Keyboard.JustDown(keys.E)||Phaser.Input.Keyboard.JustDown(keys.SPACE))void interact();
             const def=MAPS[current];for(const e of def.exits){const ex=e.x*TILE+16,ey=e.y*TILE+16;if(Phaser.Math.Distance.Between(player.x,player.y,ex,ey)<42){say(`➜ ${e.label}. Premi E.`);break;}}
           });
