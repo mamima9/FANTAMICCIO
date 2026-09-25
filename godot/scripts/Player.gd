@@ -11,7 +11,7 @@ var step_time := 0.0
 func _physics_process(delta: float) -> void:
     var keyboard_input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
     var mobile_input := Vector2.ZERO
-    var joystick = get_tree().current_scene.get_node_or_null("MobileJoystick")
+    var joystick = get_tree().current_scene.get_node_or_null("MobileJoystick/JoystickSurface")
     if joystick and joystick.has_method("get_axis"):
         mobile_input = joystick.get_axis()
 
