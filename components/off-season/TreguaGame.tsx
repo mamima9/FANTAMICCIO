@@ -58,6 +58,7 @@ export default function TreguaGame(){
           const map=scene.make.tilemap({tileWidth:TILE,tileHeight:TILE,width:COLS,height:ROWS});
           const tiles=map.addTilesetImage("rpg-tileset","tiles",TILE,TILE,0,0,1); if(!tiles)return;
           const ground=map.createBlankLayer("ground",tiles,0,0,COLS,ROWS,TILE,TILE); if(!ground)return;
+          const T={grass:0,flowers:1,path:2,plaza:3,water:4,bridge:5,wall:6,roof:7,tree:8,fence:9,stone:10,darkGrass:11,dirt:12,goldRoof:13,darkTree:14,flowerPatch:15};
 
           let userId:string|null=null,username="Contradaiolo",contradaId="quercia";
           const collected=new Set<string>();
@@ -83,24 +84,21 @@ export default function TreguaGame(){
 
           const drawMap=(id:MapId)=>{
             const def=MAPS[id]; current=id;
-            ground.fill(0);
-            ground.fill(2,14,0,4,ROWS);
-            ground.fill(2,0,10,COLS,4);
-            ground.fill(2,4,5,24,2);
-            ground.fill(2,7,20,21,2);
-            ground.fill(3,12,8,8,8);
-            if(id==="cervia"||id==="ponte"){ground.fill(4,2,15,7,5);ground.fill(5,4,17,3,2);}
-            if(id==="pozzo"){ground.fill(3,22,3,6,6);}
-            if(id==="lucertola"){ground.fill(4,19,1,8,5);}
-            if(id==="ranocchio"||id==="cervia"){ground.fill(12,2,2,7,5);}
-            // Ogni mappa ha una piccola "città" leggibile: strada principale, piazza, vicoli, case, verde e un punto d'interesse.
             mapCollisionObjects.forEach(o=>o.destroy());
             mapCollisionObjects=[];
-
-            ground.fill(0);
-            ground.fill(2,14,0,4,ROWS);
-            ground.fill(2,0,10,COLS,4);
-
+            // Base del villaggio: tutto viene costruito con il tileset pixel-art.
+            const tileRect=(tile:number,x:number,y:number,w:number,h:number)=>{for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)ground.putTileAt(tile,xx,yy);};
+            tileRect(T.grass,0,0,COLS,ROWS);
+            tileRect(T.path,14,0,4,24);
+            tileRect(T.path,0,10,32,4);
+            tileRect(T.plaza,11,8,10,8);
+            if(id==="ranocchio"||id==="cervia")tileRect(T.darkGrass,0,0,12,9);
+            if(id==="leondoro")tileRect(T.stone,7,16,18,6);
+            if(id==="lucertola")tileRect(T.darkGrass,8,5,7,18);
+            if(id==="pozzo")tileRect(T.stone,21,13,8,7);
+            if(id==="madonnina")tileRect(T.flowers,2,15,9,7);
+            if(id==="ponte"){tileRect(T.water,2,16,27,4);tileRect(T.bridge,20,9,11,3);}
+            if(id==="quercia"){tileRect(T.flowerPatch,8,3,8,5);tileRect(T.darkGrass,22,16,8,6);}
             const blocked=new Set<string>();
             const block=(x:number,y:number,w:number,h:number)=>{for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)blocked.add(xx+","+yy);};
             const contradaBanner=(x:number,y:number,label:string)=>{              const c=scene.add.container(x*TILE,y*TILE).setDepth(y*TILE+80);              c.add(scene.add.rectangle(0,0,4,42,0x6b4933));              c.add(scene.add.rectangle(15,10,26,18,def.primary).setStrokeStyle(2,def.accent,.9));              c.add(scene.add.rectangle(15,10,26,6,def.secondary,.9));              c.add(scene.add.text(15,10,label,{fontFamily:"Arial",fontSize:"6px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5));              c.add(scene.add.triangle(28,10,0,18,10,0,18,18,def.accent).setOrigin(.5));            };            const stoneMarker=(x:number,y:number)=>{              scene.add.ellipse(x*TILE,y*TILE+10,28,14,0x77746d,.9).setStrokeStyle(2,def.secondary,.8).setDepth(y*TILE+20);              scene.add.ellipse(x*TILE,y*TILE+6,21,9,0xa7a39a,.95).setDepth(y*TILE+21);            };            const marbleBlock=(x:number,y:number)=>{              scene.add.rectangle(x*TILE,y*TILE,28,42,0xc9c5b9,.98).setStrokeStyle(2,0x77746d,.8).setDepth(y*TILE+20);              scene.add.rectangle(x*TILE-3,y*TILE-13,34,6,0xe1ded5).setDepth(y*TILE+21);              scene.add.line(x*TILE,y*TILE,0,0,20,38,0x9a978f,.7).setLineWidth(2).setDepth(y*TILE+22);            };            const path=(x:number,y:number,w:number,h:number)=>{
@@ -202,28 +200,13 @@ export default function TreguaGame(){
             if(id==="lucertola")trees.push([12,6],[28,16]);
             if(id==="cervia")trees.push([12,18],[28,15]);
             trees.forEach(([x,y],i)=>{
-              const tx=x*TILE+16,ty=y*TILE+24,c=scene.add.container(tx,ty).setDepth(ty+30);
-              c.add(scene.add.ellipse(0,17,48,14,0x26351f,.24));
-              c.add(scene.add.rectangle(0,7,12,28,0x765036));
-              c.add(scene.add.circle(-12,-10,20,i%2?0x326d43:0x2f7045));
-              c.add(scene.add.circle(2,-18,25,i%2?0x3e8750:0x377b49));
-              c.add(scene.add.circle(15,-8,19,i%2?0x2e7044:0x438a52));
+              ground.putTileAt(i%3===0?T.darkTree:T.tree,x,y);
+              ground.putTileAt(T.tree,x+1,y);
             });
-            for(let i=0;i<5;i++){const x=(3+i*6)%29+1,y=(5+i*4)%16+6;ground.putTileAt(i%2?10:14,x,y);}
             // Piccoli dettagli ambientali: cespugli, fiori e pietre danno profondità alla mappa.
             const flowerSpots:Array<[number,number]>=[[10,5],[21,6],[9,17],[22,17],[2,12],[29,12]];
-            flowerSpots.forEach(([x,y],i)=>{
-              const col=i%2?0xe8c85a:0xd86f7b;
-              scene.add.circle(x*TILE+9,y*TILE+20,3,col).setDepth(y*TILE+12);
-              scene.add.circle(x*TILE+15,y*TILE+18,3,col).setDepth(y*TILE+12);
-              scene.add.rectangle(x*TILE+12,y*TILE+25,2,9,0x4f8a4d).setDepth(y*TILE+11);
-            });
-            [[2,8],[29,7],[10,22],[22,22]].forEach(([x,y])=>{
-              scene.add.ellipse(x*TILE+16,y*TILE+25,22,10,0x817967,.7).setDepth(y*TILE+10);
-              scene.add.ellipse(x*TILE+12,y*TILE+23,9,4,0xc3bca9,.7).setDepth(y*TILE+11);
-            });
-            scene.add.rectangle(16*TILE,12*TILE,7*TILE,5*TILE,def.secondary,.08).setDepth(2);
-
+            flowerSpots.forEach(([x,y])=>ground.putTileAt(T.flowerPatch,x,y));
+            [[2,8],[29,7],[10,22],[22,22]].forEach(([x,y])=>ground.putTileAt(T.stone,x,y));
             // Landmark della Contrada, sempre nello stesso territorio.
             const lx=(id==="cervia"?8:id==="leondoro"?26:id==="lucertola"?26:id==="madonnina"?24:id==="ponte"?25:id==="pozzo"?25:id==="ranocchio"?8:17)*TILE;
             const ly=(id==="cervia"?15:id==="leondoro"?15:id==="lucertola"?10:id==="madonnina"?14:id==="ponte"?9:id==="pozzo"?12:id==="ranocchio"?14:12)*TILE;
