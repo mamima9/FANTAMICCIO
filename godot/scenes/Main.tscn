@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://scripts/ChallengeManager.gd" id="7"]
 [ext_resource type="PackedScene" path="res://scenes/TrialGame.tscn" id="8"]
 [ext_resource type="Script" path="res://scripts/WorldFX.gd" id="9"]
+[ext_resource type="Script" path="res://scripts/MobileJoystick.gd" id="10"]
 
 [sub_resource type="RectangleShape2D" id="PlayerShape"]
 size = Vector2(34, 28)
@@ -145,6 +146,9 @@ theme_override_font_sizes/font_size = 12
 script = ExtResource("7")
 
 [node name="TrialGame" parent="." instance=ExtResource("8")]
+
+[node name="MobileJoystick" type="CanvasLayer" parent="."]
+script = ExtResource("10")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("5")
