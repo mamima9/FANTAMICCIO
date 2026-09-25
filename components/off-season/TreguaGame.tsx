@@ -186,7 +186,6 @@ export default function TreguaGame() {
             )
             .setDepth(-80);
 
-          // onde decorative
           for (let y = 120; y < 2150; y += 110) {
             scene.add
               .line(
@@ -228,8 +227,6 @@ export default function TreguaGame() {
               roadColor
             )
             .setDepth(-70);
-
-          // bordi strade
 
           scene.add
             .rectangle(
@@ -295,23 +292,6 @@ export default function TreguaGame() {
             )
             .setDepth(-60);
 
-          // pavimentazione
-
-          for (let x = 1210; x <= 1790; x += 70) {
-            scene.add
-              .line(
-                x,
-                880,
-                x,
-                1320,
-                x,
-                1320,
-                0xb28d59,
-                0.35
-              )
-              .setDepth(-59);
-          }
-
           scene.add
             .text(
               1500,
@@ -354,6 +334,8 @@ export default function TreguaGame() {
             [1950, 1800],
             [2300, 1800],
           ];
+
+          const houseBodies: Phaser.Physics.Arcade.StaticBody[] = [];
 
           houses.forEach(([x, y]) => {
             const house = scene.add
@@ -416,6 +398,11 @@ export default function TreguaGame() {
               house,
               true
             );
+
+            const houseBody =
+              house.body as Phaser.Physics.Arcade.StaticBody;
+
+            houseBodies.push(houseBody);
           });
 
           // =====================================================
@@ -510,7 +497,6 @@ export default function TreguaGame() {
                 contrada.lat
               );
 
-              // piccolo piedistallo
               scene.add
                 .circle(
                   x,
@@ -521,7 +507,6 @@ export default function TreguaGame() {
                 )
                 .setDepth(25);
 
-              // marker
               scene.add
                 .circle(
                   x,
@@ -541,8 +526,7 @@ export default function TreguaGame() {
                   y - 42,
                   contrada.nome,
                   {
-                    fontFamily:
-                      "Arial",
+                    fontFamily: "Arial",
                     fontSize: "18px",
                     color: "#ffffff",
                     backgroundColor:
@@ -551,8 +535,7 @@ export default function TreguaGame() {
                       x: 7,
                       y: 4,
                     },
-                    fontStyle:
-                      "bold",
+                    fontStyle: "bold",
                   }
                 )
                 .setOrigin(0.5)
@@ -564,7 +547,18 @@ export default function TreguaGame() {
           // BENIAMINI
           // =====================================================
 
-          const beniObjects: Phaser.GameObjects.GameObject[] = [];
+          const collectedBeniamini =
+            new Set<string>();
+
+          const beniObjects =
+            new Map<
+              string,
+              {
+                sprite: Phaser.GameObjects.Image;
+                label: Phaser.GameObjects.Text;
+                glow: Phaser.GameObjects.Arc;
+              }
+            >();
 
           BENIAMINI_MAPPA.forEach(
             (beni) => {
@@ -576,16 +570,16 @@ export default function TreguaGame() {
                 beni.coordinates[0]
               );
 
-              // alone
-              const glow = scene.add
-                .circle(
-                  x,
-                  y,
-                  48,
-                  0xffd95c,
-                  0.18
-                )
-                .setDepth(35);
+              const glow =
+                scene.add
+                  .circle(
+                    x,
+                    y,
+                    48,
+                    0xffd95c,
+                    0.18
+                  )
+                  .setDepth(35);
 
               scene.tweens.add({
                 targets: glow,
@@ -635,10 +629,13 @@ export default function TreguaGame() {
                   .setOrigin(0.5)
                   .setDepth(41);
 
-              beniObjects.push(
-                sprite,
-                label,
-                glow
+              beniObjects.set(
+                beni.id,
+                {
+                  sprite,
+                  label,
+                  glow,
+                }
               );
             }
           );
@@ -656,7 +653,6 @@ export default function TreguaGame() {
               npc.coordinates[0]
             );
 
-            // ombra
             scene.add
               .ellipse(
                 x,
@@ -668,7 +664,6 @@ export default function TreguaGame() {
               )
               .setDepth(45);
 
-            // corpo
             scene.add
               .rectangle(
                 x,
@@ -679,7 +674,6 @@ export default function TreguaGame() {
               )
               .setDepth(46);
 
-            // testa
             scene.add
               .circle(
                 x,
@@ -689,7 +683,6 @@ export default function TreguaGame() {
               )
               .setDepth(47);
 
-            // cappello
             scene.add
               .rectangle(
                 x,
@@ -728,14 +721,14 @@ export default function TreguaGame() {
           // PLAYER
           // =====================================================
 
-          const player = scene.add
-            .container(
-              1500,
-              1100
-            )
-            .setDepth(100);
+          const player =
+            scene.add
+              .container(
+                1500,
+                1100
+              )
+              .setDepth(100);
 
-          // ombra
           const playerShadow =
             scene.add
               .ellipse(
@@ -747,7 +740,6 @@ export default function TreguaGame() {
                 0.28
               );
 
-          // gambe
           const legLeft =
             scene.add.rectangle(
               -8,
@@ -766,7 +758,6 @@ export default function TreguaGame() {
               0x263b91
             );
 
-          // corpo
           const playerBody =
             scene.add.rectangle(
               0,
@@ -776,7 +767,6 @@ export default function TreguaGame() {
               0x4f46e5
             );
 
-          // faccia
           const face =
             scene.add.circle(
               0,
@@ -785,7 +775,6 @@ export default function TreguaGame() {
               0xf1c28f
             );
 
-          // capelli
           const hair =
             scene.add.rectangle(
               0,
@@ -795,7 +784,6 @@ export default function TreguaGame() {
               0x4a2c20
             );
 
-          // occhi
           const eye1 =
             scene.add.circle(
               -6,
@@ -837,7 +825,20 @@ export default function TreguaGame() {
           );
 
           // =====================================================
-          // PLAYER NAME
+          // COLLISIONI CASE
+          // =====================================================
+
+          houseBodies.forEach(
+            (houseBody) => {
+              scene.physics.add.collider(
+                player,
+                houseBody
+              );
+            }
+          );
+
+          // =====================================================
+          // NAME TAG
           // =====================================================
 
           const nameTag =
@@ -849,7 +850,8 @@ export default function TreguaGame() {
                 {
                   fontFamily:
                     "Arial",
-                  fontSize: "14px",
+                  fontSize:
+                    "14px",
                   color:
                     "#ffffff",
                   backgroundColor:
@@ -864,8 +866,6 @@ export default function TreguaGame() {
               )
               .setOrigin(0.5)
               .setDepth(110);
-
-        
 
           // =====================================================
           // CAMERA
@@ -882,10 +882,14 @@ export default function TreguaGame() {
           // HUD
           // =====================================================
 
-          const hud = scene.add
-            .container(18, 18)
-            .setScrollFactor(0)
-            .setDepth(1000);
+          const hud =
+            scene.add
+              .container(
+                18,
+                18
+              )
+              .setScrollFactor(0)
+              .setDepth(1000);
 
           const hudBg =
             scene.add
@@ -959,7 +963,7 @@ export default function TreguaGame() {
           ]);
 
           // =====================================================
-          // DIALOG BOX
+          // DIALOG
           // =====================================================
 
           const dialog =
@@ -1056,15 +1060,95 @@ export default function TreguaGame() {
             name: string,
             text: string
           ) => {
-            dialogName.setText(name);
-            dialogText.setText(text);
-            dialog.setVisible(true);
+            dialogName.setText(
+              name
+            );
+
+            dialogText.setText(
+              text
+            );
+
+            dialog.setVisible(
+              true
+            );
+
             dialogOpen = true;
           };
 
           const closeDialog = () => {
-            dialog.setVisible(false);
+            dialog.setVisible(
+              false
+            );
+
             dialogOpen = false;
+          };
+
+          // =====================================================
+          // RACCOLTA BENIAMINO
+          // =====================================================
+
+          const collectBeniamino = (
+            beni: (typeof BENIAMINI_MAPPA)[number]
+          ) => {
+            if (
+              collectedBeniamini.has(
+                beni.id
+              )
+            ) {
+              return;
+            }
+
+            collectedBeniamini.add(
+              beni.id
+            );
+
+            const objects =
+              beniObjects.get(
+                beni.id
+              );
+
+            if (objects) {
+              objects.sprite.setVisible(
+                false
+              );
+
+              objects.label.setVisible(
+                false
+              );
+
+              objects.glow.setVisible(
+                false
+              );
+            }
+
+            const collectedCount =
+              collectedBeniamini.size;
+
+            progressText.setText(
+              `BENIAMINI ${collectedCount} / 8`
+            );
+
+            if (
+              collectedCount === 8
+            ) {
+              objectiveText.setText(
+                "Hai tutti gli 8! Trova un'altra Contrada."
+              );
+
+              openDialog(
+                "TREGUA COMPLETATA",
+                "Hai raccolto tutti gli 8 Beniamini!\n\nOra devi trovare un giocatore di un'altra Contrada per ottenere il Barone."
+              );
+            } else {
+              objectiveText.setText(
+                `Beniamini raccolti: ${collectedCount} / 8`
+              );
+
+              openDialog(
+                beni.nome,
+                `Hai trovato il Beniamino ${beni.nome}!\n\n${collectedCount} / 8 Beniamini raccolti.`
+              );
+            }
           };
 
           // =====================================================
@@ -1077,6 +1161,10 @@ export default function TreguaGame() {
               return;
             }
 
+            // -------------------------------------------------
+            // NPC PIÙ VICINO
+            // -------------------------------------------------
+
             let closestNpc:
               | (typeof NPCS)[number]
               | null = null;
@@ -1084,32 +1172,36 @@ export default function TreguaGame() {
             let closestDistance =
               Infinity;
 
-            NPCS.forEach((npc) => {
-              const nx = mapX(
-                npc.coordinates[1]
-              );
-
-              const ny = mapY(
-                npc.coordinates[0]
-              );
-
-              const distance =
-                Phaser.Math.Distance.Between(
-                  player.x,
-                  player.y,
-                  nx,
-                  ny
+            NPCS.forEach(
+              (npc) => {
+                const nx = mapX(
+                  npc.coordinates[1]
                 );
 
-              if (
-                distance <
+                const ny = mapY(
+                  npc.coordinates[0]
+                );
+
+                const distance =
+                  Phaser.Math.Distance.Between(
+                    player.x,
+                    player.y,
+                    nx,
+                    ny
+                  );
+
+                if (
+                  distance <
                   closestDistance
-              ) {
-                closestDistance =
-                  distance;
-                closestNpc = npc;
+                ) {
+                  closestDistance =
+                    distance;
+
+                  closestNpc =
+                    npc;
+                }
               }
-            });
+            );
 
             if (
               closestNpc &&
@@ -1119,8 +1211,13 @@ export default function TreguaGame() {
                 closestNpc.nome,
                 `${closestNpc.text}\n\n${closestNpc.clue}`
               );
+
               return;
             }
+
+            // -------------------------------------------------
+            // BENIAMINO PIÙ VICINO
+            // -------------------------------------------------
 
             let closestBeni:
               | (typeof BENIAMINI_MAPPA)[number]
@@ -1131,6 +1228,14 @@ export default function TreguaGame() {
 
             BENIAMINI_MAPPA.forEach(
               (beni) => {
+                if (
+                  collectedBeniamini.has(
+                    beni.id
+                  )
+                ) {
+                  return;
+                }
+
                 const bx = mapX(
                   beni.coordinates[1]
                 );
@@ -1149,11 +1254,13 @@ export default function TreguaGame() {
 
                 if (
                   distance <
-                    beniDistance
+                  beniDistance
                 ) {
                   beniDistance =
                     distance;
-                  closestBeni = beni;
+
+                  closestBeni =
+                    beni;
                 }
               }
             );
@@ -1162,9 +1269,8 @@ export default function TreguaGame() {
               closestBeni &&
               beniDistance < 100
             ) {
-              openDialog(
-                closestBeni.nome,
-                "Hai trovato un Beniamino!"
+              collectBeniamino(
+                closestBeni
               );
             }
           };
@@ -1185,7 +1291,7 @@ export default function TreguaGame() {
             >;
 
           // =====================================================
-          // JOYSTICK
+          // JOYSTICK MOBILE
           // =====================================================
 
           const joystickBase =
@@ -1218,7 +1324,8 @@ export default function TreguaGame() {
           let joystickX = 0;
           let joystickY = 0;
 
-          const joystickCenterX = 100;
+          const joystickCenterX =
+            100;
 
           const getJoystickCenterY =
             () =>
@@ -1263,8 +1370,9 @@ export default function TreguaGame() {
             ) => {
               if (
                 !joystickActive
-              )
+              ) {
                 return;
+              }
 
               const centerY =
                 getJoystickCenterY();
@@ -1274,7 +1382,8 @@ export default function TreguaGame() {
                 joystickCenterX;
 
               const dy =
-                pointer.y - centerY;
+                pointer.y -
+                centerY;
 
               const distance =
                 Math.sqrt(
@@ -1349,25 +1458,26 @@ export default function TreguaGame() {
               .setDepth(1500)
               .setInteractive();
 
-          scene.add
-            .text(
-              scene.scale.width - 82,
-              scene.scale.height - 82,
-              "A",
-              {
-                fontFamily:
-                  "Arial",
-                fontSize:
-                  "25px",
-                color:
-                  "#ffffff",
-                fontStyle:
-                  "bold",
-              }
-            )
-            .setOrigin(0.5)
-            .setScrollFactor(0)
-            .setDepth(1501);
+          const interactButtonText =
+            scene.add
+              .text(
+                scene.scale.width - 82,
+                scene.scale.height - 82,
+                "A",
+                {
+                  fontFamily:
+                    "Arial",
+                  fontSize:
+                    "25px",
+                  color:
+                    "#ffffff",
+                  fontStyle:
+                    "bold",
+                }
+              )
+              .setOrigin(0.5)
+              .setScrollFactor(0)
+              .setDepth(1501);
 
           interactButton.on(
             "pointerdown",
@@ -1404,6 +1514,18 @@ export default function TreguaGame() {
                 scene.scale.height -
                   82
               );
+
+              interactButtonText.setPosition(
+                scene.scale.width -
+                  82,
+                scene.scale.height -
+                  82
+              );
+
+              dialog.setPosition(
+                scene.scale.width / 2,
+                scene.scale.height - 115
+              );
             }
           );
 
@@ -1419,6 +1541,10 @@ export default function TreguaGame() {
               let velocityX = 0;
               let velocityY = 0;
 
+              // -------------------------------------------------
+              // JOYSTICK
+              // -------------------------------------------------
+
               if (
                 joystickActive
               ) {
@@ -1428,6 +1554,10 @@ export default function TreguaGame() {
                 velocityY =
                   joystickY * speed;
               } else {
+                // -------------------------------------------------
+                // TASTIERA
+                // -------------------------------------------------
+
                 if (
                   cursors.left.isDown ||
                   keys.A.isDown
@@ -1461,6 +1591,10 @@ export default function TreguaGame() {
                 }
               }
 
+              // -------------------------------------------------
+              // DIAGONALE
+              // -------------------------------------------------
+
               if (
                 velocityX !== 0 &&
                 velocityY !== 0
@@ -1490,7 +1624,7 @@ export default function TreguaGame() {
               );
 
               // -------------------------------------------------
-              // ANIMAZIONE PERSONAGGIO
+              // ANIMAZIONE GAMBE
               // -------------------------------------------------
 
               if (
