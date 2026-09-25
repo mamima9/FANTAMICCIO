@@ -96,7 +96,8 @@ export default function TreguaGame() {
           blockRect(2,2,7,6);
           blockRect(12,7,5,6); blockRect(29,7,6,6); blockRect(34,20,5,6); blockRect(8,19,5,6);
           decorations.forEach(([x,y]) => blockRect(x,y,1,1));
-          ground.setCollisionByExclusion([0,1,2,3,4,5,15]);
+          ground.setCollisionByExclusion([0,1,2,3,15]);
+          scene.physics.add.collider(player, ground);
           
           let userId: string | null = null;
           const collected = new Set<string>();
