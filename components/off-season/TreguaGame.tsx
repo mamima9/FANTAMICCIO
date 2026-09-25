@@ -107,15 +107,15 @@ export default function TreguaGame() {
           let contradaId = "";
           const collected = new Set<string>();
 
-          const contradaConfig: Record<string,{color:string;label:string}> = {
-            cervia:{color:"#f4f1e8",label:"La Cervia"},
-            leondoro:{color:"#e5b93f",label:"Il Leon d'Oro"},
-            lucertola:{color:"#b9423a",label:"La Lucertola"},
-            madonnina:{color:"#2f63a8",label:"La Madonnina"},
-            ponte:{color:"#b9423a",label:"Il Ponte"},
-            pozzo:{color:"#f4f1e8",label:"Il Pozzo"},
-            quercia:{color:"#f4f1e8",label:"La Quercia"},
-            ranocchio:{color:"#e5b93f",label:"Il Ranocchio"}
+          const contradaConfig: Record<string,{primary:string;secondary:string;label:string}> = {
+            cervia:{primary:"#f4f1e8",secondary:"#7bb8d9",label:"La Cervia"},
+            leondoro:{primary:"#e5b93f",secondary:"#c63f3f",label:"Il Leon d'Oro"},
+            lucertola:{primary:"#c63f3f",secondary:"#4d914f",label:"La Lucertola"},
+            madonnina:{primary:"#3f67ad",secondary:"#e5b93f",label:"La Madonnina"},
+            ponte:{primary:"#c63f3f",secondary:"#3f67ad",label:"Il Ponte"},
+            pozzo:{primary:"#f4f1e8",secondary:"#c63f3f",label:"Il Pozzo"},
+            quercia:{primary:"#f4f1e8",secondary:"#252525",label:"La Quercia"},
+            ranocchio:{primary:"#e5b93f",secondary:"#4d914f",label:"Il Ranocchio"}
           };
 
           const player = scene.physics.add.sprite(24*TILE, 18*TILE, "player-quercia");
