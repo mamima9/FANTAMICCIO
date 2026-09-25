@@ -147,7 +147,10 @@ script = ExtResource("7")
 
 [node name="TrialGame" parent="." instance=ExtResource("8")]
 
-[node name="MobileJoystick" type="Control" parent="."]
+[node name="MobileJoystick" type="CanvasLayer" parent="."]
+layer = 50
+
+[node name="JoystickSurface" type="Control" parent="MobileJoystick"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
