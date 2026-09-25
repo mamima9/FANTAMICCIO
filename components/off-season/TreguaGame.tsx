@@ -173,8 +173,58 @@ export default function TreguaGame() {
           const interact=async()=>{let best:string|null=null,bd=Infinity; BENIAMINI_MAPPA.forEach(b=>{if(collected.has(b.id))return;const p=positions[b.id];const d=Phaser.Math.Distance.Between(player.x,player.y,p.x*TILE+16,p.y*TILE+10);if(d<bd){bd=d;best=b.id;}}); if(best&&bd<80){if(!userId){say("Devi accedere per raccogliere il Beniamino.");return;} const {error}=await supabase.from("user_beniamini").insert({user_id:userId,beniamino_id:best}); if(error&&error.code!=="23505"){say("Errore nel salvataggio.");return;} collected.add(best); objects.get(best)?.destroy(); update(); const b=BENIAMINI_MAPPA.find(x=>x.id===best); if(b)say(`✨ Hai trovato ${b.nome}!`); return;} let ni=-1,nd=Infinity; npcObjects.forEach((o,i)=>{const d=Phaser.Math.Distance.Between(player.x,player.y,o.sprite.x,o.sprite.y);if(d<nd){nd=d;ni=i;}}); if(ni>=0&&nd<85){const n=npcObjects[ni].npc;say(`${n.nome}: ${n.text}\\n\\n${n.clue}`);}};
           
           const keys=scene.input.keyboard?.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,SHIFT") as Record<string,Phaser.Input.Keyboard.Key>|undefined;
+
+          // Mobile joystick + interaction button.
+          let joyX = 0;
+          let joyY = 0;
+          let joystickPointerId: number | null = null;
+          const mobile = scene.add.container(112, scene.scale.height - 112).setScrollFactor(0).setDepth(12000);
+          const joyBase = scene.add.circle(0, 0, 62, 0x171717, 0.58).setStrokeStyle(3, 0xffffff, 0.22);
+          const joyRing = scene.add.circle(0, 0, 45, 0x000000, 0.16).setStrokeStyle(2, 0xffffff, 0.18);
+          const joyKnob = scene.add.circle(0, 0, 27, 0xd4af37, 0.88).setStrokeStyle(2, 0xffffff, 0.5);
+          mobile.add([joyBase, joyRing, joyKnob]);
+
+          const action = scene.add.container(scene.scale.width - 92, scene.scale.height - 105).setScrollFactor(0).setDepth(12000);
+          const actionBg = scene.add.circle(0, 0, 42, 0x8b3f2f, 0.9).setStrokeStyle(3, 0xffffff, 0.35).setInteractive();
+          const actionText = scene.add.text(0, 0, "E", {fontFamily:"Arial",fontSize:"24px",color:"#fff",fontStyle:"bold"}).setOrigin(.5);
+          action.add([actionBg, actionText]);
+
+          const setJoystick=(pointer: Phaser.Input.Pointer)=>{
+            const dx = pointer.x - mobile.x;
+            const dy = pointer.y - mobile.y;
+            const len = Math.hypot(dx,dy);
+            const max = 50;
+            const scale = len > max ? max / len : 1;
+            joyX = (dx * scale) / max;
+            joyY = (dy * scale) / max;
+            joyKnob.setPosition(dx * scale, dy * scale);
+          };
+          const resetJoystick=()=>{
+            joyX = 0; joyY = 0; joystickPointerId = null;
+            joyKnob.setPosition(0,0);
+          };
+          joyBase.setInteractive(new Phaser.Geom.Circle(0,0,68), Phaser.Geom.Circle.Contains);
+          joyBase.on("pointerdown",(pointer: Phaser.Input.Pointer)=>{
+            joystickPointerId = pointer.id;
+            setJoystick(pointer);
+          });
+          scene.input.on("pointermove",(pointer: Phaser.Input.Pointer)=>{
+            if(pointer.id === joystickPointerId) setJoystick(pointer);
+          });
+          scene.input.on("pointerup",(pointer: Phaser.Input.Pointer)=>{
+            if(pointer.id === joystickPointerId) resetJoystick();
+          });
+          actionBg.on("pointerdown",()=>void interact());
+
+          const keys=scene.input.keyboard?.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,SHIFT") as Record<string,Phaser.Input.Keyboard.Key>|undefined;
           scene.events.on("update",(_t:number,delta:number)=>{const dt=Math.min(delta,32)/1000; if(!keys)return; let x=0,y=0;if(keys.A.isDown||keys.LEFT.isDown)x--;if(keys.D.isDown||keys.RIGHT.isDown)x++;if(keys.W.isDown||keys.UP.isDown)y--;if(keys.S.isDown||keys.DOWN.isDown)y++;const len=Math.hypot(x,y);if(len>1){x/=len;y/=len;}const speed=keys.SHIFT.isDown?190:135;player.setVelocity(x*speed,y*speed);if(Math.abs(x)+Math.abs(y)>.05){if(Math.abs(x)>Math.abs(y)){player.anims.play("walk-side",true);player.setFlipX(x<0);}else player.anims.play(y>0?"walk-down":"walk-up",true);}else player.anims.stop();player.setDepth(player.y); if(Phaser.Input.Keyboard.JustDown(keys.E)||Phaser.Input.Keyboard.JustDown(keys.SPACE))void interact();});
-          const resize=()=>{hud.setPosition(18,18);tregua.setPosition(scene.scale.width/2,18);dialog.setPosition(scene.scale.width/2,scene.scale.height-75);};
+          const resize=()=>{
+            hud.setPosition(18,18);
+            tregua.setPosition(scene.scale.width/2,18);
+            dialog.setPosition(scene.scale.width/2,scene.scale.height-75);
+            mobile.setPosition(105,scene.scale.height-105);
+            action.setPosition(scene.scale.width-90,scene.scale.height-95);
+          };
           scene.scale.on("resize",resize); resize(); void load(); scene.cameras.main.fadeIn(500,0,0,0);
         }
       }
