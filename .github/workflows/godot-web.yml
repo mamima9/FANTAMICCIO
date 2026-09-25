@@ -1,0 +1,56 @@
+name: Build Godot Web
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "godot/**"
+      - "export_presets.cfg"
+      - ".github/workflows/godot-web.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: godot-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare Godot
+        run: |
+          mkdir -p ~/.config ~/.local/share/godot/export_templates
+          if [ -d /root/.config/godot ]; then cp -r /root/.config/godot ~/.config/; fi
+          if [ -d /root/.local/share/godot/export_templates ]; then cp -r /root/.local/share/godot/export_templates/. ~/.local/share/godot/export_templates/; fi
+
+      - name: Export Web
+        run: |
+          mkdir -p build/web
+          godot --headless --path godot --editor --quit
+          godot --headless --path godot --export-release "Web" ../build/web/index.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
