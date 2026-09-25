@@ -57,7 +57,7 @@ export default function TreguaGame(){
           scene.physics.world.setBounds(0,0,WORLD_W,WORLD_H);
           scene.cameras.main.setBounds(0,0,WORLD_W,WORLD_H).setZoom(mobile?1.85:2);
           const map=scene.make.tilemap({tileWidth:TILE,tileHeight:TILE,width:COLS,height:ROWS});
-          const tiles=map.addTilesetImage("rpg-tileset","tiles",TILE,TILE,0,0,1); if(!tiles)return;
+          const tiles=map.addTilesetImage("tiles","tiles",TILE,TILE,0,0,1); if(!tiles)return;
           const ground=map.createBlankLayer("ground",tiles,0,0,COLS,ROWS,TILE,TILE); if(!ground)return;
           const T={grass:0,flowers:1,path:2,plaza:3,water:4,bridge:5,wall:6,roof:7,tree:8,fence:9,stone:10,darkGrass:11,dirt:12,goldRoof:13,darkTree:14,flowerPatch:15};
 
