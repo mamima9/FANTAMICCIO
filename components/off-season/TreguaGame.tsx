@@ -137,7 +137,7 @@ export default function TreguaGame(){
             scene.tweens.add({targets:lm,y:ly-2,duration:1500,yoyo:true,repeat:-1,ease:"Sine.easeInOut"});
 
             // NPC storici: ogni territorio ospita più personaggi, ciascuno dedicato a un capitolo diverso.
-            const npcs=NPCS.filter(n=>n.mapId===id);
+            const beni=beniById(def.beniamino);\n            const npcs=NPCS.filter(n=>n.mapId===id);
             currentNpcData=npcs;
             currentNpcs=npcs.map((npc)=>{
               const [nx,ny]=npc.position;
