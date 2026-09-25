@@ -73,24 +73,62 @@ export default function TreguaGame() {
           ground.fill(4, 2, 2, 7, 6);
           ground.fill(5, 4, 4, 3, 2);
 
-          // Village buildings.
-          const building = (x: number, y: number, w: number, h: number) => {
-            ground.fill(6, x, y, w, h);
-            ground.fill(7, x, y - 1, w, 1);
+          // Edifici RPG: fondamenta, muri, tetti, finestre, porte e ombre.
+          const buildingRects: Array<[number,number,number,number]> = [
+            [11,8,7,5], [28,8,8,5], [33,21,7,5], [7,20,7,5]
+          ];
+          const building = (x:number,y:number,w:number,h:number,roof:number) => {
+            const px=x*TILE, py=y*TILE, ww=w*TILE, hh=h*TILE;
+            scene.add.rectangle(px+ww/2,py+hh+7,ww-8,10,0x3b2a20,0.22).setDepth(py+1);
+            scene.add.rectangle(px+ww/2,py+hh/2,ww-6,hh-5,0xe7d3ad,1).setDepth(py+8);
+            scene.add.rectangle(px+ww/2,py+hh/2-2,ww-10,hh-10,0xf1dfbd,1).setDepth(py+9);
+            scene.add.triangle(px+ww/2,py-18,0,36,ww/2,0,ww,36,roof,1).setOrigin(.5).setDepth(py+5);
+            scene.add.rectangle(px+ww/2-ww*.22,py+hh*.58,18,22,0x6f4934,1).setDepth(py+11);
+            scene.add.rectangle(px+ww*.28,py+hh*.48,22,17,0x8ec5c7,1).setDepth(py+11);
+            scene.add.rectangle(px+ww*.72,py+hh*.48,22,17,0x8ec5c7,1).setDepth(py+11);
+            scene.add.rectangle(px+ww*.28,py+hh*.48,22,3,0xffffff,0.55).setDepth(py+12);
+            scene.add.rectangle(px+ww*.72,py+hh*.48,22,3,0xffffff,0.55).setDepth(py+12);
+            scene.add.rectangle(px+ww*.5,py+6,10,22,0x8a5b3b,1).setDepth(py+10);
           };
-          building(12, 8, 5, 5);
-          building(29, 8, 6, 5);
-          building(34, 21, 5, 5);
-          building(8, 20, 5, 5);
-
-          // Decorative trees and rocks.
-          const decorations: Array<[number, number, number]> = [];
-          for (let x = 1; x < 47; x += 4) {
-            decorations.push([x, 1, 8]);
-            decorations.push([x + 1, 30, 8]);
-          }
-          [[1,10],[6,12],[39,5],[43,12],[45,22],[3,25],[17,30],[28,30],[42,29],[37,15]].forEach(([x,y]) => decorations.push([x,y,14]));
-          decorations.forEach(([x,y,t]) => ground.putTileAt(t,x,y));
+          buildingRects.forEach(([x,y,w,h],i)=>building(x,y,w,h,[0xa94f43,0xb66b45,0x8d5a3c,0xc2943f][i]));
+          
+          // Piazze e slarghi: il centro di Querceta ha una vera piazza pavimentata.
+          ground.fill(3,19,13,9,7);
+          ground.fill(2,23,0,2,34);
+          ground.fill(2,0,16,48,2);
+          
+          // Terreno vivo: chiazze d'erba, fiori, sassi e piccoli sentieri laterali.
+          const decorations:Array<[number,number,number]>=[];
+          [[2,10],[5,12],[39,5],[43,12],[45,22],[3,25],[17,30],[28,30],[42,29],[37,15],
+           [10,3],[18,5],[26,29],[31,3],[44,28],[4,31],[15,18],[30,18]].forEach(([x,y])=>decorations.push([x,y,14]));
+          [[4,9],[9,29],[14,6],[20,31],[27,9],[32,29],[41,3],[45,16]].forEach(([x,y])=>decorations.push([x,y,10]));
+          decorations.forEach(([x,y,t])=>ground.putTileAt(t,x,y));
+          
+          // Grandi alberi: chioma multilivello e ombra, per dare vera profondità 2.5D.
+          const treeSpots=[[2,1],[7,2],[18,2],[28,2],[38,2],[44,4],[2,29],[6,31],[16,30],[29,30],[41,30],[45,28]];
+          treeSpots.forEach(([tx,ty],i)=>{
+            const x=tx*TILE+16,y=ty*TILE+22;
+            const tree=scene.add.container(x,y).setDepth(y+30);
+            const shadow=scene.add.ellipse(0,20,54,18,0x26351f,0.25);
+            const trunk=scene.add.rectangle(0,7,13,30,0x765036,1);
+            const trunkHi=scene.add.rectangle(-3,3,4,24,0x93643f,1);
+            const back=scene.add.circle(-14,-10,21,i%2?0x326d43:0x2b6540,1);
+            const crown=scene.add.circle(0,-18,27,i%2?0x3e8750:0x377b49,1);
+            const front=scene.add.circle(16,-7,21,i%2?0x2e7044:0x438a52,1);
+            const light=scene.add.circle(-8,-28,9,0x5b9b5c,0.9);
+            tree.add([shadow,trunk,trunkHi,back,crown,front,light]);
+            scene.tweens.add({targets:crown,y:-20,duration:1300+ i*40,yoyo:true,repeat:-1,ease:"Sine.easeInOut"});
+          });
+          
+          // Recinzioni rurali per separare cortili e percorsi.
+          const fence=(x:number,y:number,w:number)=>{
+            const g=scene.add.graphics().setDepth(y*TILE+15);
+            g.lineStyle(4,0x704b32,1);
+            g.beginPath(); g.moveTo(x*TILE,y*TILE); g.lineTo((x+w)*TILE,y*TILE); g.strokePath();
+            g.lineStyle(3,0xa16e45,1);
+            for(let i=0;i<=w;i+=2){g.beginPath();g.moveTo((x+i)*TILE,(y-4)*TILE);g.lineTo((x+i)*TILE,(y+5)*TILE);g.strokePath();}
+          };
+          fence(9,14,8); fence(29,14,7); fence(33,27,8); fence(7,27,7);
 
           // Collision from occupied map tiles.
           const blocked = new Set<string>();
@@ -98,8 +136,9 @@ export default function TreguaGame() {
             for(let yy=y; yy<y+h; yy++) for(let xx=x; xx<x+w; xx++) blocked.add(`${xx},${yy}`);
           };
           blockRect(2,2,7,6);
-          blockRect(12,7,5,6); blockRect(29,7,6,6); blockRect(34,20,5,6); blockRect(8,19,5,6);
+          buildingRects.forEach(([x,y,w,h])=>blockRect(x,y,w,h));
           decorations.forEach(([x,y]) => blockRect(x,y,1,1));
+          treeSpots.forEach(([x,y])=>blockRect(x,y,2,2));
           ground.setCollisionByExclusion([0,1,2,3,5,12,15]);
           
           let userId: string | null = null;
@@ -166,6 +205,59 @@ export default function TreguaGame() {
             cervia:{x:6,y:25}, leondoro:{x:37,y:7}, lucertola:{x:42,y:11}, madonnina:{x:26,y:11},
             ponte:{x:5,y:18}, pozzo:{x:39,y:18}, quercia:{x:22,y:13}, ranocchio:{x:11,y:11}
           };
+
+          // Landmark unici: piccoli punti di riferimento visivi legati ai luoghi della Tregua.
+          const landmark=(id:string,x:number,y:number)=>{
+            const cfg=contradaConfig[id];
+            if(!cfg) return;
+            const px=x*TILE+16, py=y*TILE+16;
+            const g=scene.add.container(px,py).setDepth(py+60);
+            const primary=Phaser.Display.Color.HexStringToColor(cfg.primary).color;
+            const secondary=Phaser.Display.Color.HexStringToColor(cfg.secondary).color;
+            const shadow=scene.add.ellipse(0,18,58,16,0x2b211b,0.25);
+            g.add(shadow);
+            if(id==="cervia"){
+              g.add(scene.add.circle(0,-2,18,secondary,1).setStrokeStyle(3,primary,.9));
+              g.add(scene.add.rectangle(0,3,8,17,0x8c633f,1));
+            } else if(id==="leondoro"){
+              g.add(scene.add.rectangle(0,0,30,26,0xd9c49a,1).setStrokeStyle(3,primary));
+              g.add(scene.add.triangle(0,-19,0,28,15,0,30,28,secondary,1));
+            } else if(id==="lucertola"){
+              g.add(scene.add.circle(0,0,19,0x527d48,1).setStrokeStyle(3,primary));
+              g.add(scene.add.circle(0,0,10,secondary,1));
+            } else if(id==="madonnina"){
+              g.add(scene.add.rectangle(0,2,22,24,0xe6d8b7,1).setStrokeStyle(2,primary));
+              g.add(scene.add.triangle(0,-19,0,25,12,0,24,25,secondary,1));
+            } else if(id==="ponte"){
+              g.add(scene.add.rectangle(-20,2,8,20,0x8a5b3a,1));
+              g.add(scene.add.rectangle(12,2,8,20,0x8a5b3a,1));
+              g.add(scene.add.rectangle(-15,-4,30,7,primary,1));
+              g.add(scene.add.rectangle(-15,4,30,5,secondary,1));
+            } else if(id==="pozzo"){
+              g.add(scene.add.ellipse(0,6,34,18,0xb7b1a5,1).setStrokeStyle(3,primary));
+              g.add(scene.add.rectangle(-15,-10,30,6,secondary,1));
+              g.add(scene.add.rectangle(-2,-16,4,23,0x765036,1));
+            } else if(id==="quercia"){
+              g.add(scene.add.circle(0,-8,25,0x355f3e,1).setStrokeStyle(3,primary));
+              g.add(scene.add.rectangle(-5,8,10,22,0x765036,1));
+              g.add(scene.add.circle(-10,-16,8,0x56804c,1));
+            } else if(id==="ranocchio"){
+              g.add(scene.add.circle(0,0,20,secondary,1).setStrokeStyle(3,primary));
+              g.add(scene.add.circle(-7,-5,4,0xffffff,1));
+              g.add(scene.add.circle(7,-5,4,0xffffff,1));
+              g.add(scene.add.circle(-7,-5,2,0x222222,1));
+              g.add(scene.add.circle(7,-5,2,0x222222,1));
+            }
+            scene.tweens.add({targets:g,y:py-2,duration:1500,yoyo:true,repeat:-1,ease:"Sine.easeInOut"});
+          };
+          landmark("cervia",4,24);
+          landmark("leondoro",36,5);
+          landmark("lucertola",44,10);
+          landmark("madonnina",28,10);
+          landmark("ponte",7,17);
+          landmark("pozzo",41,17);
+          landmark("quercia",20,12);
+          landmark("ranocchio",13,10);
 
           // Otto micro-zone: ogni area ha il nome della Contrada e un punto di riferimento visivo.
           Object.entries(positions).forEach(([id,p])=>{
