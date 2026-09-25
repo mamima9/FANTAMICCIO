@@ -4,10 +4,6 @@ import { useEffect } from "react";
 
 export default function ViewportDesktop() {
   useEffect(() => {
-    const isMobile = window.innerWidth < 768;
-
-    if (!isMobile) return;
-
     let viewport = document.querySelector(
       'meta[name="viewport"]'
     ) as HTMLMetaElement | null;
@@ -21,7 +17,7 @@ export default function ViewportDesktop() {
     const previousContent = viewport.content;
 
     viewport.content =
-      "width=1030, initial-scale=0.4, maximum-scale=1";
+      "width=device-width, initial-scale=1, maximum-scale=1";
 
     return () => {
       viewport!.content =
