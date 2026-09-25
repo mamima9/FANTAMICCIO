@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import Phaser from "phaser";
 
 import { createClient } from "@/lib/supabase/client";
-import { BENIAMINI_MAPPA } from "@/data/offseason";
+import { BENIAMINI_MAPPA, NPCS } from "@/data/offseason";
 
 export default function TreguaGame() {
   const gameRef = useRef<HTMLDivElement>(null);
@@ -14,21 +14,27 @@ export default function TreguaGame() {
 
     const supabase = createClient();
 
+    const WORLD_W = 1536;
+    const WORLD_H = 1024;
+
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
-
       parent: gameRef.current,
-
       width: 960,
       height: 540,
 
-      backgroundColor: "#18251b",
+      backgroundColor: "#101813",
 
       pixelArt: true,
 
       scale: {
         mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH,
+      },
+
+      render: {
+        antialias: false,
+        roundPixels: true,
       },
 
       physics: {
@@ -40,18 +46,10 @@ export default function TreguaGame() {
 
       scene: {
         preload() {
-          // --------------------------------------------------
-          // MAPPA
-          // --------------------------------------------------
-
           this.load.image(
             "querceta",
             "/game/querceta.png"
           );
-
-          // --------------------------------------------------
-          // BENIAMINI
-          // --------------------------------------------------
 
           BENIAMINI_MAPPA.forEach((beni) => {
             this.load.image(
@@ -64,54 +62,282 @@ export default function TreguaGame() {
         create() {
           const scene = this;
 
-          // ==================================================
-          // WORLD
-          // ==================================================
+          // =====================================================
+          // STATE
+          // =====================================================
 
-          const WORLD_WIDTH = 1536;
-          const WORLD_HEIGHT = 1024;
+          let currentUserId: string | null = null;
+
+          const collected = new Set<string>();
+
+          let dialogTimer:
+            | Phaser.Time.TimerEvent
+            | null = null;
+
+          // =====================================================
+          // WORLD
+          // =====================================================
 
           scene.physics.world.setBounds(
             0,
             0,
-            WORLD_WIDTH,
-            WORLD_HEIGHT
+            WORLD_W,
+            WORLD_H
           );
 
           scene.cameras.main.setBounds(
             0,
             0,
-            WORLD_WIDTH,
-            WORLD_HEIGHT
+            WORLD_W,
+            WORLD_H
           );
 
-          // ==================================================
+          // =====================================================
           // MAPPA
-          // ==================================================
+          // =====================================================
 
-          const map = scene.add
+          scene.add
             .image(
-              WORLD_WIDTH / 2,
-              WORLD_HEIGHT / 2,
+              WORLD_W / 2,
+              WORLD_H / 2,
               "querceta"
             )
             .setDisplaySize(
-              WORLD_WIDTH,
-              WORLD_HEIGHT
+              WORLD_W,
+              WORLD_H
             )
-            .setDepth(-100);
+            .setDepth(-1000);
 
-          // ==================================================
-          // AUTENTICAZIONE
-          // ==================================================
+          // Overlay leggerissimo per dare più contrasto
+          scene.add
+            .rectangle(
+              WORLD_W / 2,
+              WORLD_H / 2,
+              WORLD_W,
+              WORLD_H,
+              0x17301d,
+              0.06
+            )
+            .setDepth(-999);
 
-          let currentUserId: string | null = null;
+          // =====================================================
+          // WALKABLE AREAS
+          // =====================================================
+          //
+          // Zona principale della piazza e percorsi.
+          // Non disegniamo nulla: sono solamente collision masks.
+          //
 
-          // ==================================================
+          const walkableZones = [
+            new Phaser.Geom.Rectangle(
+              300,
+              300,
+              900,
+              470
+            ),
+
+            new Phaser.Geom.Rectangle(
+              400,
+              180,
+              220,
+              650
+            ),
+
+            new Phaser.Geom.Rectangle(
+              850,
+              170,
+              260,
+              700
+            ),
+
+            new Phaser.Geom.Rectangle(
+              100,
+              420,
+              500,
+              360
+            ),
+
+            new Phaser.Geom.Rectangle(
+              500,
+              700,
+              620,
+              220
+            ),
+          ];
+
+          const isWalkable = (
+            x: number,
+            y: number
+          ) => {
+            return walkableZones.some(
+              (zone) =>
+                zone.contains(x, y)
+            );
+          };
+
+          // =====================================================
+          // PLAYER
+          // =====================================================
+
+          const player = scene.add
+            .container(
+              760,
+              620
+            )
+            .setDepth(620);
+
+          const shadow =
+            scene.add.ellipse(
+              0,
+              22,
+              30,
+              10,
+              0x000000,
+              0.28
+            );
+
+          /*
+           * Pixel-style player costruito come piccolo sprite
+           * geometrico. Lo sostituiremo con lo sprite definitivo
+           * quando avremo il character sheet.
+           */
+
+          const legs =
+            scene.add.rectangle(
+              0,
+              13,
+              20,
+              18,
+              0x28365e
+            );
+
+          const body =
+            scene.add.rectangle(
+              0,
+              -2,
+              26,
+              30,
+              0x315aa5
+            );
+
+          const skin =
+            scene.add.rectangle(
+              0,
+              -25,
+              21,
+              19,
+              0xf0bd8c
+            );
+
+          const hair =
+            scene.add.rectangle(
+              0,
+              -35,
+              23,
+              9,
+              0x3a241c
+            );
+
+          player.add([
+            shadow,
+            legs,
+            body,
+            skin,
+            hair,
+          ]);
+
+          // =====================================================
+          // PLAYER NAME
+          // =====================================================
+
+          const playerName =
+            scene.add
+              .text(
+                player.x,
+                player.y - 58,
+                "TU",
+                {
+                  fontFamily:
+                    "Arial",
+                  fontSize: "13px",
+                  color: "#ffffff",
+                  fontStyle:
+                    "bold",
+                  backgroundColor:
+                    "#392619",
+                  padding: {
+                    x: 7,
+                    y: 4,
+                  },
+                }
+              )
+              .setOrigin(0.5)
+              .setScrollFactor(1)
+              .setDepth(1000);
+
+          // =====================================================
+          // CAMERA
+          // =====================================================
+
+          scene.cameras.main.startFollow(
+            player,
+            true,
+            0.10,
+            0.10
+          );
+
+          scene.cameras.main.setZoom(
+            1.35
+          );
+
+          // =====================================================
           // BENIAMINI
-          // ==================================================
+          // =====================================================
 
-          const collected = new Set<string>();
+          const positions: Record<
+            string,
+            { x: number; y: number }
+          > = {
+            quercia: {
+              x: 760,
+              y: 470,
+            },
+
+            leondoro: {
+              x: 760,
+              y: 250,
+            },
+
+            ranocchio: {
+              x: 480,
+              y: 260,
+            },
+
+            lucertola: {
+              x: 1090,
+              y: 190,
+            },
+
+            pozzo: {
+              x: 1110,
+              y: 520,
+            },
+
+            madonnina: {
+              x: 650,
+              y: 680,
+            },
+
+            ponte: {
+              x: 1160,
+              y: 760,
+            },
+
+            cervia: {
+              x: 320,
+              y: 760,
+            },
+          };
 
           const beniObjects = new Map<
             string,
@@ -122,369 +348,292 @@ export default function TreguaGame() {
             }
           >();
 
-          // --------------------------------------------------
-          // POSIZIONI TEMPORANEE
-          // --------------------------------------------------
-          //
-          // Queste sono relative alla nuova mappa.
-          // Le rifiniamo quando avremo la tilemap definitiva.
-          //
+          BENIAMINI_MAPPA.forEach(
+            (beni) => {
+              const pos =
+                positions[beni.id];
 
-          const positions: Record<
-            string,
-            { x: number; y: number }
-          > = {
-            quercia: {
-              x: 770,
-              y: 470,
-            },
+              if (!pos) return;
 
-            leondoro: {
-              x: 760,
-              y: 250,
-            },
+              const glow =
+                scene.add
+                  .circle(
+                    pos.x,
+                    pos.y,
+                    38,
+                    0xffd35a,
+                    0.16
+                  )
+                  .setDepth(
+                    pos.y - 20
+                  );
 
-            ranocchio: {
-              x: 500,
-              y: 240,
-            },
+              scene.tweens.add({
+                targets: glow,
+                scale: 1.35,
+                alpha: 0.03,
+                duration: 900,
+                ease:
+                  "Sine.easeInOut",
+                yoyo: true,
+                repeat: -1,
+              });
 
-            lucertola: {
-              x: 1100,
-              y: 180,
-            },
+              const sprite =
+                scene.add
+                  .image(
+                    pos.x,
+                    pos.y - 10,
+                    `beni-${beni.id}`
+                  )
+                  .setDisplaySize(
+                    58,
+                    58
+                  )
+                  .setDepth(
+                    pos.y
+                  );
 
-            pozzo: {
-              x: 1100,
-              y: 520,
-            },
+              scene.tweens.add({
+                targets: sprite,
+                y: pos.y - 18,
+                duration: 850,
+                ease:
+                  "Sine.easeInOut",
+                yoyo: true,
+                repeat: -1,
+              });
 
-            madonnina: {
-              x: 650,
-              y: 650,
-            },
+              const label =
+                scene.add
+                  .text(
+                    pos.x,
+                    pos.y + 32,
+                    beni.nome,
+                    {
+                      fontFamily:
+                        "Arial",
+                      fontSize: "12px",
+                      color: "#ffffff",
+                      fontStyle:
+                        "bold",
+                      backgroundColor:
+                        "#392619",
+                      padding: {
+                        x: 6,
+                        y: 3,
+                      },
+                    }
+                  )
+                  .setOrigin(0.5)
+                  .setDepth(
+                    pos.y + 1
+                  );
 
-            ponte: {
-              x: 1120,
-              y: 760,
-            },
-
-            cervia: {
-              x: 350,
-              y: 780,
-            },
-          };
-
-          BENIAMINI_MAPPA.forEach((beni) => {
-            const pos =
-              positions[beni.id];
-
-            if (!pos) return;
-
-            const glow = scene.add
-              .circle(
-                pos.x,
-                pos.y,
-                46,
-                0xffd45c,
-                0.18
-              )
-              .setDepth(20);
-
-            scene.tweens.add({
-              targets: glow,
-              scale: 1.25,
-              alpha: 0.05,
-              duration: 900,
-              yoyo: true,
-              repeat: -1,
-            });
-
-            const sprite = scene.add
-              .image(
-                pos.x,
-                pos.y - 8,
-                `beni-${beni.id}`
-              )
-              .setDisplaySize(
-                62,
-                62
-              )
-              .setDepth(30);
-
-            scene.tweens.add({
-              targets: sprite,
-              y: pos.y - 16,
-              duration: 900,
-              yoyo: true,
-              repeat: -1,
-              ease: "Sine.easeInOut",
-            });
-
-            const label = scene.add
-              .text(
-                pos.x,
-                pos.y + 38,
-                beni.nome,
+              beniObjects.set(
+                beni.id,
                 {
-                  fontFamily:
-                    "Arial",
-                  fontSize: "14px",
-                  color: "#ffffff",
-                  backgroundColor:
-                    "#49301f",
-                  padding: {
-                    x: 6,
-                    y: 4,
-                  },
-                  fontStyle:
-                    "bold",
+                  sprite,
+                  glow,
+                  label,
                 }
-              )
-              .setOrigin(0.5)
-              .setDepth(31);
-
-            beniObjects.set(
-              beni.id,
-              {
-                sprite,
-                glow,
-                label,
-              }
-            );
-          });
-
-          // ==================================================
-          // PLAYER
-          // ==================================================
-
-          const player = scene.add
-            .container(
-              770,
-              560
-            )
-            .setDepth(100);
-
-          // ombra
-
-          const shadow =
-            scene.add.ellipse(
-              0,
-              24,
-              34,
-              12,
-              0x000000,
-              0.3
-            );
-
-          // corpo
-
-          const body =
-            scene.add.rectangle(
-              0,
-              0,
-              28,
-              32,
-              0x3859a8
-            );
-
-          // testa
-
-          const head =
-            scene.add.circle(
-              0,
-              -23,
-              16,
-              0xf1c28f
-            );
-
-          // capelli
-
-          const hair =
-            scene.add.rectangle(
-              0,
-              -37,
-              27,
-              8,
-              0x3a251b
-            );
-
-          // gambe
-
-          const legLeft =
-            scene.add.rectangle(
-              -7,
-              18,
-              8,
-              17,
-              0x28386d
-            );
-
-          const legRight =
-            scene.add.rectangle(
-              7,
-              18,
-              8,
-              17,
-              0x28386d
-            );
-
-          player.add([
-            shadow,
-            legLeft,
-            legRight,
-            body,
-            head,
-            hair,
-          ]);
-
-          // ==================================================
-          // NOME PLAYER
-          // ==================================================
-
-          const nameTag =
-            scene.add
-              .text(
-                player.x,
-                player.y - 55,
-                "TU",
-                {
-                  fontFamily:
-                    "Arial",
-                  fontSize: "13px",
-                  color: "#ffffff",
-                  backgroundColor:
-                    "#49301f",
-                  padding: {
-                    x: 5,
-                    y: 3,
-                  },
-                  fontStyle:
-                    "bold",
-                }
-              )
-              .setOrigin(0.5)
-              .setDepth(101);
-
-          // ==================================================
-          // INPUT
-          // ==================================================
-
-          const keys =
-            scene.input.keyboard!.addKeys(
-              "W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE"
-            ) as Record<
-              string,
-              Phaser.Input.Keyboard.Key
-            >;
-
-          // ==================================================
-          // CAMERA
-          // ==================================================
-
-          scene.cameras.main.startFollow(
-            player,
-            true,
-            0.08,
-            0.08
+              );
+            }
           );
 
-          scene.cameras.main.setZoom(
-            1.25
-          );
+          // =====================================================
+          // NPC INTERACTION POINTS
+          // =====================================================
 
-          // ==================================================
+          const npcPoints =
+            NPCS.map((npc, index) => {
+              const keys = Object.keys(
+                positions
+              );
+
+              const key =
+                keys[index % keys.length];
+
+              const p =
+                positions[key];
+
+              return {
+                id: npc.id,
+                nome: npc.nome,
+                text: npc.text,
+                clue: npc.clue,
+                x: p.x + 45,
+                y: p.y + 35,
+              };
+            });
+
+          // Invisible interaction zones.
+          // The NPC art is already part of the world illustration.
+
+          // =====================================================
           // HUD
-          // ==================================================
+          // =====================================================
 
           const hud =
             scene.add
               .container(
-                20,
-                20
+                18,
+                18
               )
               .setScrollFactor(0)
-              .setDepth(1000);
+              .setDepth(5000);
 
-          const hudBackground =
+          const hudBg =
             scene.add
               .rectangle(
                 0,
                 0,
-                265,
-                105,
-                0x3e291c,
-                0.94
+                300,
+                112,
+                0x332116,
+                0.95
               )
-              .setOrigin(0);
-
-          hudBackground.setStrokeStyle(
-            2,
-            0xd4af37
-          );
+              .setOrigin(0)
+              .setStrokeStyle(
+                2,
+                0xd4af37
+              );
 
           const hudTitle =
-            scene.add.text(
-              16,
-              12,
-              "TREGUA TRA CONTRADE",
-              {
-                fontFamily:
-                  "Arial",
-                fontSize: "17px",
-                color: "#f5d77b",
-                fontStyle:
-                  "bold",
-              }
-            );
+            scene.add
+              .text(
+                16,
+                11,
+                "TREGUA TRA CONTRADE",
+                {
+                  fontFamily:
+                    "Arial",
+                  fontSize: "17px",
+                  color: "#f4cf64",
+                  fontStyle:
+                    "bold",
+                }
+              );
 
           const progress =
+            scene.add
+              .text(
+                16,
+                42,
+                "BENIAMINI 0 / 8",
+                {
+                  fontFamily:
+                    "Arial",
+                  fontSize: "22px",
+                  color: "#ffffff",
+                  fontStyle:
+                    "bold",
+                }
+              );
+
+          const objective =
+            scene.add
+              .text(
+                16,
+                77,
+                "Esplora Querceta",
+                {
+                  fontFamily:
+                    "Arial",
+                  fontSize: "13px",
+                  color: "#e5d8ca",
+                }
+              );
+
+          hud.add([
+            hudBg,
+            hudTitle,
+            progress,
+            objective,
+          ]);
+
+          // =====================================================
+          // MINIMAP
+          // =====================================================
+
+          const minimap =
+            scene.add
+              .container(
+                scene.scale.width - 175,
+                18
+              )
+              .setScrollFactor(0)
+              .setDepth(5000);
+
+          const miniBg =
+            scene.add
+              .rectangle(
+                0,
+                0,
+                155,
+                105,
+                0x332116,
+                0.95
+              )
+              .setOrigin(0)
+              .setStrokeStyle(
+                2,
+                0xd4af37
+              );
+
+          const miniTitle =
             scene.add.text(
-              16,
-              42,
-              "BENIAMINI 0 / 8",
+              12,
+              9,
+              "QUERCETA",
               {
                 fontFamily:
                   "Arial",
-                fontSize: "21px",
+                fontSize: "14px",
                 color: "#ffffff",
                 fontStyle:
                   "bold",
               }
             );
 
-          const objective =
-            scene.add.text(
-              16,
-              75,
-              "Esplora Querceta",
-              {
-                fontFamily:
-                  "Arial",
-                fontSize: "13px",
-                color: "#dfd5c8",
-              }
+          const miniWorld =
+            scene.add
+              .rectangle(
+                10,
+                31,
+                135,
+                65,
+                0x5b8c52
+              )
+              .setOrigin(0);
+
+          const miniPlayer =
+            scene.add.circle(
+              78,
+              64,
+              4,
+              0xffd45a
             );
 
-          hud.add([
-            hudBackground,
-            hudTitle,
-            progress,
-            objective,
+          minimap.add([
+            miniBg,
+            miniTitle,
+            miniWorld,
+            miniPlayer,
           ]);
 
-          // ==================================================
-          // DIALOGO
-          // ==================================================
+          // =====================================================
+          // DIALOG
+          // =====================================================
 
           const dialog =
             scene.add
               .container(
-                0,
-                0
+                scene.scale.width / 2,
+                scene.scale.height - 82
               )
               .setScrollFactor(0)
-              .setDepth(2000)
+              .setDepth(6000)
               .setVisible(false);
 
           const dialogBg =
@@ -493,8 +642,8 @@ export default function TreguaGame() {
                 0,
                 0,
                 760,
-                125,
-                0x38251a,
+                110,
+                0x2b1c14,
                 0.97
               )
               .setStrokeStyle(
@@ -505,18 +654,18 @@ export default function TreguaGame() {
           const dialogText =
             scene.add
               .text(
-                -350,
-                -35,
+                -345,
+                -34,
                 "",
                 {
                   fontFamily:
                     "Arial",
-                  fontSize: "19px",
+                  fontSize: "17px",
                   color: "#ffffff",
                   wordWrap: {
                     width: 690,
                   },
-                  lineSpacing: 8,
+                  lineSpacing: 6,
                 }
               );
 
@@ -526,32 +675,133 @@ export default function TreguaGame() {
           ]);
 
           const showDialog = (
-            text: string
+            message: string
           ) => {
+            if (dialogTimer) {
+              dialogTimer.remove();
+            }
+
             dialog.setPosition(
               scene.scale.width / 2,
-              scene.scale.height - 90
+              scene.scale.height - 82
             );
 
-            dialogText.setText(text);
-
-            dialog.setVisible(true);
-
-            scene.time.delayedCall(
-              3500,
-              () => {
-                dialog.setVisible(
-                  false
-                );
-              }
+            dialogText.setText(
+              message
             );
+
+            dialog.setVisible(
+              true
+            );
+
+            dialogTimer =
+              scene.time.delayedCall(
+                4200,
+                () => {
+                  dialog.setVisible(
+                    false
+                  );
+                }
+              );
           };
 
-          // ==================================================
-          // SUPABASE
-          // ==================================================
+          // =====================================================
+          // TREGUA BUTTON
+          // =====================================================
 
-          const loadSavedBeniamini =
+          const treguaButton =
+            scene.add
+              .container(
+                scene.scale.width / 2,
+                20
+              )
+              .setScrollFactor(0)
+              .setDepth(5500)
+              .setVisible(false);
+
+          const treguaBg =
+            scene.add
+              .rectangle(
+                0,
+                0,
+                250,
+                44,
+                0xd4af37
+              )
+              .setStrokeStyle(
+                2,
+                0x5c3a21
+              );
+
+          const treguaText =
+            scene.add
+              .text(
+                0,
+                0,
+                "🤝 CERCA IL BARONE",
+                {
+                  fontFamily:
+                    "Arial",
+                  fontSize: "16px",
+                  color: "#3b2617",
+                  fontStyle:
+                    "bold",
+                }
+              )
+              .setOrigin(0.5);
+
+          treguaButton.add([
+            treguaBg,
+            treguaText,
+          ]);
+
+          treguaBg.setInteractive({
+            useHandCursor: true,
+          });
+
+          treguaBg.on(
+            "pointerdown",
+            () => {
+              window.location.href =
+                "/tregua";
+            }
+          );
+
+          // =====================================================
+          // UPDATE PROGRESS
+          // =====================================================
+
+          const updateProgress = (
+            count: number
+          ) => {
+            progress.setText(
+              `BENIAMINI ${count} / 8`
+            );
+
+            if (count >= 8) {
+              objective.setText(
+                "🤝 Tutti gli 8 trovati!"
+              );
+
+              treguaButton.setVisible(
+                true
+              );
+
+              showDialog(
+                "Hai completato la raccolta! Ora puoi iniziare la Tregua con un'altra Contrada."
+              );
+            } else {
+              objective.setText(
+                "Trova tutti i Beniamini"
+              );
+            }
+          };
+
+          // =====================================================
+          // LOAD SAVED COLLECTION
+          // =====================================================
+
+          const loadSaved =
             async () => {
               const {
                 data: {
@@ -560,13 +810,19 @@ export default function TreguaGame() {
               } =
                 await supabase.auth.getUser();
 
-              if (!user) return;
+              if (!user) {
+                showDialog(
+                  "Accedi per salvare i tuoi Beniamini."
+                );
+                return;
+              }
 
               currentUserId =
                 user.id;
 
               const {
                 data,
+                error,
               } =
                 await supabase
                   .from(
@@ -580,41 +836,48 @@ export default function TreguaGame() {
                     user.id
                   );
 
+              if (error) {
+                console.error(
+                  error
+                );
+                return;
+              }
+
               let count = 0;
 
               (
                 data ?? []
               ).forEach(
-                (item) => {
-                  const id =
-                    item.beniamino_id;
-
+                (row) => {
                   if (
                     !BENIAMINI_MAPPA.some(
                       (b) =>
-                        b.id === id
+                        b.id ===
+                        row.beniamino_id
                     )
                   ) {
                     return;
                   }
 
-                  collected.add(id);
+                  collected.add(
+                    row.beniamino_id
+                  );
 
-                  const object =
+                  const obj =
                     beniObjects.get(
-                      id
+                      row.beniamino_id
                     );
 
-                  if (object) {
-                    object.sprite.setVisible(
+                  if (obj) {
+                    obj.sprite.setVisible(
                       false
                     );
 
-                    object.glow.setVisible(
+                    obj.glow.setVisible(
                       false
                     );
 
-                    object.label.setVisible(
+                    obj.label.setVisible(
                       false
                     );
                   }
@@ -628,276 +891,630 @@ export default function TreguaGame() {
               );
             };
 
-          // ==================================================
-          // PROGRESS
-          // ==================================================
+          // =====================================================
+          // COLLECT
+          // =====================================================
 
-          const updateProgress = (
-            count: number
+          const collect = async (
+            id: string
           ) => {
-            progress.setText(
-              `BENIAMINI ${count} / 8`
-            );
+            if (
+              collected.has(id)
+            ) {
+              return;
+            }
 
-            if (count >= 8) {
-              objective.setText(
-                "🤝 Hai completato la mappa!"
+            if (!currentUserId) {
+              showDialog(
+                "Devi accedere per raccogliere questo Beniamino."
+              );
+              return;
+            }
+
+            const {
+              error,
+            } =
+              await supabase
+                .from(
+                  "user_beniamini"
+                )
+                .insert({
+                  user_id:
+                    currentUserId,
+                  beniamino_id:
+                    id,
+                });
+
+            if (
+              error &&
+              error.code !==
+                "23505"
+            ) {
+              console.error(
+                error
               );
 
               showDialog(
-                "Hai trovato tutti gli 8 Beniamini! Ora cerca un giocatore di un'altra Contrada."
+                "Errore nel salvataggio del Beniamino."
               );
-            } else {
-              objective.setText(
-                "Esplora Querceta"
+
+              return;
+            }
+
+            collected.add(id);
+
+            const obj =
+              beniObjects.get(id);
+
+            if (obj) {
+              scene.tweens.add({
+                targets: [
+                  obj.sprite,
+                  obj.glow,
+                  obj.label,
+                ],
+                scale: 1.8,
+                alpha: 0,
+                duration: 420,
+                ease: "Back.easeIn",
+                onComplete: () => {
+                  obj.sprite.destroy();
+                  obj.glow.destroy();
+                  obj.label.destroy();
+                },
+              });
+            }
+
+            const count =
+              collected.size;
+
+            updateProgress(
+              count
+            );
+
+            const beni =
+              BENIAMINI_MAPPA.find(
+                (b) =>
+                  b.id === id
+              );
+
+            if (beni) {
+              showDialog(
+                `✨ Hai trovato ${beni.nome}!`
               );
             }
           };
 
-          // ==================================================
-          // RACCOLTA
-          // ==================================================
+          // =====================================================
+          // INTERACTION
+          // =====================================================
 
-          const collectBeniamino =
-            async (
-              id: string
+          const interact = () => {
+            let closest:
+              | string
+              | null = null;
+
+            let distance =
+              Infinity;
+
+            BENIAMINI_MAPPA.forEach(
+              (beni) => {
+                if (
+                  collected.has(
+                    beni.id
+                  )
+                ) {
+                  return;
+                }
+
+                const p =
+                  positions[
+                    beni.id
+                  ];
+
+                if (!p) return;
+
+                const d =
+                  Phaser.Math.Distance.Between(
+                    player.x,
+                    player.y,
+                    p.x,
+                    p.y
+                  );
+
+                if (
+                  d < distance
+                ) {
+                  distance = d;
+                  closest =
+                    beni.id;
+                }
+              }
+            );
+
+            if (
+              closest &&
+              distance < 90
+            ) {
+              collect(
+                closest
+              );
+
+              return;
+            }
+
+            let nearestNpc:
+              | (typeof npcPoints)[number]
+              | null = null;
+
+            let npcDistance =
+              Infinity;
+
+            npcPoints.forEach(
+              (npc) => {
+                const d =
+                  Phaser.Math.Distance.Between(
+                    player.x,
+                    player.y,
+                    npc.x,
+                    npc.y
+                  );
+
+                if (
+                  d <
+                  npcDistance
+                ) {
+                  npcDistance = d;
+                  nearestNpc =
+                    npc;
+                }
+              }
+            );
+
+            if (
+              nearestNpc &&
+              npcDistance < 95
+            ) {
+              showDialog(
+                `${nearestNpc.nome}: ${nearestNpc.text}\n\n${nearestNpc.clue}`
+              );
+            }
+          };
+
+          // =====================================================
+          // KEYBOARD
+          // =====================================================
+
+          const keyboard =
+            scene.input.keyboard;
+
+          if (!keyboard) {
+            return;
+          }
+
+          const keys =
+            keyboard.addKeys(
+              "W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,SHIFT"
+            ) as Record<
+              string,
+              Phaser.Input.Keyboard.Key
+            >;
+
+          // =====================================================
+          // MOBILE JOYSTICK
+          // =====================================================
+
+          const joystick =
+            scene.add
+              .container(
+                105,
+                scene.scale.height - 105
+              )
+              .setScrollFactor(0)
+              .setDepth(7000);
+
+          const joyOuter =
+            scene.add
+              .circle(
+                0,
+                0,
+                58,
+                0x172018,
+                0.60
+              )
+              .setStrokeStyle(
+                2,
+                0xffffff,
+                0.35
+              );
+
+          const joyInner =
+            scene.add.circle(
+              0,
+              0,
+              27,
+              0xffffff,
+              0.32
+            );
+
+          joystick.add([
+            joyOuter,
+            joyInner,
+          ]);
+
+          let joystickActive =
+            false;
+
+          let joystickX = 0;
+          let joystickY = 0;
+
+          joyOuter.setInteractive();
+
+          joyOuter.on(
+            "pointerdown",
+            (
+              pointer: Phaser.Input.Pointer
+            ) => {
+              joystickActive =
+                true;
+
+              updateJoystick(
+                pointer
+              );
+            }
+          );
+
+          scene.input.on(
+            "pointermove",
+            (
+              pointer: Phaser.Input.Pointer
             ) => {
               if (
-                collected.has(id)
+                joystickActive
               ) {
-                return;
-              }
-
-              if (
-                !currentUserId
-              ) {
-                showDialog(
-                  "Devi effettuare il login per raccogliere i Beniamini."
-                );
-
-                return;
-              }
-
-              const {
-                error,
-              } =
-                await supabase
-                  .from(
-                    "user_beniamini"
-                  )
-                  .insert({
-                    user_id:
-                      currentUserId,
-                    beniamino_id:
-                      id,
-                  });
-
-              if (
-                error &&
-                error.code !==
-                  "23505"
-              ) {
-                showDialog(
-                  "Non è stato possibile salvare il Beniamino."
-                );
-
-                return;
-              }
-
-              collected.add(id);
-
-              const object =
-                beniObjects.get(
-                  id
-                );
-
-              if (object) {
-                scene.tweens.add({
-                  targets: [
-                    object.sprite,
-                    object.glow,
-                  ],
-                  scale: 1.7,
-                  alpha: 0,
-                  duration: 450,
-                });
-
-                scene.time.delayedCall(
-                  450,
-                  () => {
-                    object.sprite.setVisible(
-                      false
-                    );
-
-                    object.glow.setVisible(
-                      false
-                    );
-
-                    object.label.setVisible(
-                      false
-                    );
-                  }
+                updateJoystick(
+                  pointer
                 );
               }
+            }
+          );
 
-              const count =
-                collected.size;
-
-              updateProgress(
-                count
-              );
-
-              const beni =
-                BENIAMINI_MAPPA.find(
-                  (b) =>
-                    b.id === id
-                );
-
-              if (beni) {
-                showDialog(
-                  `✨ Hai trovato ${beni.nome}!`
-                );
-              }
-            };
-
-          // ==================================================
-          // INTERAZIONE
-          // ==================================================
-
-          const interact =
+          scene.input.on(
+            "pointerup",
             () => {
-              let nearestId:
-                | string
-                | null = null;
+              joystickActive =
+                false;
 
-              let nearestDistance =
-                Infinity;
+              joystickX = 0;
+              joystickY = 0;
 
-              BENIAMINI_MAPPA.forEach(
-                (beni) => {
-                  if (
-                    collected.has(
-                      beni.id
-                    )
-                  ) {
-                    return;
-                  }
+              joyInner.setPosition(
+                0,
+                0
+              );
+            }
+          );
 
-                  const pos =
-                    positions[
-                      beni.id
-                    ];
+          function updateJoystick(
+            pointer: Phaser.Input.Pointer
+          ) {
+            const dx =
+              pointer.x -
+              joystick.x;
 
-                  if (!pos) return;
+            const dy =
+              pointer.y -
+              joystick.y;
 
-                  const distance =
-                    Phaser.Math.Distance.Between(
-                      player.x,
-                      player.y,
-                      pos.x,
-                      pos.y
-                    );
-
-                  if (
-                    distance <
-                      nearestDistance
-                  ) {
-                    nearestDistance =
-                      distance;
-
-                    nearestId =
-                      beni.id;
-                  }
-                }
+            const length =
+              Math.sqrt(
+                dx * dx +
+                  dy * dy
               );
 
-              if (
-                nearestId &&
-                nearestDistance <
-                  90
-              ) {
-                collectBeniamino(
-                  nearestId
-                );
+            const max = 38;
 
-                return;
-              }
+            if (
+              length === 0
+            ) {
+              return;
+            }
+
+            const factor =
+              Math.min(
+                length,
+                max
+              ) / length;
+
+            const x =
+              dx * factor;
+
+            const y =
+              dy * factor;
+
+            joyInner.setPosition(
+              x,
+              y
+            );
+
+            joystickX =
+              x / max;
+
+            joystickY =
+              y / max;
+          }
+
+          // =====================================================
+          // ACTION BUTTON
+          // =====================================================
+
+          const action =
+            scene.add
+              .container(
+                scene.scale.width - 85,
+                scene.scale.height - 90
+              )
+              .setScrollFactor(0)
+              .setDepth(7000);
+
+          const actionBg =
+            scene.add
+              .circle(
+                0,
+                0,
+                34,
+                0x38251b,
+                0.82
+              )
+              .setStrokeStyle(
+                2,
+                0xd4af37
+              );
+
+          const actionText =
+            scene.add
+              .text(
+                0,
+                0,
+                "E",
+                {
+                  fontFamily:
+                    "Arial",
+                  fontSize: "22px",
+                  color: "#ffffff",
+                  fontStyle:
+                    "bold",
+                }
+              )
+              .setOrigin(0.5);
+
+          action.add([
+            actionBg,
+            actionText,
+          ]);
+
+          actionBg.setInteractive();
+
+          actionBg.on(
+            "pointerdown",
+            () => {
+              interact();
+            }
+          );
+
+          // =====================================================
+          // RESPONSIVE UI
+          // =====================================================
+
+          const resizeUi =
+            () => {
+              minimap.setPosition(
+                scene.scale.width -
+                  175,
+                18
+              );
+
+              treguaButton.setPosition(
+                scene.scale.width / 2,
+                18
+              );
+
+              dialog.setPosition(
+                scene.scale.width / 2,
+                scene.scale.height -
+                  82
+              );
+
+              joystick.setPosition(
+                105,
+                scene.scale.height -
+                  105
+              );
+
+              action.setPosition(
+                scene.scale.width -
+                  85,
+                scene.scale.height -
+                  90
+              );
             };
 
-          // ==================================================
-          // LOOP
-          // ==================================================
+          scene.scale.on(
+            "resize",
+            resizeUi
+          );
+
+          // =====================================================
+          // GAME LOOP
+          // =====================================================
 
           scene.events.on(
             "update",
-            () => {
-              const speed = 190;
+            (
+              _time: number,
+              delta: number
+            ) => {
+              const dt =
+                Math.min(
+                  delta,
+                  32
+                ) / 1000;
 
-              let vx = 0;
-              let vy = 0;
+              let x = 0;
+              let y = 0;
 
               if (
                 keys.A.isDown ||
                 keys.LEFT.isDown
               ) {
-                vx -= 1;
+                x -= 1;
               }
 
               if (
                 keys.D.isDown ||
                 keys.RIGHT.isDown
               ) {
-                vx += 1;
+                x += 1;
               }
 
               if (
                 keys.W.isDown ||
                 keys.UP.isDown
               ) {
-                vy -= 1;
+                y -= 1;
               }
 
               if (
                 keys.S.isDown ||
                 keys.DOWN.isDown
               ) {
-                vy += 1;
+                y += 1;
               }
 
-              if (vx !== 0 && vy !== 0) {
-                vx *= 0.707;
-                vy *= 0.707;
+              if (
+                joystickActive
+              ) {
+                x =
+                  joystickX;
+                y =
+                  joystickY;
               }
 
-              player.x +=
-                vx *
-                speed *
-                (1 / 60);
+              const magnitude =
+                Math.sqrt(
+                  x * x +
+                    y * y
+                );
 
-              player.y +=
-                vy *
-                speed *
-                (1 / 60);
+              if (
+                magnitude > 1
+              ) {
+                x /= magnitude;
+                y /= magnitude;
+              }
 
-              player.x =
-                Phaser.Math.Clamp(
+              const sprint =
+                keys.SHIFT.isDown;
+
+              const speed =
+                sprint
+                  ? 245
+                  : 170;
+
+              const nextX =
+                player.x +
+                x *
+                  speed *
+                  dt;
+
+              const nextY =
+                player.y +
+                y *
+                  speed *
+                  dt;
+
+              // Collisione logica
+              if (
+                isWalkable(
+                  nextX,
+                  player.y
+                )
+              ) {
+                player.x =
+                  nextX;
+              }
+
+              if (
+                isWalkable(
                   player.x,
-                  40,
-                  WORLD_WIDTH - 40
-                );
+                  nextY
+                )
+              ) {
+                player.y =
+                  nextY;
+              }
 
-              player.y =
-                Phaser.Math.Clamp(
-                  player.y,
-                  40,
-                  WORLD_HEIGHT - 40
-                );
-
-              nameTag.setPosition(
+              playerName.setPosition(
                 player.x,
-                player.y - 55
+                player.y - 58
               );
 
+              // Depth sorting
+              player.setDepth(
+                player.y
+              );
+
+              playerName.setDepth(
+                player.y + 100
+              );
+
+              // Mini-map player
+              miniPlayer.setPosition(
+                10 +
+                  (player.x /
+                    WORLD_W) *
+                    135,
+                31 +
+                  (player.y /
+                    WORLD_H) *
+                    65
+              );
+
+              // Animazione movimento
+              const moving =
+                Math.abs(x) +
+                  Math.abs(y) >
+                0.05;
+
+              if (
+                moving
+              ) {
+                const bob =
+                  Math.sin(
+                    scene.time.now /
+                      90
+                  ) * 2;
+
+                body.y =
+                  -2 + bob;
+
+                hair.y =
+                  -35 + bob;
+
+                skin.y =
+                  -25 + bob;
+
+                legs.y =
+                  13 -
+                  bob;
+              } else {
+                body.y = -2;
+                hair.y = -35;
+                skin.y = -25;
+                legs.y = 13;
+              }
+
+              // Interazione tastiera
               if (
                 Phaser.Input.Keyboard.JustDown(
                   keys.E
@@ -911,27 +1528,21 @@ export default function TreguaGame() {
             }
           );
 
-          // ==================================================
-          // RESIZE DIALOG
-          // ==================================================
+          // =====================================================
+          // INITIAL LOAD
+          // =====================================================
 
-          scene.scale.on(
-            "resize",
-            (
-              gameSize: Phaser.Structs.Size
-            ) => {
-              dialog.setPosition(
-                gameSize.width / 2,
-                gameSize.height - 90
-              );
-            }
+          loadSaved();
+
+          resizeUi();
+
+          // Fade-in
+          scene.cameras.main.fadeIn(
+            500,
+            0,
+            0,
+            0
           );
-
-          // ==================================================
-          // START
-          // ==================================================
-
-          loadSavedBeniamini();
         },
       },
     };
@@ -947,7 +1558,7 @@ export default function TreguaGame() {
   return (
     <div
       ref={gameRef}
-      className="w-full h-screen overflow-hidden bg-black"
+      className="fixed inset-0 overflow-hidden bg-black"
     />
   );
 }
