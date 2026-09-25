@@ -33,6 +33,9 @@ export default function TreguaGame() {
           this.load.image("player-up-2", "/game/player-up-2.svg");
           this.load.image("player-side-1", "/game/player-side-1.svg");
           this.load.image("player-side-2", "/game/player-side-2.svg");
+          ["cervia","leondoro","lucertola","madonnina","ponte","pozzo","quercia","ranocchio"].forEach((id) => {
+            this.load.image(`player-${id}`, `/game/player-${id}.svg`);
+          });
           this.load.image("npc", "/game/npc.svg");
           BENIAMINI_MAPPA.forEach((b) => this.load.image(`beni-${b.id}`, b.image));
         },
@@ -100,9 +103,22 @@ export default function TreguaGame() {
           ground.setCollisionByExclusion([0,1,2,3,5,12,15]);
           
           let userId: string | null = null;
+          let username = "Contradaiolo";
+          let contradaId = "";
           const collected = new Set<string>();
 
-          const player = scene.physics.add.sprite(24*TILE, 18*TILE, "player-down-1");
+          const contradaConfig: Record<string,{color:string;label:string}> = {
+            cervia:{color:"#f4f1e8",label:"La Cervia"},
+            leondoro:{color:"#e5b93f",label:"Il Leon d'Oro"},
+            lucertola:{color:"#b9423a",label:"La Lucertola"},
+            madonnina:{color:"#2f63a8",label:"La Madonnina"},
+            ponte:{color:"#b9423a",label:"Il Ponte"},
+            pozzo:{color:"#f4f1e8",label:"Il Pozzo"},
+            quercia:{color:"#f4f1e8",label:"La Quercia"},
+            ranocchio:{color:"#e5b93f",label:"Il Ranocchio"}
+          };
+
+          const player = scene.physics.add.sprite(24*TILE, 18*TILE, "player-quercia");
           player.setScale(.72);
           player.setCollideWorldBounds(true);
           player.setDepth(player.y);
@@ -111,6 +127,18 @@ export default function TreguaGame() {
             playerBody.setSize(22, 18).setOffset(13, 40);
           }
           scene.cameras.main.startFollow(player, true, .12, .12);
+
+          const usernameText = scene.add.text(player.x, player.y - 55, username, {
+            fontFamily:"Arial", fontSize:isMobile ? "11px" : "12px", color:"#fff",
+            fontStyle:"bold", stroke:"#241812", strokeThickness:4
+          }).setOrigin(.5).setDepth(20000);
+
+          const setPlayerContrada = (id:string) => {
+            const valid = contradaConfig[id] ? id : "quercia";
+            contradaId = valid;
+            player.setTexture(`player-${valid}`);
+            usernameText.setText(username);
+          };
 
           const anim = (key:string, frames:string[]) => {
             if (scene.anims.exists(key)) return;
@@ -196,8 +224,12 @@ export default function TreguaGame() {
           const tt = scene.add.text(0,0,"🤝 CERCA IL BARONE",{fontFamily:"Arial",fontSize:"15px",color:"#3b2617",fontStyle:"bold"}).setOrigin(.5);
           tregua.add([tb,tt]); tb.on("pointerdown",()=>window.location.href="/tregua");
 
+          const updatePlayerLabel=()=>{usernameText.setPosition(player.x,player.y-55);usernameText.setDepth(player.y+1000);};
           const update=()=>{progress.setText(`BENIAMINI ${collected.size} / 8`); if(collected.size===8){tregua.setVisible(true);say("Hai trovato tutti gli 8 Beniamini! Ora puoi cercare un giocatore di un'altra Contrada.");}};
-          const load=async()=>{const {data:{user}}=await supabase.auth.getUser(); if(!user){say("Accedi per salvare la tua raccolta.");return;} userId=user.id; const {data}=await supabase.from("user_beniamini").select("beniamino_id").eq("user_id",user.id); (data??[]).forEach((r:{beniamino_id:string})=>{if(positions[r.beniamino_id]){collected.add(r.beniamino_id);objects.get(r.beniamino_id)?.setVisible(false);}}); update();};
+          const load=async()=>{const {data:{user}}=await supabase.auth.getUser(); if(!user){say("Accedi per salvare la tua raccolta.");return;} userId=user.id;
+            const {data:profile}=await supabase.from("profiles").select("username,contrada_id").eq("id",user.id).maybeSingle();
+            if(profile){username=profile.username || "Contradaiolo"; setPlayerContrada(profile.contrada_id || "quercia");}
+            const {data}=await supabase.from("user_beniamini").select("beniamino_id").eq("user_id",user.id); (data??[]).forEach((r:{beniamino_id:string})=>{if(positions[r.beniamino_id]){collected.add(r.beniamino_id);objects.get(r.beniamino_id)?.setVisible(false);}}); update();};
           const interact=async()=>{let best:string|null=null,bd=Infinity; BENIAMINI_MAPPA.forEach(b=>{if(collected.has(b.id))return;const p=positions[b.id];const d=Phaser.Math.Distance.Between(player.x,player.y,p.x*TILE+16,p.y*TILE+10);if(d<bd){bd=d;best=b.id;}}); if(best&&bd<80){if(!userId){say("Devi accedere per raccogliere il Beniamino.");return;} const {error}=await supabase.from("user_beniamini").insert({user_id:userId,beniamino_id:best}); if(error&&error.code!=="23505"){say("Errore nel salvataggio.");return;} collected.add(best); objects.get(best)?.destroy(); update(); const b=BENIAMINI_MAPPA.find(x=>x.id===best); if(b)say(`✨ Hai trovato ${b.nome}!`); return;} let ni=-1,nd=Infinity; npcObjects.forEach((o,i)=>{const d=Phaser.Math.Distance.Between(player.x,player.y,o.sprite.x,o.sprite.y);if(d<nd){nd=d;ni=i;}}); if(ni>=0&&nd<85){const n=npcObjects[ni].npc;say(`${n.nome}: ${n.text}\\n\\n${n.clue}`);}};
           
           const keys=scene.input.keyboard?.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,SHIFT") as Record<string,Phaser.Input.Keyboard.Key>|undefined;
@@ -245,7 +277,7 @@ export default function TreguaGame() {
           actionBg.on("pointerdown",()=>void interact());
 
           const keys=scene.input.keyboard?.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,SHIFT") as Record<string,Phaser.Input.Keyboard.Key>|undefined;
-          scene.events.on("update",(_t:number,delta:number)=>{const dt=Math.min(delta,32)/1000; if(!keys)return; let x=0,y=0;if(keys.A.isDown||keys.LEFT.isDown)x--;if(keys.D.isDown||keys.RIGHT.isDown)x++;if(keys.W.isDown||keys.UP.isDown)y--;if(keys.S.isDown||keys.DOWN.isDown)y++;const len=Math.hypot(x,y);if(len>1){x/=len;y/=len;}const speed=keys.SHIFT.isDown?190:135;player.setVelocity(x*speed,y*speed);if(Math.abs(x)+Math.abs(y)>.05){if(Math.abs(x)>Math.abs(y)){player.anims.play("walk-side",true);player.setFlipX(x<0);}else player.anims.play(y>0?"walk-down":"walk-up",true);}else player.anims.stop();player.setDepth(player.y); updateMini(); if(Phaser.Input.Keyboard.JustDown(keys.E)||Phaser.Input.Keyboard.JustDown(keys.SPACE))void interact();});
+          scene.events.on("update",(_t:number,delta:number)=>{const dt=Math.min(delta,32)/1000; if(!keys)return; let x=0,y=0;if(keys.A.isDown||keys.LEFT.isDown)x--;if(keys.D.isDown||keys.RIGHT.isDown)x++;if(keys.W.isDown||keys.UP.isDown)y--;if(keys.S.isDown||keys.DOWN.isDown)y++;const len=Math.hypot(x,y);if(len>1){x/=len;y/=len;}const speed=keys.SHIFT.isDown?190:135;player.setVelocity(x*speed,y*speed);if(Math.abs(x)+Math.abs(y)>.05){if(Math.abs(x)>Math.abs(y)){player.anims.play("walk-side",true);player.setFlipX(x<0);}else player.anims.play(y>0?"walk-down":"walk-up",true);}else player.anims.stop();player.setDepth(player.y); updatePlayerLabel(); updateMini(); if(Phaser.Input.Keyboard.JustDown(keys.E)||Phaser.Input.Keyboard.JustDown(keys.SPACE))void interact();});
           const resize=()=>{
             hud.setPosition(18,18);
             tregua.setPosition(scene.scale.width/2,18);
