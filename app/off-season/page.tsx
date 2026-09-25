@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import {
   BENIAMINI_MAPPA,
   NPCS,
-} from "@/data/offSeason";
+} from "@/data/offseason";
 
 const supabase = createClient();
 
