@@ -66,6 +66,7 @@ export default function TreguaGame(){
           let currentNpcs:Phaser.GameObjects.Image[]=[];
           let currentNpcData:any[]=[];
           let currentBeni:Phaser.GameObjects.Image|null=null;
+          let mapCollisionObjects:Phaser.GameObjects.GameObject[]=[];
           let player:Phaser.Physics.Arcade.Sprite;
           let usernameText:Phaser.GameObjects.Text;
           let progress:Phaser.GameObjects.Text;
@@ -92,27 +93,95 @@ export default function TreguaGame(){
             if(id==="pozzo"){ground.fill(3,22,3,6,6);}
             if(id==="lucertola"){ground.fill(4,19,1,8,5);}
             if(id==="ranocchio"||id==="cervia"){ground.fill(12,2,2,7,5);}
+            // Ogni mappa ha una piccola "città" leggibile: strada principale, piazza, vicoli, case, verde e un punto d'interesse.
+            mapCollisionObjects.forEach(o=>o.destroy());
+            mapCollisionObjects=[];
+
+            ground.fill(0);
+            ground.fill(2,14,0,4,ROWS);
+            ground.fill(2,0,10,COLS,4);
+
             const blocked=new Set<string>();
-            const block=(x:number,y:number,w:number,h:number)=>{for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)blocked.add(`${xx},${yy}`);};
-            const house=(x:number,y:number,w:number,h:number,roof:number)=>{
-              scene.add.rectangle((x+w/2)*TILE,(y+h+0.2)*TILE,w*TILE-8,10,0x3b2a20,.22).setDepth(y*TILE+1);
+            const block=(x:number,y:number,w:number,h:number)=>{for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)blocked.add(xx+","+yy);};
+            const path=(x:number,y:number,w:number,h:number)=>{
+              scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE,h*TILE,0xd7c59d,.92).setDepth(1);
+              if(w>h)for(let xx=x;xx<x+w;xx+=2)scene.add.rectangle((xx+.5)*TILE,(y+h/2)*TILE,18,3,0xb59c72,.28).setDepth(2);
+            };
+            const plaza=(x:number,y:number,w:number,h:number)=>{
+              scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE,h*TILE,0xe1d2ad,.96).setDepth(1);
+              scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE-10,h*TILE-10,0xd2bd91,.35).setDepth(2).setStrokeStyle(2,0xb3986c,.55);
+            };
+            const house=(x:number,y:number,w:number,h:number,roof:number,label?:string)=>{
+              scene.add.rectangle((x+w/2)*TILE,(y+h+.2)*TILE,w*TILE-8,10,0x3b2a20,.22).setDepth(y*TILE+1);
               scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE-6,h*TILE-5,0xe7d3ad).setDepth(y*TILE+8);
               scene.add.triangle((x+w/2)*TILE,(y-10)*TILE,0,36,w*TILE/2,0,w*TILE,36,roof).setOrigin(.5).setDepth(y*TILE+6);
               scene.add.rectangle((x+w*.3)*TILE,(y+h*.55)*TILE,18,16,0x8ec5c7).setDepth(y*TILE+11);
               scene.add.rectangle((x+w*.7)*TILE,(y+h*.55)*TILE,18,16,0x8ec5c7).setDepth(y*TILE+11);
               scene.add.rectangle((x+w*.5)*TILE,(y+h*.65)*TILE,10,22,0x8a5b3b).setDepth(y*TILE+11);
-              block(x,y,w,h);
+              if(label)scene.add.text((x+w/2)*TILE,(y-18)*TILE,label,{fontFamily:"Arial",fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(y*TILE+20);
+              const hit=scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE-8,h*TILE-4,0xffffff,0);
+              scene.physics.add.existing(hit,true);mapCollisionObjects.push(hit);block(x,y,w,h);
             };
+            const fence=(x:number,y:number,w:number,h:number)=>{
+              for(let yy=y;yy<y+h;yy+=2)scene.add.rectangle(x*TILE+10,(yy+.5)*TILE,4,24,0x765036).setDepth(yy*TILE+10);
+              for(let xx=x;xx<x+w;xx+=2)scene.add.rectangle((xx+.5)*TILE,y*TILE+10,24,4,0x765036).setDepth(y*TILE+10);
+            };
+            const bench=(x:number,y:number)=>{
+              scene.add.rectangle(x*TILE,y*TILE,34,7,0x765036).setDepth(y*TILE+10);
+              scene.add.rectangle(x*TILE-9,y*TILE+10,4,14,0x5d402d).setDepth(y*TILE+9);
+              scene.add.rectangle(x*TILE+9,y*TILE+10,4,14,0x5d402d).setDepth(y*TILE+9);
+            };
+
+            path(14,0,4,24);path(0,10,32,4);plaza(11,8,10,8);
+
             const roofs=[def.secondary,def.accent,0x9b6845];
-            house(3,3,6,4,roofs[0]);house(23,3,6,4,roofs[1]);house(4,18,6,4,roofs[2]);
-            if(id==="quercia"){house(23,17,6,4,def.secondary);}
-            if(id==="pozzo"){house(17,3,7,4,def.secondary);}
-            if(id==="madonnina"){house(20,17,7,4,def.secondary);}
-            if(id==="cervia"){house(18,8,7,4,def.secondary);}
-            if(id==="ponte"){house(19,16,7,4,def.secondary);}
+            if(id==="quercia"){
+              house(3,3,6,4,roofs[0],"BORGO");house(23,3,6,4,roofs[1],"BOTTEGA");house(3,18,6,4,roofs[2],"OSTERIA");house(23,18,6,4,def.secondary,"SEDE");
+              path(4,7,24,2);path(7,14,18,2);fence(1,17,5,4);bench(9,11);
+            } else if(id==="ranocchio"){
+              house(3,3,6,4,roofs[0],"CASA");house(23,3,6,4,roofs[1],"FIENILE");house(4,18,6,4,roofs[2],"CASCINA");
+              path(6,7,20,2);path(8,14,16,2);fence(22,17,7,4);bench(11,11);
+              scene.add.ellipse(7*TILE,17*TILE,70,42,0x79a95d,.7).setStrokeStyle(3,def.secondary,.6).setDepth(3);
+              scene.add.circle(7*TILE,17*TILE,10,0x3d7d45).setDepth(4);
+            } else if(id==="leondoro"){
+              house(3,3,6,4,roofs[0],"CAFAGGIO");house(23,3,6,4,roofs[1],"MARZOCCHINO");house(3,18,6,4,roofs[2],"BOTTEGA");
+              path(6,7,20,2);path(8,14,16,2);fence(22,17,7,4);bench(11,11);
+              for(let i=0;i<4;i++)scene.add.rectangle((8+i*5)*TILE,17*TILE,22,34,0xc7b79a,.9).setDepth(3).setStrokeStyle(2,0x8e806d,.6);
+            } else if(id==="lucertola"){
+              house(3,3,6,4,roofs[0],"RIPA");house(23,3,6,4,roofs[1],"MARGINETTA");house(4,18,6,4,roofs[2],"CASA");
+              path(6,7,20,2);path(8,14,16,2);fence(1,17,7,4);bench(23,12);
+              scene.add.rectangle(25*TILE,14*TILE,48,10,0xc4b08d,.9).setDepth(5).setStrokeStyle(2,def.primary,.7);
+              scene.add.text(25*TILE,14*TILE,"RIPA",{fontFamily:"Arial",fontSize:"8px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(6);
+            } else if(id==="pozzo"){
+              house(3,3,6,4,roofs[0],"POZZI");house(23,3,6,4,roofs[1],"BOTTEGA");house(4,18,6,4,roofs[2],"CASA");
+              path(6,7,20,2);path(8,14,16,2);bench(11,11);fence(22,17,7,4);
+              scene.add.ellipse(25*TILE,17*TILE,52,28,0xb7b1a5,.95).setStrokeStyle(4,def.secondary).setDepth(5);
+              scene.add.ellipse(25*TILE,16*TILE,35,14,0x304a55,.9).setDepth(6);
+              scene.add.text(25*TILE,18*TILE,"POZZO",{fontFamily:"Arial",fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);
+            } else if(id==="madonnina"){
+              house(3,3,6,4,roofs[0],"PAGLIAIO");house(23,3,6,4,roofs[1],"BORGO");house(3,18,6,4,roofs[2],"CASA");house(23,18,6,4,def.secondary,"CHIESINA");
+              path(6,7,20,2);path(8,14,16,2);bench(11,11);fence(17,18,4,4);
+              scene.add.circle(25*TILE,17*TILE,22,0xe6d8b7).setStrokeStyle(3,def.secondary).setDepth(5);
+              scene.add.triangle(25*TILE,14*TILE,0,25,14,0,28,25,def.primary).setOrigin(.5).setDepth(6);
+            } else if(id==="cervia"){
+              house(3,3,6,4,roofs[0],"MONTISCENDI");house(23,3,6,4,roofs[1],"TORRE");house(18,18,7,4,roofs[2],"SEDE");
+              path(6,7,20,2);path(8,14,16,2);fence(1,17,8,4);bench(11,11);
+              scene.add.rectangle(8*TILE,15*TILE,18,55,0x8b6a48).setDepth(5).setStrokeStyle(3,def.secondary);
+              scene.add.rectangle(8*TILE,10*TILE,46,20,0xd8d0bd).setDepth(6);
+              scene.add.text(8*TILE,10*TILE,"PORTA",{fontFamily:"Arial",fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);
+            } else {
+              house(3,3,6,4,roofs[0],"VAIANA");house(23,3,6,4,roofs[1],"MAGAZZENO");house(19,18,7,4,roofs[2],"SEDE");
+              path(6,7,20,2);path(8,14,16,2);bench(11,11);fence(1,17,7,4);
+              scene.add.rectangle(25*TILE,10*TILE,70,12,0x765036).setDepth(5);
+              scene.add.rectangle(25*TILE,9*TILE,58,6,def.primary).setDepth(6);
+              scene.add.rectangle(25*TILE,11*TILE,58,6,def.secondary).setDepth(6);
+              scene.add.text(25*TILE,8*TILE,"PONTE DI TAVOLE",{fontFamily:"Arial",fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(7);
+            }
+
             const trees:Array<[number,number]>=[[1,1],[10,2],[28,1],[1,22],[12,22],[29,21]];
-            if(id==="cervia"||id==="ranocchio"){trees.push([16,2],[27,22]);}
-            if(id==="lucertola"){trees.push([12,6],[28,16]);}
+            if(id==="cervia"||id==="ranocchio")trees.push([16,2],[27,22]);
+            if(id==="lucertola")trees.push([12,6],[28,16]);
+            if(id==="cervia")trees.push([12,18],[28,15]);
             trees.forEach(([x,y],i)=>{
               const tx=x*TILE+16,ty=y*TILE+24,c=scene.add.container(tx,ty).setDepth(ty+30);
               c.add(scene.add.ellipse(0,17,48,14,0x26351f,.24));
