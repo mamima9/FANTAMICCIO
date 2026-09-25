@@ -52,7 +52,7 @@ export default function TreguaGame(){
         },
         create(this:Phaser.Scene){
           const scene=this, WORLD_W=COLS*TILE, WORLD_H=ROWS*TILE;
-          const FONT="Trebuchet MS, Arial, sans-serif";
+          const FONT="Verdana, Arial, sans-serif";
           const mobile=window.innerWidth<768||"ontouchstart"in window||navigator.maxTouchPoints>0||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
           scene.physics.world.setBounds(0,0,WORLD_W,WORLD_H);
           scene.cameras.main.setBounds(0,0,WORLD_W,WORLD_H).setZoom(mobile?1.85:2);
@@ -249,7 +249,7 @@ export default function TreguaGame(){
             mapTitle.setText(def.label.toUpperCase());
             locationText.setText(def.place);
             const zone=scene.add.container(WORLD_W/2,34).setDepth(7000);
-            zone.add(scene.add.rectangle(0,0,430,52,0x241812,.88).setStrokeStyle(2,def.accent,.9));
+            zone.add(scene.add.rectangle(0,0,430,52,0x241812,.92).setStrokeStyle(2,def.accent,.95));
             zone.add(scene.add.text(0,-7,def.label.toUpperCase(),{fontFamily:FONT,fontSize:"22px",fontStyle:"bold",color:"#f7e7b0",stroke:"#241812",strokeThickness:5}).setOrigin(.5));
             zone.add(scene.add.text(0,13,def.place.toUpperCase(),{fontFamily:FONT,fontSize:"10px",fontStyle:"bold",letterSpacing:2,color:"#ffffff",stroke:"#241812",strokeThickness:3}).setOrigin(.5));
             scene.tweens.add({targets:zone,alpha:0,duration:900,delay:3500,ease:"Sine.easeInOut"});
@@ -259,7 +259,7 @@ export default function TreguaGame(){
           player=scene.physics.add.sprite(MAPS.quercia.spawn.x*TILE,MAPS.quercia.spawn.y*TILE,"player-quercia");
           player.setScale(.72).setCollideWorldBounds(true);
           const body=player.body as Phaser.Physics.Arcade.Body;body.setSize(22,18).setOffset(13,40);
-          usernameText=scene.add.text(player.x,player.y-55,username,{fontFamily:FONT,fontSize:mobile?"11px":"12px",color:"#fff",fontStyle:"bold",stroke:"#241812",strokeThickness:4}).setOrigin(.5).setDepth(20000);
+          usernameText=scene.add.text(player.x,player.y-55,username,{fontFamily:FONT,fontSize:mobile?"10px":"11px",color:"#fff",fontStyle:"bold",stroke:"#17110d",strokeThickness:5,backgroundColor:"#241812",padding:{x:5,y:3}}).setOrigin(.5).setDepth(20000);
 
           const hud=scene.add.container(18,18).setScrollFactor(0).setDepth(9000);
           hud.add(scene.add.rectangle(0,0,300,104,0x2b1c14,.94).setOrigin(0).setStrokeStyle(2,0xd4af37));
