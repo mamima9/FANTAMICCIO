@@ -232,7 +232,7 @@ export default function TreguaGame() {
             const {data}=await supabase.from("user_beniamini").select("beniamino_id").eq("user_id",user.id); (data??[]).forEach((r:{beniamino_id:string})=>{if(positions[r.beniamino_id]){collected.add(r.beniamino_id);objects.get(r.beniamino_id)?.setVisible(false);}}); update();};
           const interact=async()=>{let best:string|null=null,bd=Infinity; BENIAMINI_MAPPA.forEach(b=>{if(collected.has(b.id))return;const p=positions[b.id];const d=Phaser.Math.Distance.Between(player.x,player.y,p.x*TILE+16,p.y*TILE+10);if(d<bd){bd=d;best=b.id;}}); if(best&&bd<80){if(!userId){say("Devi accedere per raccogliere il Beniamino.");return;} const {error}=await supabase.from("user_beniamini").insert({user_id:userId,beniamino_id:best}); if(error&&error.code!=="23505"){say("Errore nel salvataggio.");return;} collected.add(best); objects.get(best)?.destroy(); update(); const b=BENIAMINI_MAPPA.find(x=>x.id===best); if(b)say(`✨ Hai trovato ${b.nome}!`); return;} let ni=-1,nd=Infinity; npcObjects.forEach((o,i)=>{const d=Phaser.Math.Distance.Between(player.x,player.y,o.sprite.x,o.sprite.y);if(d<nd){nd=d;ni=i;}}); if(ni>=0&&nd<85){const n=npcObjects[ni].npc;say(`${n.nome}: ${n.text}\\n\\n${n.clue}`);}};
           
-          const keys=scene.input.keyboard?.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,SHIFT") as Record<string,Phaser.Input.Keyboard.Key>|undefined;
+          const keys = scene.input.keyboard?.addKeys("W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,SHIFT") as Record<string, Phaser.Input.Keyboard.Key> | undefined;
 
           // Mobile joystick + interaction button.
           let joyX = 0;
