@@ -41,6 +41,90 @@ export default function TreguaGame() {
           // =====================================================
           // MONDO
           // =====================================================
+// =====================================================
+// JOYSTICK MOBILE
+// =====================================================
+
+const joystickBase = scene.add
+  .circle(95, 445, 55, 0x000000, 0.35)
+  .setScrollFactor(0)
+  .setDepth(1000);
+
+const joystickThumb = scene.add
+  .circle(95, 445, 25, 0xffffff, 0.8)
+  .setScrollFactor(0)
+  .setDepth(1001);
+
+let joystickActive = false;
+let joystickX = 0;
+let joystickY = 0;
+
+const maxDistance = 38;
+
+scene.input.on(
+  "pointerdown",
+  (pointer: Phaser.Input.Pointer) => {
+    if (pointer.x < 190 && pointer.y > 360) {
+      joystickActive = true;
+
+      joystickThumb.setPosition(
+        pointer.x,
+        pointer.y
+      );
+    }
+  }
+);
+
+scene.input.on(
+  "pointermove",
+  (pointer: Phaser.Input.Pointer) => {
+    if (!joystickActive) return;
+
+    const dx = pointer.x - 95;
+    const dy = pointer.y - 445;
+
+    const distance = Math.sqrt(
+      dx * dx + dy * dy
+    );
+
+    const angle = Math.atan2(dy, dx);
+
+    const limitedDistance = Math.min(
+      distance,
+      maxDistance
+    );
+
+    const x =
+      Math.cos(angle) * limitedDistance;
+
+    const y =
+      Math.sin(angle) * limitedDistance;
+
+    joystickThumb.setPosition(
+      95 + x,
+      445 + y
+    );
+
+    joystickX = x / maxDistance;
+    joystickY = y / maxDistance;
+  }
+);
+
+scene.input.on(
+  "pointerup",
+  () => {
+    joystickActive = false;
+
+    joystickX = 0;
+    joystickY = 0;
+
+    joystickThumb.setPosition(
+      95,
+      445
+    );
+  }
+);
+
 const mapMinLat = 43.950;
 const mapMaxLat = 43.990;
 
