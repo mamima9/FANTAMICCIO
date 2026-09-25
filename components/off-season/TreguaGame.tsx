@@ -11,33 +11,38 @@ export default function TreguaGame() {
 
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
+
       parent: gameRef.current,
+
       width: 960,
       height: 540,
-      backgroundColor: "#7ec850",
+
+      backgroundColor: "#79b85a",
+
       pixelArt: true,
+
       scale: {
         mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH,
       },
+
       physics: {
         default: "arcade",
         arcade: {
           debug: false,
         },
       },
-      scene: {
-        preload() {},
 
+      scene: {
         create() {
           const scene = this;
 
-          // =========================
+          // =====================================================
           // MONDO
-          // =========================
+          // =====================================================
 
-          const worldWidth = 2400;
-          const worldHeight = 1600;
+          const worldWidth = 3200;
+          const worldHeight = 2200;
 
           scene.physics.world.setBounds(
             0,
@@ -53,141 +58,272 @@ export default function TreguaGame() {
             worldHeight
           );
 
-          // prato
+          // =====================================================
+          // TERRENO
+          // =====================================================
+
           scene.add
             .rectangle(
               worldWidth / 2,
               worldHeight / 2,
               worldWidth,
               worldHeight,
-              0x7ec850
+              0x79b85a
             )
-            .setDepth(-10);
+            .setDepth(-20);
 
-          // =========================
-          // STRADE
-          // =========================
+          // =====================================================
+          // ACQUA
+          // =====================================================
 
           scene.add
             .rectangle(
-              1200,
-              800,
+              2750,
+              1100,
+              650,
+              2200,
+              0x58a6c7
+            )
+            .setDepth(-19);
+
+          // =====================================================
+          // STRADA PRINCIPALE
+          // =====================================================
+
+          scene.add
+            .rectangle(
+              1550,
+              1100,
               180,
-              1600,
-              0xd8bd8a
+              2200,
+              0xd9bd82
             )
-            .setDepth(-5);
+            .setDepth(-18);
 
           scene.add
             .rectangle(
-              1200,
-              800,
-              2400,
-              150,
-              0xd8bd8a
+              1550,
+              1100,
+              3100,
+              170,
+              0xd9bd82
             )
-            .setDepth(-5);
+            .setDepth(-18);
 
-          // =========================
-          // PIAZZA
-          // =========================
+          // =====================================================
+          // STRADE SECONDARIE
+          // =====================================================
+
+          const secondaryRoads = [
+            {
+              x: 750,
+              y: 500,
+              width: 1500,
+              height: 110,
+            },
+            {
+              x: 750,
+              y: 1700,
+              width: 1500,
+              height: 110,
+            },
+            {
+              x: 2150,
+              y: 650,
+              width: 110,
+              height: 900,
+            },
+            {
+              x: 850,
+              y: 1100,
+              width: 110,
+              height: 900,
+            },
+          ];
+
+          secondaryRoads.forEach((road) => {
+            scene.add
+              .rectangle(
+                road.x,
+                road.y,
+                road.width,
+                road.height,
+                0xd9bd82
+              )
+              .setDepth(-17);
+          });
+
+          // =====================================================
+          // PIAZZA CENTRALE
+          // =====================================================
 
           scene.add
             .rectangle(
-              1200,
-              800,
-              500,
-              350,
-              0xc9a96e
+              1550,
+              1100,
+              600,
+              450,
+              0xcaa76a
             )
-            .setDepth(-4);
+            .setStrokeStyle(8, 0x9a7547)
+            .setDepth(-16);
 
           scene.add
             .text(
-              1200,
-              690,
+              1550,
+              900,
               "QUERCETA",
               {
                 fontFamily: "Arial",
-                fontSize: "42px",
-                color: "#5c3a21",
+                fontSize: "48px",
+                color: "#5b3a22",
                 fontStyle: "bold",
               }
             )
             .setOrigin(0.5)
-            .setDepth(5);
+            .setDepth(-10);
 
-          // =========================
+          // =====================================================
           // CASE
-          // =========================
+          // =====================================================
 
           const houses = [
-            [850, 650],
-            [1550, 650],
-            [850, 950],
-            [1550, 950],
-            [1050, 500],
-            [1350, 500],
-            [1050, 1100],
-            [1350, 1100],
+            [500, 450],
+            [900, 450],
+            [1200, 450],
+            [1900, 450],
+            [2300, 450],
+
+            [500, 750],
+            [900, 750],
+            [2200, 800],
+
+            [500, 1450],
+            [900, 1450],
+            [2100, 1450],
+
+            [500, 1800],
+            [950, 1800],
+            [1900, 1800],
+            [2300, 1800],
           ];
 
           houses.forEach(([x, y]) => {
-            scene.add
-              .rectangle(x, y, 150, 120, 0xf2d7a5)
-              .setStrokeStyle(6, 0x5c3a21)
-              .setDepth(1);
+            const house = scene.add
+              .rectangle(
+                x,
+                y,
+                150,
+                110,
+                0xf1d5a6
+              )
+              .setStrokeStyle(6, 0x68452c)
+              .setDepth(2);
 
             scene.add
               .triangle(
                 x,
-                y - 90,
+                y - 75,
                 x - 95,
-                y - 20,
+                y - 15,
                 x + 95,
-                y - 20,
-                0x8c4b32
+                y - 15,
+                0x9b5039
               )
-              .setDepth(2);
+              .setDepth(3);
+
+            scene.add
+              .rectangle(
+                x,
+                y + 25,
+                32,
+                50,
+                0x6f4931
+              )
+              .setDepth(4);
+
+            scene.physics.add.existing(
+              house,
+              true
+            );
           });
 
-          // =========================
+          // =====================================================
           // ALBERI
-          // =========================
+          // =====================================================
 
           const trees = [
-            [450, 400],
-            [600, 550],
-            [400, 900],
-            [550, 1150],
-            [1850, 400],
-            [2050, 600],
-            [1900, 1000],
-            [2100, 1250],
-            [700, 1350],
-            [1750, 1350],
+            [250, 250],
+            [400, 350],
+            [650, 250],
+            [1050, 250],
+            [1450, 250],
+            [1800, 250],
+            [2150, 250],
+            [2450, 300],
+
+            [250, 700],
+            [350, 950],
+            [250, 1250],
+            [350, 1550],
+
+            [1150, 1550],
+            [1400, 1750],
+            [1650, 1550],
+            [1800, 1950],
+            [2150, 1600],
+            [2500, 1700],
           ];
 
           trees.forEach(([x, y]) => {
             scene.add
-              .circle(x, y - 30, 45, 0x2e7d32)
+              .rectangle(
+                x,
+                y + 28,
+                22,
+                65,
+                0x70472f
+              )
+              .setDepth(1);
+
+            scene.add
+              .circle(
+                x,
+                y,
+                48,
+                0x2f7d32
+              )
               .setDepth(2);
 
             scene.add
-              .rectangle(x, y + 20, 18, 55, 0x6d4c41)
-              .setDepth(1);
+              .circle(
+                x - 28,
+                y + 10,
+                30,
+                0x398d38
+              )
+              .setDepth(2);
+
+            scene.add
+              .circle(
+                x + 28,
+                y + 10,
+                30,
+                0x398d38
+              )
+              .setDepth(2);
           });
 
-          // =========================
+          // =====================================================
           // PERSONAGGIO
-          // =========================
+          // =====================================================
 
           const player = scene.add
             .rectangle(
-              1200,
-              900,
+              1550,
+              1250,
               34,
-              48,
+              46,
               0x4f46e5
             )
             .setDepth(10);
@@ -199,39 +335,44 @@ export default function TreguaGame() {
 
           body.setCollideWorldBounds(true);
 
-          // =========================
-          // NOME
-          // =========================
+          // =====================================================
+          // NOME PLAYER
+          // =====================================================
 
           const nameTag = scene.add
-            .text(1200, 860, "TU", {
-              fontFamily: "Arial",
-              fontSize: "16px",
-              color: "#ffffff",
-              backgroundColor: "#5c3a21",
-              padding: {
-                x: 6,
-                y: 3,
-              },
-              fontStyle: "bold",
-            })
+            .text(
+              player.x,
+              player.y - 42,
+              "TU",
+              {
+                fontFamily: "Arial",
+                fontSize: "15px",
+                color: "#ffffff",
+                backgroundColor: "#49301f",
+                padding: {
+                  x: 6,
+                  y: 3,
+                },
+                fontStyle: "bold",
+              }
+            )
             .setOrigin(0.5)
             .setDepth(20);
 
-          // =========================
+          // =====================================================
           // CAMERA
-          // =========================
+          // =====================================================
 
           scene.cameras.main.startFollow(
             player,
             true,
-            0.08,
-            0.08
+            0.10,
+            0.10
           );
 
-          // =========================
+          // =====================================================
           // CONTROLLI
-          // =========================
+          // =====================================================
 
           const cursors =
             scene.input.keyboard!.createCursorKeys();
@@ -277,6 +418,13 @@ export default function TreguaGame() {
                 keys.S.isDown
               ) {
                 body.setVelocityY(speed);
+              }
+
+              if (
+                body.velocity.x !== 0 &&
+                body.velocity.y !== 0
+              ) {
+                body.velocity.normalize().scale(speed);
               }
 
               nameTag.setPosition(
