@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" path="res://art/player-quercia.svg" id="4"]
 [ext_resource type="Script" path="res://scripts/HUD.gd" id="5"]
 [ext_resource type="Script" path="res://scripts/NPC.gd" id="6"]
+[ext_resource type="Script" path="res://scripts/ChallengeManager.gd" id="7"]
 
 [sub_resource type="RectangleShape2D" id="PlayerShape"]
 size = Vector2(34, 28)
@@ -72,9 +73,6 @@ drag_horizontal_enabled = true
 drag_vertical_enabled = true
 
 
-[node name="ChallengeManager" type="Node" parent="."]
-script = null
-
 [node name="NPCs" type="Node2D" parent="."]
 
 [node name="CustodeDelleQuerce" type="Area2D" parent="NPCs"]
@@ -126,6 +124,7 @@ theme_override_colors/font_color = Color(1,0.92,0.68,1)
 theme_override_font_sizes/font_size = 12
 
 [node name="ChallengeManager" type="Node" parent="."]
+script = ExtResource("7")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("5")
