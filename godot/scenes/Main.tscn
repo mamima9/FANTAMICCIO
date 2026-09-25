@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1"]
 [ext_resource type="Texture2D" path="res://art/quercia-map.svg" id="2"]
 [ext_resource type="Script" path="res://scripts/Player.gd" id="3"]
 [ext_resource type="Texture2D" path="res://art/player-quercia.svg" id="4"]
 [ext_resource type="Script" path="res://scripts/HUD.gd" id="5"]
+[ext_resource type="Script" path="res://scripts/NPC.gd" id="6"]
 
 [sub_resource type="RectangleShape2D" id="PlayerShape"]
 size = Vector2(34, 28)
@@ -20,6 +21,22 @@ corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
+
+
+[sub_resource type="CircleShape2D" id="NPCShape"]
+radius = 55.0
+
+[sub_resource type="StyleBoxFlat" id="NPCPanel"]
+bg_color = Color(0.12,0.08,0.05,0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.83,0.66,0.30,0.9)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1")
@@ -53,6 +70,57 @@ limit_right = 2304
 limit_bottom = 1296
 drag_horizontal_enabled = true
 drag_vertical_enabled = true
+
+
+[node name="NPCs" type="Node2D" parent="."]
+
+[node name="CustodeDelleQuerce" type="Area2D" parent="NPCs"]
+position = Vector2(720, 530)
+script = ExtResource("6")
+npc_name = "Custode delle Querce"
+dialogue = ["Le querce non mostrano mai il loro segreto a chi corre senza guardare.", "Segui il sentiero con i segni dorati: il primo indizio è vicino alla quercia più antica.", "Quando il vento cambia, le prove cominciano."]
+
+[node name="Prompt" type="Label" parent="NPCs/CustodeDelleQuerce"]
+offset_left = -75.0
+offset_top = -55.0
+offset_right = 75.0
+offset_bottom = -30.0
+text = "E  •  PARLA"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1,0.92,0.68,1)
+theme_override_font_sizes/font_size = 12
+
+[node name="VecchioDellaBottega" type="Area2D" parent="NPCs"]
+position = Vector2(650, 365)
+script = ExtResource("6")
+npc_name = "Vecchio della Bottega"
+dialogue = ["Ho visto il simbolo del Miccio oltre la piazza, tra i sentieri delle querce.", "Non serve essere veloci: devi scegliere il percorso giusto.", "Cerca tre segni dorati. Quando li avrai trovati, saprai dove iniziare."]
+
+[node name="Prompt" type="Label" parent="NPCs/VecchioDellaBottega"]
+offset_left = -75.0
+offset_top = -55.0
+offset_right = 75.0
+offset_bottom = -30.0
+text = "E  •  PARLA"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1,0.92,0.68,1)
+theme_override_font_sizes/font_size = 12
+
+[node name="Contradaiolo" type="Area2D" parent="NPCs"]
+position = Vector2(1490, 710)
+script = ExtResource("6")
+npc_name = "Contradaiolo"
+dialogue = ["La prova della Quercia è una corsa, ma il bosco ti farà perdere la strada.", "Non fidarti del primo sentiero che vedi.", "Quando trovi la Quercia Antica, la prova sarà pronta."]
+
+[node name="Prompt" type="Label" parent="NPCs/Contradaiolo"]
+offset_left = -75.0
+offset_top = -55.0
+offset_right = 75.0
+offset_bottom = -30.0
+text = "E  •  PARLA"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1,0.92,0.68,1)
+theme_override_font_sizes/font_size = 12
 
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("5")
