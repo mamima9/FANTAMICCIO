@@ -120,7 +120,7 @@ export default function TreguaGame(){
               scene.add.rectangle((x+w*.5)*TILE,(y+h*.65)*TILE,10,22,0x8a5b3b).setDepth(y*TILE+11);
               if(label)scene.add.text((x+w/2)*TILE,(y-18)*TILE,label,{fontFamily:"Arial",fontSize:"7px",fontStyle:"bold",color:"#fff",stroke:"#241812",strokeThickness:3}).setOrigin(.5).setDepth(y*TILE+20);
               const hit=scene.add.rectangle((x+w/2)*TILE,(y+h/2)*TILE,w*TILE-8,h*TILE-4,0xffffff,0);
-              scene.physics.add.existing(hit,true);mapCollisionObjects.push(hit);block(x,y,w,h);
+              scene.physics.add.existing(hit,true);scene.physics.add.collider(player,hit);mapCollisionObjects.push(hit);block(x,y,w,h);
             };
             const fence=(x:number,y:number,w:number,h:number)=>{
               for(let yy=y;yy<y+h;yy+=2)scene.add.rectangle(x*TILE+10,(yy+.5)*TILE,4,24,0x765036).setDepth(yy*TILE+10);
