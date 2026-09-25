@@ -9,30 +9,29 @@ type MapId = "quercia"|"ranocchio"|"leondoro"|"lucertola"|"pozzo"|"madonnina"|"c
 type Exit = {x:number;y:number;target:MapId;label:string};
 type MapDef = {
   id:MapId; label:string; place:string; center:[number,number]; spawn:{x:number;y:number};
-  beniamino:string; npcId:string; primary:number; secondary:number; accent:number; exits:Exit[];
+  beniamino:string; primary:number; secondary:number; accent:number; exits:Exit[];
 };
 
 const MAPS:Record<MapId,MapDef> = {
-  quercia:{id:"quercia",label:"La Quercia",place:"Querceta",center:[43.97659,10.20043],spawn:{x:16,y:12},beniamino:"quercia",npcId:"vecchio-contradaiolo",primary:0xf4f1e8,secondary:0x252525,accent:0xb58b42,
+  quercia:{id:"quercia",label:"La Quercia",place:"Querceta",center:[43.97659,10.20043],spawn:{x:16,y:12},beniamino:"quercia",primary:0xf4f1e8,secondary:0x252525,accent:0xb58b42,
     exits:[{x:14,y:0,target:"ranocchio",label:"Verso Ranocchio"},{x:27,y:0,target:"leondoro",label:"Verso Leon d'Oro"},{x:0,y:10,target:"ponte",label:"Verso Ponte"},{x:31,y:14,target:"madonnina",label:"Verso Madonnina"}]},
-  ranocchio:{id:"ranocchio",label:"Il Ranocchio",place:"Ranocchiaio / Cugnia",center:[43.97924,10.19747],spawn:{x:17,y:20},beniamino:"ranocchio",npcId:"contadino-ranocchio",primary:0xe5b93f,secondary:0x4d914f,accent:0xffffff,
+  ranocchio:{id:"ranocchio",label:"Il Ranocchio",place:"Ranocchiaio / Cugnia",center:[43.97924,10.19747],spawn:{x:17,y:20},beniamino:"ranocchio",primary:0xe5b93f,secondary:0x4d914f,accent:0xffffff,
     exits:[{x:16,y:23,target:"quercia",label:"Verso Querceta"},{x:31,y:11,target:"leondoro",label:"Verso Leon d'Oro"}]},
-  leondoro:{id:"leondoro",label:"Il Leon d'Oro",place:"Marzocchino",center:[43.98086,10.20304],spawn:{x:6,y:20},beniamino:"leondoro",npcId:"storico-leon",primary:0xe5b93f,secondary:0xc63f3f,accent:0x3f67ad,
+  leondoro:{id:"leondoro",label:"Il Leon d'Oro",place:"Marzocchino",center:[43.98086,10.20304],spawn:{x:6,y:20},beniamino:"leondoro",primary:0xe5b93f,secondary:0xc63f3f,accent:0x3f67ad,
     exits:[{x:5,y:23,target:"quercia",label:"Verso Querceta"},{x:0,y:11,target:"ranocchio",label:"Verso Ranocchio"},{x:31,y:12,target:"lucertola",label:"Verso Lucertola"}]},
-  lucertola:{id:"lucertola",label:"La Lucertola",place:"Ripa",center:[43.98458,10.21372],spawn:{x:3,y:18},beniamino:"lucertola",npcId:"abitante-ripa",primary:0xc63f3f,secondary:0x4d914f,accent:0xe5b93f,
+  lucertola:{id:"lucertola",label:"La Lucertola",place:"Ripa",center:[43.98458,10.21372],spawn:{x:3,y:18},beniamino:"lucertola",primary:0xc63f3f,secondary:0x4d914f,accent:0xe5b93f,
     exits:[{x:0,y:18,target:"leondoro",label:"Verso Leon d'Oro"},{x:31,y:15,target:"pozzo",label:"Verso Pozzo"}]},
-  pozzo:{id:"pozzo",label:"Il Pozzo",place:"Pozzi",center:[43.9769,10.2152],spawn:{x:4,y:8},beniamino:"pozzo",npcId:"guardiano-pozzi",primary:0xf4f1e8,secondary:0xc63f3f,accent:0x3f67ad,
+  pozzo:{id:"pozzo",label:"Il Pozzo",place:"Pozzi",center:[43.9769,10.2152],spawn:{x:4,y:8},beniamino:"pozzo",primary:0xf4f1e8,secondary:0xc63f3f,accent:0x3f67ad,
     exits:[{x:0,y:8,target:"lucertola",label:"Verso Ripa"},{x:31,y:18,target:"madonnina",label:"Verso Madonnina"}]},
-  madonnina:{id:"madonnina",label:"La Madonnina",place:"Madonnina dei Pagliai",center:[43.97315,10.20749],spawn:{x:5,y:7},beniamino:"madonnina",npcId:"custode-madonnina",primary:0x3f67ad,secondary:0xe5b93f,accent:0xc63f3f,
+  madonnina:{id:"madonnina",label:"La Madonnina",place:"Madonnina dei Pagliai",center:[43.97315,10.20749],spawn:{x:5,y:7},beniamino:"madonnina",primary:0x3f67ad,secondary:0xe5b93f,accent:0xc63f3f,
     exits:[{x:0,y:15,target:"quercia",label:"Verso Querceta"},{x:31,y:18,target:"pozzo",label:"Verso Pozzi"},{x:18,y:23,target:"cervia",label:"Verso Cervia"}]},
-  cervia:{id:"cervia",label:"La Cervia",place:"Montiscendi",center:[43.95773,10.22506],spawn:{x:25,y:4},beniamino:"cervia",npcId:"viandante-cervia",primary:0xf4f1e8,secondary:0x7bb8d9,accent:0x6c9b5b,
+  cervia:{id:"cervia",label:"La Cervia",place:"Montiscendi",center:[43.95773,10.22506],spawn:{x:25,y:4},beniamino:"cervia",primary:0xf4f1e8,secondary:0x7bb8d9,accent:0x6c9b5b,
     exits:[{x:18,y:0,target:"madonnina",label:"Verso Madonnina"},{x:0,y:18,target:"ponte",label:"Verso Ponte"}]},
-  ponte:{id:"ponte",label:"Il Ponte",place:"Vaiana",center:[43.96688,10.19238],spawn:{x:25,y:6},beniamino:"ponte",npcId:"guardiano-ponte",primary:0xc63f3f,secondary:0x3f67ad,accent:0xe5b93f,
+  ponte:{id:"ponte",label:"Il Ponte",place:"Vaiana",center:[43.96688,10.19238],spawn:{x:25,y:6},beniamino:"ponte",primary:0xc63f3f,secondary:0x3f67ad,accent:0xe5b93f,
     exits:[{x:31,y:7,target:"quercia",label:"Verso Querceta"},{x:0,y:17,target:"cervia",label:"Verso Cervia"}]},
 };
 
 const TILE=32, COLS=32, ROWS=24;
-const npcById=(id:string)=>NPCS.find(n=>n.id===id);
 const beniById=(id:string)=>BENIAMINI_MAPPA.find(b=>b.id===id);
 
 export default function TreguaGame(){
@@ -64,8 +63,8 @@ export default function TreguaGame(){
           const collected=new Set<string>();
           const objects=new Map<string,Phaser.GameObjects.Image>();
           let current:MapId="quercia";
-          let currentNpc:Phaser.GameObjects.Image|null=null;
-          let currentNpcData:any=null;
+          let currentNpcs:Phaser.GameObjects.Image[]=[];
+          let currentNpcData:any[]=[];
           let currentBeni:Phaser.GameObjects.Image|null=null;
           let player:Phaser.Physics.Arcade.Sprite;
           let usernameText:Phaser.GameObjects.Text;
@@ -137,13 +136,17 @@ export default function TreguaGame(){
             else {lm.add(scene.add.rectangle(0,2,28,25,0xe6d8b7).setStrokeStyle(3,def.secondary));lm.add(scene.add.triangle(0,-18,0,25,14,0,28,25,def.primary));}
             scene.tweens.add({targets:lm,y:ly-2,duration:1500,yoyo:true,repeat:-1,ease:"Sine.easeInOut"});
 
-            // NPC e Beniamino locali: una sola coppia per territorio.
-            const npc=npcById(def.npcId), beni=beniById(def.beniamino);
-            const np={x:Math.max(2,Math.min(29,def.spawn.x+2)),y:Math.max(2,Math.min(21,def.spawn.y-2))};
-            if(npc){currentNpcData=npc;currentNpc=scene.add.image(np.x*TILE+16,np.y*TILE+10,"npc").setScale(.72).setDepth(np.y*TILE+30);
-              const tag=scene.add.text(currentNpc.x,currentNpc.y-38,npc.nome,{fontFamily:"Arial",fontSize:"8px",fontStyle:"bold",color:"#fff",backgroundColor:"#241812",padding:{x:4,y:3}}).setOrigin(.5).setDepth(1000);
-              scene.tweens.add({targets:tag,y:tag.y-2,duration:900,yoyo:true,repeat:-1,ease:"Sine.easeInOut"});
-            }
+            // NPC storici: ogni territorio ospita più personaggi, ciascuno dedicato a un capitolo diverso.
+            const npcs=NPCS.filter(n=>n.mapId===id);
+            currentNpcData=npcs;
+            currentNpcs=npcs.map((npc)=>{
+              const [nx,ny]=npc.position;
+              const img=scene.add.image(nx*TILE+16,ny*TILE+10,"npc").setScale(.72).setDepth(ny*TILE+30);
+              const tag=scene.add.text(img.x,img.y-38,npc.nome,{fontFamily:"Arial",fontSize:"8px",fontStyle:"bold",color:"#fff",backgroundColor:"#241812",padding:{x:4,y:3}}).setOrigin(.5).setDepth(1000);
+              scene.tweens.add({targets:[img,tag],y:"-=2",duration:900,yoyo:true,repeat:-1,ease:"Sine.easeInOut"});
+              img.setData("npcId",npc.id);
+              return img;
+            });
             if(beni){
               const bx=Math.max(3,Math.min(28,def.spawn.x+7)),by=Math.max(3,Math.min(20,def.spawn.y+1));
               currentBeni=scene.add.image(bx*TILE+16,by*TILE+10,`beni-${beni.id}`).setDisplaySize(54,54).setDepth(by*TILE+40);
@@ -160,10 +163,6 @@ export default function TreguaGame(){
             scene.cameras.main.startFollow(player,true,.12,.12);
             mapTitle.setText(def.label.toUpperCase());
             locationText.setText(def.place);
-            currentNpcData=npc;
-            currentNpc=currentNpc;
-            currentBeni=currentBeni;
-            if(currentNpc)currentNpc.setData("map",id);
             if(currentBeni)currentBeni.setData("map",id);
           };
 
@@ -199,7 +198,8 @@ export default function TreguaGame(){
             if(current===id)return;
             scene.cameras.main.fadeOut(180,0,0,0);
             await new Promise(r=>scene.time.delayedCall(190,r));
-            if(currentNpc)currentNpc.destroy(); currentNpc=null;
+            currentNpcs.forEach(n=>n.destroy()); currentNpcs=[];
+            currentNpcData=[];
             if(currentBeni)currentBeni.destroy(); currentBeni=null;
             // Ogni territorio è una mappa separata: prima di caricare la nuova
             // eliminiamo solo gli oggetti del mondo, mantenendo player e HUD.
@@ -219,7 +219,18 @@ export default function TreguaGame(){
               if(error&&error.code!=="23505"){say("Errore nel salvataggio.");return;}
               collected.add(id);currentBeni.setVisible(false);updateProgress();const b=beniById(id);if(b)say(`✨ Hai trovato ${b.nome}! ${collected.size===8?"Hai completato la raccolta. Ora cerca un giocatore di un'altra Contrada.":""}`);return;
             }
-            if(currentNpc&&currentNpcData&&Phaser.Math.Distance.Between(player.x,player.y,currentNpc.x,currentNpc.y)<90){say(`${currentNpcData.nome}: ${currentNpcData.text}\\n\\n${currentNpcData.clue}`);return;}
+            if(currentNpcs.length){
+              let nearestIndex=-1,nearest=Infinity;
+              currentNpcs.forEach((npc,index)=>{
+                const d=Phaser.Math.Distance.Between(player.x,player.y,npc.x,npc.y);
+                if(d<nearest){nearest=d;nearestIndex=index;}
+              });
+              if(nearestIndex>=0&&nearest<90){
+                const npc=currentNpcData[nearestIndex];
+                say(`${npc.nome}: ${npc.text}\\n\\n${npc.clue}`);
+                return;
+              }
+            }
             for(const e of def.exits){const ex=e.x*TILE+16,ey=e.y*TILE+16;if(Phaser.Math.Distance.Between(player.x,player.y,ex,ey)<72){const target=MAPS[e.target];const incoming=target.exits.find(x=>x.target===current);await transition(e.target,incoming?{x:incoming.x+(incoming.x===0?2:incoming.x===COLS-1?-2:0),y:incoming.y+(incoming.y===0?2:incoming.y===ROWS-1?-2:0)}:target.spawn);return;}}
           };
 
