@@ -333,7 +333,7 @@ export default function TreguaGame(){
             (data??[]).forEach((r:{beniamino_id:string})=>{if(MAPS[r.beniamino_id as MapId])collected.add(r.beniamino_id);});
             updateProgress();drawMap("quercia");scene.cameras.main.fadeIn(400,0,0,0);
           };
-          const resize=()=>{tregua.setPosition(scene.scale.width/2,18);dialog.setPosition(scene.scale.width/2,scene.scale.height-78);mobileUi.setPosition(92,scene.scale.height-105);act.setPosition(scene.scale.width-90,scene.scale.height-98);world.setPosition(scene.scale.width-118,92);};
+          const resize=()=>{tregua.setPosition(scene.scale.width/2,18);dialog.setPosition(scene.scale.width/2,scene.scale.height-78);mobileUi.setPosition(92,scene.scale.height-155);act.setPosition(scene.scale.width-90,scene.scale.height-98);world.setPosition(scene.scale.width-118,92);};
           scene.scale.on("resize",resize);resize();void load();
         }
       }
