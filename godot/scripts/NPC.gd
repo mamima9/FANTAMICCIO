@@ -36,16 +36,19 @@ func interact() -> void:
         if main.has_method("start_trial"):
             main.start_trial(trial_id)
         return
+
     if dialogue.is_empty():
         return
+
     var hud = get_tree().current_scene.get_node("HUD")
     if hud.has_method("show_dialogue"):
         hud.show_dialogue(npc_name, dialogue[dialogue_index])
-    dialogue_index += 1
-    if dialogue_index >= dialogue.size():
-        dialogue_index = dialogue.size() - 1
-        if trial_id != "":
-            ready_for_trial = true
+
+    if dialogue_index < dialogue.size() - 1:
+        dialogue_index += 1
+    else:
+        ready_for_trial = trial_id != ""
+        if ready_for_trial:
             $Prompt.text = "E  •  INIZIA PROVA"
 
 func _draw() -> void:
