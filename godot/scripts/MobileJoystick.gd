@@ -7,6 +7,7 @@ extends Control
 @export var touch_zone_radius := 240.0
 
 var touch_id := -1
+var mouse_active := false
 var center := Vector2.ZERO
 var knob := Vector2.ZERO
 var axis := Vector2.ZERO
@@ -41,6 +42,18 @@ func _input(event: InputEvent) -> void:
     elif event is InputEventScreenDrag and event.index == touch_id:
         _update_stick(event.position)
         get_viewport().set_input_as_handled()
+    elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+        if event.pressed and not mouse_active and event.position.distance_to(center) <= touch_zone_radius:
+            mouse_active = true
+            _update_stick(event.position)
+            get_viewport().set_input_as_handled()
+        elif not event.pressed and mouse_active:
+            mouse_active = false
+            _release()
+            get_viewport().set_input_as_handled()
+    elif event is InputEventMouseMotion and mouse_active:
+        _update_stick(event.position)
+        get_viewport().set_input_as_handled()
 
 func _update_stick(position: Vector2) -> void:
     var offset := position - center
@@ -58,6 +71,7 @@ func _update_stick(position: Vector2) -> void:
 
 func _release() -> void:
     touch_id = -1
+    mouse_active = false
     axis = Vector2.ZERO
     knob = center
     queue_redraw()
