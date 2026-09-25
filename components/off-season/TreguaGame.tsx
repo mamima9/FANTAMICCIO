@@ -195,6 +195,38 @@ export default function TreguaGame(){
             zone.add(scene.add.text(0,13,def.place.toUpperCase(),{fontFamily:FONT,fontSize:"10px",fontStyle:"bold",letterSpacing:2,color:"#ffffff",stroke:"#241812",strokeThickness:3}).setOrigin(.5));
             scene.tweens.add({targets:zone,alpha:0,duration:900,delay:3500,ease:"Sine.easeInOut"});
             if(currentBeni)currentBeni.setData("map",id);
+
+            // Segnali narrativi nel mondo: piccoli punti interattivi che guidano
+            // il giocatore verso la prova senza trasformare gli NPC in semplici waypoint.
+            const clueSpots:Record<MapId,Array<{x:number;y:number;text:string}>>={
+              quercia:[
+                {x:9,y:6,text:"Un segno dorato è inciso sulla corteccia.\n\n\"Non seguire il sentiero più corto.\""},
+                {x:18,y:17,text:"Secondo segno: tre graffi dorati indicano il bosco."},
+                {x:26,y:19,text:"Terzo segno.\n\nLa Quercia Antica è vicina."}
+              ],
+              cervia:[
+                {x:12,y:8,text:"Una pietra porta il simbolo della campana.\n\n\"Guarda sopra di te.\""}
+              ],
+              pozzo:[
+                {x:23,y:15,text:"Traccia I — acqua."},
+                {x:26,y:16,text:"Traccia II — pietra."},
+                {x:28,y:18,text:"Traccia III — Miccio."}
+              ],
+              leondoro:[{x:18,y:18,text:"Graffi profondi nella pietra.\n\nIl Leone è passato di qui."}],
+              ranocchio:[{x:20,y:18,text:"Petali dorati sulla ninfea.\n\nIl prossimo salto è quello sicuro."}],
+              ponte:[{x:23,y:11,text:"Le tavole mostrano un ritmo: sicura, sicura, pausa."}],
+              madonnina:[{x:7,y:17,text:"Un simbolo appare tra il fieno.\n\nMemorizzalo."}],
+              lucertola:[{x:18,y:13,text:"Un'incisione sulla pietra indica una sola delle due strade."}]
+            };
+            (clueSpots[id]||[]).forEach((clue)=>{
+              const marker=scene.add.container(clue.x*TILE+16,clue.y*TILE+12).setDepth(6500);
+              marker.add(scene.add.circle(0,0,10,def.accent,.22).setStrokeStyle(2,def.accent,.9));
+              marker.add(scene.add.text(0,0,"?",{fontFamily:FONT,fontSize:"12px",fontStyle:"bold",color:"#fff"}).setOrigin(.5));
+              marker.setData("clueText",clue.text);
+              scene.tweens.add({targets:marker,alpha:{from:0.65,to:1},duration:700,yoyo:true,repeat:-1});
+              marker.setInteractive(new Phaser.Geom.Circle(0,0,14),Phaser.Geom.Circle.Contains);
+              marker.on("pointerdown",()=>say(clue.text));
+            });
           };
 
           player=scene.physics.add.sprite(MAPS.quercia.spawn.x*TILE,MAPS.quercia.spawn.y*TILE,"player-quercia");
