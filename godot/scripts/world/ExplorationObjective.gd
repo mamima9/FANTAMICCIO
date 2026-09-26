@@ -23,7 +23,7 @@ func _process(delta: float) -> void:
 
 func get_title() -> String:
     if completed:
-        return "✓ " + objective_title
+        return "[OK] " + objective_title
     return objective_title
 
 func interact() -> void:
@@ -36,7 +36,6 @@ func interact() -> void:
             main.show_interaction(objective_title, "Indizio già raccolto. Esplorazione: %d/%d." % [progress, TOTAL_STEPS])
         return
 
-    # The story must be discovered in sequence: NPC -> clue -> NPC -> clue.
     if story < objective_step:
         var main := get_tree().current_scene
         if main and main.has_method("show_interaction"):
@@ -54,9 +53,9 @@ func interact() -> void:
     SaveManager.save_game()
     WebBridge.progress("exploration_objective", map_id)
 
-    var message := objective_text + "\n\n🔎 Traccia %d/%d completata." % [objective_step, TOTAL_STEPS]
+    var message := objective_text + "\n\nTraccia %d/%d completata." % [objective_step, TOTAL_STEPS]
     if objective_step == TOTAL_STEPS:
-        message += "\n\n🏁 Hai completato l'esplorazione della Contrada!"
+        message += "\n\nHai completato l'esplorazione della Contrada!"
     else:
         message += "\nParla con il prossimo abitante per continuare."
     var main := get_tree().current_scene
@@ -69,7 +68,7 @@ func _draw() -> void:
     if completed:
         draw_circle(Vector2.ZERO, 15.0, Color(0.75, 0.95, 0.55, 0.22))
         draw_circle(Vector2.ZERO, 8.0, Color("#dff4a2"))
-        draw_string(ThemeDB.fallback_font, Vector2(-5, 5), "✓", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#4a6b2a"))
+        draw_string(ThemeDB.fallback_font, Vector2(-10, 5), "OK", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color("#4a6b2a"))
         return
     var active := GameManager.narrative_step(map_id) >= objective_step and GameManager.exploration_progress(map_id) == objective_step - 1
     var pulse := 1.0 + sin(phase * 3.0) * 0.10
