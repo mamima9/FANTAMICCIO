@@ -185,7 +185,7 @@ func _build_map_interaction() -> void:
     area.position = positions.get(current_map_id, Vector2(640,360))
     area.set_script(load("res://scripts/world/Challenge.gd"))
     area.contrada_id = current_map_id
-    area.display_name = "Prova - " + str(current_data["challenge"])
+    area.display_name = "Prova - " + str(current_data["name"])
     var shape_node := CollisionShape2D.new()
     var shape := CircleShape2D.new()
     shape.radius = 72.0
@@ -202,7 +202,7 @@ func _build_map_hotspots() -> void:
         "madonnina":[["Edicola dei Pagliai",Vector2(930,500),"Un simbolo della Contrada è nascosto tra i fiori."]],
         "ponte":[["Passerella",Vector2(950,240),"Le assi scricchiolano: il ritmo del ponte sembra cambiare."]],
         "pozzo":[["Pozzo antico",Vector2(260,250),"Dal fondo arriva un'eco. Le pietre sembrano raccontare una storia."]],
-        "ranocchio":[["Stagno dei Ranocchi",Vector2(260,470),"L'acqua si muove e lascia piccole impronte sul fango."]
+        "ranocchio":[["Stagno dei Ranocchi",Vector2(260,470),"L'acqua si muove e lascia piccole impronte sul fango."]]
     }
     if not specs.has(current_map_id):
         return
