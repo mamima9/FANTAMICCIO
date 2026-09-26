@@ -46,23 +46,9 @@ func load_map(map_id: String, entry_direction: String = "") -> void:
     queue_redraw()
 
 func _build_background() -> void:
-    var path := "res://assets/maps/" + current_map_id + "-bg.png"
-    if not ResourceLoader.exists(path):
-        return
-    var texture := load(path) as Texture2D
-    if texture == null:
-        return
-    var sprite := Sprite2D.new()
-    sprite.texture = texture
-    sprite.centered = false
-    sprite.position = Vector2.ZERO
-    sprite.scale = Vector2(
-        WORLD_SIZE.x / float(texture.get_width()),
-        WORLD_SIZE.y / float(texture.get_height())
-    )
-    sprite.z_index = -100
-    map_nodes.add_child(sprite)
-    has_background = true
+    # Render the playable top-down map procedurally. The old PNGs were
+    # decorative/oversized artwork and did not match the 1280x720 world.
+    has_background = false
 
 func _clear_world() -> void:
     for child in map_nodes.get_children():
