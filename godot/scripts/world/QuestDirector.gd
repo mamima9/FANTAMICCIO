@@ -69,7 +69,17 @@ func _rebuild_npcs(map_id: String) -> void:
             child.queue_free()
 
     var data: Array = NPC_DATA.get(map_id, [])
-    var positions := [Vector2(360,300), Vector2(700,470), Vector2(950,250)]
+    var positions_by_map := {
+        "cervia":[Vector2(210,180),Vector2(520,280),Vector2(850,120)],
+        "leondoro":[Vector2(230,170),Vector2(620,250),Vector2(900,220)],
+        "lucertola":[Vector2(240,520),Vector2(560,420),Vector2(900,280)],
+        "madonnina":[Vector2(230,220),Vector2(560,500),Vector2(900,300)],
+        "ponte":[Vector2(250,220),Vector2(640,470),Vector2(940,250)],
+        "pozzo":[Vector2(220,210),Vector2(540,330),Vector2(850,430)],
+        "quercia":[Vector2(230,210),Vector2(540,220),Vector2(820,300)],
+        "ranocchio":[Vector2(220,390),Vector2(520,520),Vector2(820,300)]
+    }
+    var positions: Array = positions_by_map.get(map_id, [Vector2(360,300), Vector2(700,470), Vector2(950,250)])
     for i in data.size():
         var npc := Area2D.new()
         npc.set_script(script_ref)
