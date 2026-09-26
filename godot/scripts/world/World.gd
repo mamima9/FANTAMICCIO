@@ -266,6 +266,34 @@ func _build_map_hotspots() -> void:
         marker.position = Vector2(0, -45)
         hotspot.add_child(marker)
 
+func _build_dynamic_event() -> void:
+    var specs := {
+        "quercia": ["Fruscio delle radici", Vector2(760, 250), "Le foglie si muovono senza vento. Per un istante una radice sembra indicare una direzione precisa."],
+        "ranocchio": ["Salto nello stagno", Vector2(330, 470), "CRA! Un ranocchio salta fuori dall'acqua e lascia una piccola impronta luminosa sulla riva."],
+        "leondoro": ["Rimbalzo d'oro", Vector2(930, 300), "Un riflesso attraversa l'arena. Il bersaglio si muove da solo, come se qualcuno lo avesse appena colpito."],
+        "lucertola": ["Scintilla improvvisa", Vector2(350, 500), "Una scintilla corre lungo il muro e si spegne vicino a una pietra che sembra fuori posto."],
+        "pozzo": ["Eco dal pozzo", Vector2(300, 250), "Dal pozzo arriva un'eco. Non ripete il tuo rumore: sembra quasi rispondere."],
+        "madonnina": ["Luce sul simbolo", Vector2(930, 440), "Una luce attraversa l'edicola per un secondo e illumina un piccolo simbolo nascosto."],
+        "cervia": ["Passaggio nella boscaglia", Vector2(400, 430), "Qualcosa attraversa rapidamente il sentiero. Restano nuove tracce nel terreno."],
+        "ponte": ["Asse in movimento", Vector2(900, 260), "Una delle assi oscilla anche se nessuno la sta toccando. Poi torna perfettamente ferma."]
+    }
+    if not specs.has(current_map_id):
+        return
+
+    var info: Array = specs[current_map_id]
+    var event := Area2D.new()
+    event.position = info[1]
+    event.set_script(load("res://scripts/world/DynamicEvent.gd"))
+    event.event_id = current_map_id + "_event"
+    event.event_title = str(info[0])
+    event.event_text = str(info[2])
+    var shape_node := CollisionShape2D.new()
+    var shape := CircleShape2D.new()
+    shape.radius = 48.0
+    shape_node.shape = shape
+    event.add_child(shape_node)
+    hotspot_nodes.add_child(event)
+
 func _build_beniamino() -> void:
     var beniamino := Area2D.new()
     beniamino.collision_layer = 2
