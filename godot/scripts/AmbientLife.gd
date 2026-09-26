@@ -13,6 +13,7 @@ class Critter:
 
 var rng := RandomNumberGenerator.new()
 var critters: Array[Critter] = []
+var player: Node2D
 
 # Zone coerenti con la mappa:
 # conigli nelle radure basse, uccelli vicino alle chiome,
@@ -29,6 +30,7 @@ var zones := [
 
 func _ready() -> void:
     rng.randomize()
+    player = get_tree().current_scene.get_node_or_null("Player")
     for zone in zones:
         for i in 2:
             var c := Critter.new()
@@ -44,7 +46,8 @@ func _ready() -> void:
     queue_redraw()
 
 func _process(delta: float) -> void:
-    var player := get_tree().current_scene.get_node_or_null("Player")
+    if not is_instance_valid(player):
+        player = get_tree().current_scene.get_node_or_null("Player")
 
     for c in critters:
         c.phase += delta
@@ -61,9 +64,13 @@ func _process(delta: float) -> void:
 
         # Gli animali reagiscono al giocatore senza diventare NPC:
         # scappano leggermente se ci si avvicina troppo.
-        if player and c.kind == 1 and c.pos.distance_to(player.global_position) < 90.0:
+        if player and c.kind == 1 and c.pos.distance_to(player.global_position) < 110.0:
             c.vel = (c.pos - player.global_position).normalized() * (c.speed * 1.8)
             c.pause = 0.2
+        elif player and c.kind == 0 and c.pos.distance_to(player.global_position) < 150.0:
+            # Gli uccelli fanno un piccolo balzo di fuga, senza teletrasportarsi.
+            c.vel = (c.pos - player.global_position).normalized() * (c.speed * 2.0)
+            c.pause = 0.35
 
         if rng.randf() < delta * 0.12:
             c.vel = Vector2.from_angle(rng.randf_range(0.0, TAU)) * c.speed
