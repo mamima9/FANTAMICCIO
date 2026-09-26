@@ -18,6 +18,7 @@ var rocks := [
     Vector2(1260,510), Vector2(1650,700), Vector2(1940,450), Vector2(2020,760)
 ]
 var benches := [Vector2(910,720), Vector2(1320,930), Vector2(1660,560)]
+var collision_nodes: Array[StaticBody2D] = []
 var fences := [
     [Vector2(560,330), Vector2(680,330)],
     [Vector2(880,930), Vector2(1010,930)],
@@ -33,18 +34,31 @@ func _process(delta: float) -> void:
     queue_redraw()
 
 func _build_collisions() -> void:
+    # Collisioni strette sul tronco: la chioma resta attraversabile.
     for p in trees:
-        if p.x > 680.0 and p.x < 1460.0 and p.y > 300.0 and p.y < 950.0:
-            continue
         var body := StaticBody2D.new()
-        body.position = p + Vector2(0, 10)
+        body.position = p + Vector2(0, 24)
         body.name = "TreeCollision"
         var shape := CollisionShape2D.new()
         var circle := CircleShape2D.new()
-        circle.radius = 24.0
+        circle.radius = 13.0
         shape.shape = circle
         body.add_child(shape)
         add_child(body)
+        collision_nodes.append(body)
+
+    # Rocce: ostacolo piccolo e coerente con il disegno.
+    for p in rocks:
+        var body := StaticBody2D.new()
+        body.position = p + Vector2(0, 2)
+        body.name = "RockCollision"
+        var shape := CollisionShape2D.new()
+        var circle := CircleShape2D.new()
+        circle.radius = 14.0
+        shape.shape = circle
+        body.add_child(shape)
+        add_child(body)
+        collision_nodes.append(body)
 
 func _draw() -> void:
     # Woodland clearings.
