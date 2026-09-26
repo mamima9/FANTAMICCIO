@@ -26,7 +26,7 @@ export default function OffSeasonPage() {
       const contrada = data?.contrada_id ? String(data.contrada_id).toLowerCase() : "";
 
       if (mounted && contrada) {
-        setGameUrl(GODOT_URL + "?contrada=" + encodeURIComponent(contrada));
+        setGameUrl(GODOT_URL + "&contrada=" + encodeURIComponent(contrada));
       }
     };
 
