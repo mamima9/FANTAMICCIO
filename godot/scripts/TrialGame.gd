@@ -17,6 +17,7 @@ var target := 0
 var danger_timer := 0.0
 var flash_timer := 0.0
 var rng := RandomNumberGenerator.new()
+var intro_lock := 0.0
 
 var clues: Array[String] = []
 var clue_order: Array[int] = []
@@ -60,7 +61,9 @@ func start(trial_id: String) -> void:
     player_velocity = Vector2.ZERO
     retry_button.visible = false
     root.visible = true
+    intro_lock = 1.15
     _setup_trial()
+    message.text = "LA PROVA STA PER INIZIARE..."
     queue_redraw()
 
 func _setup_trial() -> void:
@@ -158,6 +161,12 @@ func _setup_trial() -> void:
 
 func _process(delta: float) -> void:
     if not active:
+        return
+    if intro_lock > 0.0:
+        intro_lock -= delta
+        if intro_lock <= 0.0:
+            message.text = "VIA! " + Challenges.get_challenge(id).get("hint", "")
+        arena.queue_redraw()
         return
     elapsed += delta
     flash_timer = max(0.0, flash_timer - delta)
