@@ -10,6 +10,9 @@ func _ready() -> void:
     monitoring = true
     queue_redraw()
 
+func get_title() -> String:
+    return display_name
+
 func interact() -> void:
     if GameManager.trial_completed(contrada_id):
         var main = get_tree().current_scene
@@ -40,6 +43,6 @@ func _draw() -> void:
     draw_circle(Vector2.ZERO, 17, accent if unlocked else accent.darkened(0.45))
     draw_string(ThemeDB.fallback_font, Vector2(-28, 40), "PROVA", HORIZONTAL_ALIGNMENT_CENTER, 56, 11, Color("#fff0c0"))
     if GameManager.trial_completed(contrada_id):
-        draw_string(ThemeDB.fallback_font, Vector2(-22, -31), "✓", HORIZONTAL_ALIGNMENT_CENTER, 44, 20, Color("#d9f0a1"))
+        draw_string(ThemeDB.fallback_font, Vector2(-22, -31), "OK", HORIZONTAL_ALIGNMENT_CENTER, 44, 14, Color("#d9f0a1"))
     elif not unlocked:
-        draw_string(ThemeDB.fallback_font, Vector2(-8, 5), "🔒", HORIZONTAL_ALIGNMENT_CENTER, 16, 12, Color("#fff0c0"))
+        draw_string(ThemeDB.fallback_font, Vector2(-24, 5), "CHIUSA", HORIZONTAL_ALIGNMENT_CENTER, 48, 9, Color("#fff0c0"))
