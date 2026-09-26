@@ -37,6 +37,21 @@ corner_radius_bottom_left = 8
 [sub_resource type="RectangleShape2D" id="BuildingShape"]
 size = Vector2(300, 180)
 
+[sub_resource type="RectangleShape2D" id="BorgoShape"]
+size = Vector2(330, 190)
+
+[sub_resource type="RectangleShape2D" id="CasaShape"]
+size = Vector2(300, 185)
+
+[sub_resource type="RectangleShape2D" id="BottegaShape"]
+size = Vector2(280, 155)
+
+[sub_resource type="CircleShape2D" id="PondShape"]
+radius = 65.0
+
+[sub_resource type="CircleShape2D" id="AncientTreeShape"]
+radius = 82.0
+
 [sub_resource type="RectangleShape2D" id="BorderShapeH"]
 size = Vector2(2304, 40)
 
