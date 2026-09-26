@@ -10,6 +10,7 @@ const PLAYER_START := Vector2(600, 900)
 @onready var prompt: Label = $HUD/Prompt
 @onready var title: Label = $HUD/Title
 @onready var beniamino: Area2D = $Beniamino
+@onready var quest: Node = $QuestManager
 
 func _ready() -> void:
     trial_game.won.connect(_on_trial_won)
@@ -24,12 +25,17 @@ func _ready() -> void:
     prompt.text = "Esplora il bosco  •  avvicinati agli abitanti  •  E per parlare"
 
     $Camera2D.position = player.position
-    $Camera2D.zoom = Vector2(1.0, 1.0)
+    $Camera2D.zoom = Vector2(0.86, 0.86)
 
     if $HUD.has_method("set_location"):
         $HUD.set_location("BOSCO DELLA QUERCIA", "Trova gli indizi degli abitanti")
     if $HUD.has_method("set_progress"):
         $HUD.set_progress("BENIAMINI", "0 / 8")
+    refresh_objective()
+
+func refresh_objective() -> void:
+    if $HUD.has_method("set_location"):
+        $HUD.set_location("BOSCO DELLA QUERCIA", quest.get_objective())
 
 func _process(_delta: float) -> void:
     if not trial_game.active:
@@ -53,6 +59,7 @@ func _on_trial_won(id: String) -> void:
     beniamino.beniamino_id = id
     beniamino.position = Vector2(1740, 520)
     beniamino.reveal()
+    quest.mark_complete()
     $HUD.show_toast("PROVA SUPERATA  •  Il Beniamino è apparso nel bosco!")
 
 func _on_trial_failed(_id: String) -> void:
