@@ -195,7 +195,8 @@ func _input(event: InputEvent) -> void:
         _handle_point_input(arena.get_local_mouse_position())
 
     if event is InputEventScreenTouch and event.pressed:
-        _handle_point_input(arena.get_local_mouse_position())
+        var touch_point := arena.get_global_transform_with_canvas().affine_inverse() * event.position
+        _handle_point_input(touch_point)
 
 func _handle_point_input(p: Vector2) -> void:
     if id == "pozzo":
