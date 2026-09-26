@@ -24,7 +24,7 @@ func _ready() -> void:
     title.text = "LA QUERCIA  •  QUERCETA"
     prompt.text = "Esplora il bosco  •  avvicinati agli abitanti  •  E per parlare"
 
-    $Camera2D.enabled = true
+    $Player/Camera2D.enabled = true
     $Camera2D.position_smoothing_enabled = false
     $Camera2D.global_position = player.global_position
     $Camera2D.zoom = Vector2(1.0, 1.0)
