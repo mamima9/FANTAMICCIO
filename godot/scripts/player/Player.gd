@@ -19,6 +19,14 @@ func _ready() -> void:
     queue_redraw()
 
 func _physics_process(delta: float) -> void:
+    var hud := get_tree().current_scene.get_node_or_null("HUD")
+    if hud and hud.has_method("is_dialogue_open") and hud.is_dialogue_open():
+        velocity = Vector2.ZERO
+        is_moving = false
+        _refresh_nearest_interactable()
+        queue_redraw()
+        return
+
     var direction := InputManager.get_move_vector()
 
     if direction.length() > 1.0:
