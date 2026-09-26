@@ -47,6 +47,7 @@ func load_map(map_id: String, entry_direction: String = "") -> void:
 
     player.global_position = _spawn_for_entry(entry_direction)
     map_changed.emit(map_id)
+    WebBridge.progress("map_changed", map_id)
     queue_redraw()
 
 func _clear_world() -> void:
