@@ -22,6 +22,11 @@ var target_color := 0
 var balance := 0.0
 var round_index := 0
 var target_pos := Vector2(640, 390)
+var root_grid_size := Vector2i(10, 6)
+var root_cell := Vector2i(0, 5)
+var root_goal := Vector2i(9, 0)
+var root_walls: Array[Vector2i] = []
+var root_moves := 0
 
 const COLORS := [
     Color("#d94a45"),
@@ -70,10 +75,18 @@ func _setup_mode() -> void:
 
     match mode:
         0:
-            instruction = "Raccogli tutte le foglie prima che il vento le porti via."
-            for i in target:
-                points.append(Vector2(240 + (i % 3) * 390, 235 + (i / 3) * 180))
-                used.append(false)
+            # Puzzle a scivolamento: le radici della Quercia sostituiscono il ghiaccio.
+            instruction = "Scivola tra le radici della Quercia e raggiungi il cuore dell’albero."
+            root_cell = Vector2i(0, 5)
+            root_goal = Vector2i(9, 0)
+            root_walls = [
+                Vector2i(2, 0), Vector2i(2, 1), Vector2i(2, 2), Vector2i(2, 3),
+                Vector2i(4, 1), Vector2i(5, 1), Vector2i(6, 1),
+                Vector2i(7, 3), Vector2i(7, 4), Vector2i(7, 5),
+                Vector2i(4, 4), Vector2i(5, 4)
+            ]
+            root_moves = 0
+            target = 4
         1:
             instruction = "Tocca quando il Ranocchio atterra sul bersaglio."
         2:
@@ -148,7 +161,15 @@ func _input(event: InputEvent) -> void:
     if not active:
         return
 
-    if event.is_action_pressed("ui_left") and mode == 7:
+    if mode == 0 and event.is_action_pressed("ui_left"):
+        _root_slide(Vector2i(-1, 0))
+    elif mode == 0 and event.is_action_pressed("ui_right"):
+        _root_slide(Vector2i(1, 0))
+    elif mode == 0 and event.is_action_pressed("ui_up"):
+        _root_slide(Vector2i(0, -1))
+    elif mode == 0 and event.is_action_pressed("ui_down"):
+        _root_slide(Vector2i(0, 1))
+    elif event.is_action_pressed("ui_left") and mode == 7:
         balance = clamp(balance - 0.22, -1.2, 1.2)
     elif event.is_action_pressed("ui_right") and mode == 7:
         balance = clamp(balance + 0.22, -1.2, 1.2)
@@ -169,7 +190,7 @@ func _gui_input(event: InputEvent) -> void:
 func _action(position: Vector2) -> void:
     match mode:
         0:
-            _leaf_action(position)
+            _root_touch_action(position)
         1:
             _frog_action()
         2:
@@ -188,6 +209,35 @@ func _action(position: Vector2) -> void:
         7:
             var half := size.x * 0.5
             balance = clamp(balance + (-0.28 if position.x < half else 0.28), -1.2, 1.2)
+
+func _root_touch_action(position: Vector2) -> void:
+    var center := Vector2(640, 565)
+    var delta := position - center
+    if delta.length() > 150.0:
+        return
+    if abs(delta.x) > abs(delta.y):
+        _root_slide(Vector2i(1 if delta.x > 0 else -1, 0))
+    elif abs(delta.y) > 20.0:
+        _root_slide(Vector2i(0, 1 if delta.y > 0 else -1))
+
+func _root_slide(direction: Vector2i) -> void:
+    if not active or mode != 0:
+        return
+    var current := root_cell
+    while true:
+        var next := current + direction
+        if next.x < 0 or next.x >= root_grid_size.x or next.y < 0 or next.y >= root_grid_size.y:
+            break
+        if root_walls.has(next):
+            break
+        current = next
+    if current == root_cell:
+        return
+    root_cell = current
+    root_moves += 1
+    progress = root_moves
+    if root_cell == root_goal:
+        _finish(true)
 
 func _leaf_action(position: Vector2) -> void:
     for i in points.size():
@@ -295,7 +345,7 @@ func _draw() -> void:
 
     match mode:
         0:
-            _draw_leaves(accent)
+            _draw_root_gym(accent)
         1:
             _draw_frog(accent)
         2:
@@ -311,16 +361,39 @@ func _draw() -> void:
         7:
             _draw_balance(accent)
 
-func _draw_leaves(accent: Color) -> void:
-    for i in points.size():
-        if used[i]:
-            continue
-        var p := points[i] + Vector2(sin(elapsed * 2.0 + i) * 8.0, cos(elapsed * 1.7 + i) * 5.0)
-        draw_circle(p, 34, Color(accent, 0.15))
-        draw_colored_polygon(PackedVector2Array([
-            p + Vector2(0, -27), p + Vector2(22, 5), p + Vector2(0, 30), p + Vector2(-22, 5)
-        ]), Color("#78a85a"))
-        draw_line(p + Vector2(0, -20), p + Vector2(0, 22), Color("#e4c96b"), 3)
+func _draw_root_gym(accent: Color) -> void:
+    # Root-gym floor: a sliding puzzle where thick oak roots stop the player.
+    var board := Rect2(150, 175, 980, 330)
+    draw_rect(board, Color("#1d2819"))
+    draw_rect(board, Color("#6d4a28"), false, 7)
+
+    var cell_size := Vector2(board.size.x / root_grid_size.x, board.size.y / root_grid_size.y)
+    for y in root_grid_size.y:
+        for x in root_grid_size.x:
+            var rect := Rect2(board.position + Vector2(x, y) * cell_size, cell_size)
+            draw_rect(rect, Color(0.18, 0.25, 0.15, 0.55), false, 1)
+
+    for wall in root_walls:
+        var r := Rect2(board.position + Vector2(wall.x, wall.y) * cell_size + Vector2(4, 4), cell_size - Vector2(8, 8))
+        draw_rect(r, Color("#51351f"))
+        draw_rect(r, Color("#8a5b2f"), false, 4)
+        draw_circle(r.position + Vector2(18, 18), 7, Color("#a8753d"))
+        draw_circle(r.position + Vector2(r.size.x - 18, r.size.y - 18), 5, Color("#6d4727"))
+
+    var player_p := board.position + (Vector2(root_cell) + Vector2(0.5, 0.5)) * cell_size
+    draw_circle(player_p, min(cell_size.x, cell_size.y) * 0.28, Color("#78a85a"))
+    draw_circle(player_p + Vector2(-8, -8), 6, Color("#dce7a0"))
+    draw_circle(player_p + Vector2(8, -8), 6, Color("#dce7a0"))
+    draw_circle(player_p + Vector2(-8, -8), 2.5, Color("#1c2417"))
+    draw_circle(player_p + Vector2(8, -8), 2.5, Color("#1c2417"))
+
+    var goal_p := board.position + (Vector2(root_goal) + Vector2(0.5, 0.5)) * cell_size
+    draw_circle(goal_p, min(cell_size.x, cell_size.y) * 0.34, Color("#d9b94a", 0.9))
+    draw_circle(goal_p, min(cell_size.x, cell_size.y) * 0.22, Color("#6f9c4e"))
+    draw_string(ThemeDB.fallback_font, goal_p + Vector2(-35, 6), "♥", HORIZONTAL_ALIGNMENT_CENTER, 70, 24, Color("#fff1c7"))
+
+    draw_string(ThemeDB.fallback_font, Vector2(395, 540), "←  ↑  ↓  →   SCIVOLA TRA LE RADICI", HORIZONTAL_ALIGNMENT_CENTER, 490, 19, Color("#fff1c7"))
+    draw_string(ThemeDB.fallback_font, Vector2(470, 585), "Su mobile tocca una direzione • ogni radice ti fa fermare", HORIZONTAL_ALIGNMENT_CENTER, 340, 15, Color(1, 0.95, 0.82, 0.85))
 
 func _draw_frog(accent: Color) -> void:
     var phase := fmod(elapsed * 2.7, TAU)
