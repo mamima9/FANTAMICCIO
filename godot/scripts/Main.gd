@@ -31,6 +31,7 @@ const REGIONAL_LOCATIONS := {
 func _ready() -> void:
     contrada_id = _read_contrada()
     $RegionalWorld.set_contrada(contrada_id)
+    $WorldDecoration.contrada_id = contrada_id
     $Citizens.set_contrada(contrada_id)
     _configure_regional_quest()
     trial_game.won.connect(_on_trial_won)
