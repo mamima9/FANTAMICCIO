@@ -19,8 +19,7 @@ func interact() -> void:
 
     if not GameManager.has_beniamino(contrada_id):
         GameManager.unlock_beniamino(contrada_id)
-        if Engine.has_singleton("WebBridge"):
-            WebBridge.progress("beniamino_unlocked", contrada_id)
+        WebBridge.progress("beniamino_unlocked", contrada_id)
     var main = get_tree().current_scene
     if main and main.has_method("show_interaction"):
         main.show_interaction(display_name, "Hai trovato il Beniamino! Ora appartiene alla tua collezione.")
