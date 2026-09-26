@@ -8,6 +8,7 @@ var selected_contrada: String = "quercia"
 var collected_beniamini: Dictionary = {}
 var discovered_secrets: Dictionary = {}
 var completed_trials: Dictionary = {}
+var exploration_objectives: Dictionary = {}
 var game_started: bool = false
 
 func start_game() -> void:
@@ -36,3 +37,16 @@ func discover_secret(secret_id: String) -> void:
 
 func secret_discovered(secret_id: String) -> bool:
     return discovered_secrets.get(secret_id, false)
+
+
+func complete_exploration_step(map_id: String, step: int) -> void:
+    var key := str(map_id)
+    var current := int(exploration_objectives.get(key, 0))
+    if step == current + 1:
+        exploration_objectives[key] = step
+
+func exploration_progress(map_id: String) -> int:
+    return int(exploration_objectives.get(str(map_id), 0))
+
+func exploration_completed(map_id: String, total_steps: int = 3) -> bool:
+    return exploration_progress(map_id) >= total_steps
