@@ -36,6 +36,10 @@ var bridge_index := 0
 var memory_symbols: Array[int] = []
 var route_fork := 0
 var memory_target_slot := 0
+var quercia_obstacles: Array[Rect2] = []
+var quercia_gate := 0
+var quercia_last_sign := -1
+var quercia_stamina := 100.0
 
 @onready var root: Control = $Root
 @onready var title: Label = $Root/Panel/Title
@@ -108,9 +112,13 @@ func _setup_trial() -> void:
             objective.text = "Trova i 3 segni dorati e raggiungi la Quercia Antica."
             message.text = "Il sentiero più corto non è quello giusto."
             player_pos = Vector2(80, 470)
-            golden_signs = [Vector2(180,390), Vector2(360,250), Vector2(540,360)]
+            golden_signs = [Vector2(170,400), Vector2(365,235), Vector2(545,355)]
             sign_found = [false, false, false]
-            ancient_tree = Vector2(650,140)
+            ancient_tree = Vector2(665,125)
+            quercia_gate = 0
+            quercia_last_sign = -1
+            quercia_stamina = 100.0
+            quercia_obstacles = [Rect2(235,335,95,32), Rect2(410,270,82,30), Rect2(300,405,110,30), Rect2(505,175,90,30), Rect2(560,390,82,28)]
         "ponte":
             time_limit = 55.0
             target = 1
@@ -272,15 +280,29 @@ func _update_leon(delta: float) -> void:
 
 func _update_quercia(delta: float) -> void:
     var v := _movement()
-    player_pos += v * 190.0 * delta
+    var running := v.length() > 0.05
+    if running:
+        quercia_stamina = max(0.0, quercia_stamina - delta * 7.0)
+    else:
+        quercia_stamina = min(100.0, quercia_stamina + delta * 13.0)
+    var move_speed := 205.0 if quercia_stamina > 5.0 else 125.0
+    player_pos += v * move_speed * delta
     player_pos.x = clamp(player_pos.x, 45.0, 700.0)
     player_pos.y = clamp(player_pos.y, 80.0, 510.0)
+    for obstacle in quercia_obstacles:
+        if obstacle.grow(10.0).has_point(player_pos):
+            player_pos -= v * move_speed * delta
+            flash_timer = 0.25
+            message.text = "Una radice blocca il sentiero. Cerca il passaggio."
     for i in golden_signs.size():
-        if not sign_found[i] and player_pos.distance_to(golden_signs[i]) < 42.0:
+        if not sign_found[i] and player_pos.distance_to(golden_signs[i]) < 44.0:
             sign_found[i] = true
             score += 1
-            message.text = "Segno dorato %d/3 trovato." % score
-    if score == 3 and player_pos.distance_to(ancient_tree) < 55.0:
+            quercia_last_sign = i
+            quercia_gate = score
+            quercia_stamina = min(100.0, quercia_stamina + 30.0)
+            message.text = "SEGNO DORATO %d/3  •  Il bosco ti apre un nuovo passaggio." % score
+    if score == 3 and player_pos.distance_to(ancient_tree) < 58.0:
         _win()
 
 func _update_ponte(delta: float) -> void:
