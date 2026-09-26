@@ -161,6 +161,7 @@ func _build_npc() -> void:
     npc.position = Vector2(420, 360)
     npc.set_script(load("res://scripts/world/NPC.gd"))
     npc.npc_name = "Custode della Contrada"
+    npc.title = npc.npc_name
     npc.dialogue = "Ogni territorio custodisce una prova. Esplora, parla con gli abitanti e torna qui quando sei pronto."
     var shape_node := CollisionShape2D.new()
     var shape := CircleShape2D.new()
