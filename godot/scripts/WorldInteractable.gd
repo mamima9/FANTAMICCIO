@@ -4,6 +4,7 @@ extends Area2D
 @export_multiline var text := "Qui c'è qualcosa da scoprire."
 var player_near := false
 var pulse := 0.0
+var quest_required_step := -1
 
 func _ready() -> void:
     body_entered.connect(_on_body_entered)
@@ -13,6 +14,12 @@ func _ready() -> void:
 func _process(delta: float) -> void:
     pulse += delta
     if player_near and Input.is_action_just_pressed("interact"):
+        var quest = get_tree().current_scene.get_node_or_null("QuestManager")
+        if quest_required_step >= 0 and quest and quest.step < quest_required_step:
+            var locked_hud = get_tree().current_scene.get_node_or_null("HUD")
+            if locked_hud and locked_hud.has_method("show_toast"):
+                locked_hud.show_toast("Prima segui gli indizi della storia.")
+            return
         var hud = get_tree().current_scene.get_node_or_null("HUD")
         if hud and hud.has_method("show_dialogue"):
             hud.show_dialogue(title, text)
