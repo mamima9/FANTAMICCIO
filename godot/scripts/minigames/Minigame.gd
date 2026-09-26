@@ -93,11 +93,16 @@ func _setup_mode() -> void:
             instruction = "Colpisci il bersaglio d'oro al centro per 6 volte."
             target_pos = Vector2(640, 390)
         3:
-            instruction = "Trova il simbolo indicato: cambia posizione a ogni round."
-            for y in 4:
-                for x in 4:
-                    points.append(Vector2(430 + x * 105, 245 + y * 78))
-            used.resize(16)
+            # Lucertola: mini livello platform/action in stile avventura 3D, adattato
+            # al 2D browser: corsa, piattaforme, ostacoli e fiammate.
+            instruction = "Corri con la Lucertola, salta gli ostacoli e sputa fuoco per aprirti la strada."
+            target = 5
+            round_index = 0
+            points = [
+                Vector2(250, 470), Vector2(410, 390), Vector2(575, 475),
+                Vector2(735, 350), Vector2(900, 450), Vector2(1050, 330)
+            ]
+            used.resize(points.size())
             for i in used.size():
                 used[i] = false
         4:
@@ -161,7 +166,11 @@ func _input(event: InputEvent) -> void:
     if not active:
         return
 
-    if mode == 0 and event.is_action_pressed("ui_left"):
+    if mode == 3 and event.is_action_pressed("ui_accept"):
+        _lizard_fire()
+    elif mode == 3 and event.is_action_pressed("ui_up"):
+        _lizard_jump()
+    elif mode == 0 and event.is_action_pressed("ui_left"):
         _root_slide(Vector2i(-1, 0))
     elif mode == 0 and event.is_action_pressed("ui_right"):
         _root_slide(Vector2i(1, 0))
@@ -259,20 +268,34 @@ func _frog_action() -> void:
             _finish(true)
 
 func _lizard_action(position: Vector2) -> void:
-    var wanted := (round_index * 3 + 2) % SYMBOLS.size()
+    # Tap/click near an obstacle or platform marker to interact.
     for i in points.size():
         if used[i]:
             continue
-        if position.distance_to(points[i]) <= 36.0:
-            if i == wanted:
-                used[i] = true
-                progress += 1
-                round_index += 1
-                if progress >= target:
-                    _finish(true)
-            else:
-                time_left = max(0.0, time_left - 2.0)
+        if position.distance_to(points[i]) <= 65.0:
+            used[i] = true
+            progress += 1
+            if progress >= target:
+                _finish(true)
             return
+
+func _lizard_fire() -> void:
+    if mode != 3:
+        return
+    # Fire breath clears the next obstacle.
+    for i in points.size():
+        if not used[i]:
+            used[i] = true
+            progress += 1
+            break
+    if progress >= target:
+        _finish(true)
+
+func _lizard_jump() -> void:
+    if mode != 3:
+        return
+    # Jump gives a short burst of progress and avoids a ground hazard.
+    elapsed += 0.35
 
 func _well_action(position: Vector2) -> void:
     for i in 6:
@@ -351,7 +374,7 @@ func _draw() -> void:
         2:
             _draw_target(accent)
         3:
-            _draw_lizard(accent)
+            _draw_lizard_run(accent)
         4:
             _draw_well(accent)
         5:
@@ -415,17 +438,38 @@ func _draw_target(accent: Color) -> void:
     draw_circle(target_pos, 27, Color("#a8392f"))
     draw_string(ThemeDB.fallback_font, target_pos + Vector2(-70, 145), "COLPISCI", HORIZONTAL_ALIGNMENT_CENTER, 140, 16, Color("#fff1c7"))
 
-func _draw_lizard(accent: Color) -> void:
-    var wanted := (round_index * 3 + 2) % SYMBOLS.size()
-    draw_string(ThemeDB.fallback_font, Vector2(500, 190), "TROVA: " + SYMBOLS[wanted], HORIZONTAL_ALIGNMENT_CENTER, 280, 26, accent)
+func _draw_lizard_run(accent: Color) -> void:
+    # Side-scrolling adventure layout: platforms, crates, hazards and fire targets.
+    draw_rect(Rect2(120, 200, 1040, 350), Color("#182019"))
+    draw_rect(Rect2(120, 510, 1040, 40), Color("#51351f"))
+    draw_line(Vector2(120, 510), Vector2(1160, 510), accent, 5)
+
     for i in points.size():
         var p := points[i]
-        var rect := Rect2(p - Vector2(42, 30), Vector2(84, 60))
-        draw_rect(rect, Color("#38271a"))
-        draw_rect(rect, accent if not used[i] else Color("#5b4630"), false, 3)
-        if not used[i]:
-            var symbol := SYMBOLS[(i + round_index * 2) % SYMBOLS.size()]
-            draw_string(ThemeDB.fallback_font, p + Vector2(-15, 12), symbol, HORIZONTAL_ALIGNMENT_CENTER, 30, 24, Color("#fff1c7"))
+        if used[i]:
+            continue
+        draw_rect(Rect2(p - Vector2(45, 18), Vector2(90, 36)), Color("#8a5b2f"))
+        draw_rect(Rect2(p - Vector2(45, 18), Vector2(90, 36)), Color("#d39a4c"), false, 4)
+        draw_circle(p + Vector2(0, -40), 16, Color("#d94a45"))
+        draw_circle(p + Vector2(0, -40), 7, Color("#ffd35c"))
+
+    var lizard := Vector2(220 + fmod(elapsed * 115.0, 820.0), 450)
+    var bob := sin(elapsed * 8.0) * 5.0
+    lizard.y += bob
+    draw_ellipse(lizard, Vector2(48, 27), Color("#79a95a"))
+    draw_circle(lizard + Vector2(35, -18), 20, Color("#91c36c"))
+    draw_circle(lizard + Vector2(40, -21), 5, Color("#1c2417"))
+    draw_line(lizard + Vector2(-40, 20), lizard + Vector2(-62, 34), Color("#79a95a"), 9)
+
+    # Fire breath.
+    var flame := lizard + Vector2(62, -6)
+    draw_colored_polygon(PackedVector2Array([
+        flame, flame + Vector2(70, -24), flame + Vector2(98, 0),
+        flame + Vector2(70, 24)
+    ]), Color("#e4bd43"))
+    draw_circle(flame + Vector2(35, 0), 14, Color("#fff0a8"))
+
+    draw_string(ThemeDB.fallback_font, Vector2(400, 620), "↑ SALTA     SPAZIO / TAP: SPUTA FUOCO", HORIZONTAL_ALIGNMENT_CENTER, 480, 18, Color("#fff1c7"))
 
 func _draw_well(accent: Color) -> void:
     draw_circle(Vector2(640, 390), 105, Color("#252c36"))
