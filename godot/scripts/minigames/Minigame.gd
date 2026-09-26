@@ -412,7 +412,8 @@ func _draw() -> void:
 
     draw_string(ThemeDB.fallback_font, Vector2(64, 78), title, HORIZONTAL_ALIGNMENT_LEFT, -1, 30, Color("#fff1c7"))
     draw_string(ThemeDB.fallback_font, Vector2(64, 110), instruction, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(1, 0.95, 0.84, 0.92))
-    draw_string(ThemeDB.fallback_font, Vector2(64, 145), "PROGRESSO %d / %d    TEMPO %02d" % [progress, target, int(ceil(time_left))], HORIZONTAL_ALIGNMENT_LEFT, -1, 17, accent)
+    var progress_text := "RADICI: %d MOSSE    TEMPO %02d" % [root_moves, int(ceil(time_left))] if mode == 0 else "PROGRESSO %d / %d    TEMPO %02d" % [progress, target, int(ceil(time_left))]
+    draw_string(ThemeDB.fallback_font, Vector2(64, 145), progress_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 17, accent)
 
     match mode:
         0:
