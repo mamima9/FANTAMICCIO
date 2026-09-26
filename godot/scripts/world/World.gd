@@ -12,6 +12,7 @@ var map_nodes := Node2D.new()
 var collision_nodes := Node2D.new()
 var exit_nodes := Node2D.new()
 var hotspot_nodes := Node2D.new()
+var has_background := false
 
 @onready var player: CharacterBody2D = get_parent().get_node("Player")
 
@@ -27,6 +28,7 @@ func load_map(map_id: String, entry_direction: String = "") -> void:
         map_id = "quercia"
     current_map_id = map_id
     current_data = MapData.get_map(map_id)
+    has_background = false
     GameManager.set_map(map_id)
     _clear_world()
     _build_background()
@@ -61,6 +63,7 @@ func _build_background() -> void:
     )
     sprite.z_index = -100
     map_nodes.add_child(sprite)
+    has_background = true
 
 func _clear_world() -> void:
     for child in map_nodes.get_children():
@@ -362,6 +365,8 @@ func _draw() -> void:
     draw_string(ThemeDB.fallback_font, Vector2(28, 64), "Esplora  •  parla  •  segui gli indizi", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("#fff0c4"))
 
 func _draw_terrain() -> void:
+    if has_background:
+        return
     draw_rect(Rect2(Vector2.ZERO, WORLD_SIZE), Color("#78a45b"))
     # subtle pixel-like grass texture
     for y in range(90, 700, 34):
