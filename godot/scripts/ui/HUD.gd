@@ -26,12 +26,17 @@ func _refresh_mobile_visibility() -> void:
 func set_prompt(text: String) -> void:
     prompt.text = text
 
-func set_map_progress(_map_id: String, found: int, total: int) -> void:
+func set_map_progress(map_id: String, found: int, total: int) -> void:
     if progress_label:
-        progress_label.text = "✨ Segreti scoperti: %d/%d   •   🏆 Beniamini: %d/8" % [
+        var objectives := GameManager.exploration_progress(map_id)
+        var trial := "✓ Prova" if GameManager.trial_completed(map_id) else "○ Prova"
+        var beniamino := "✓ Beniamino" if GameManager.has_beniamino(map_id) else "○ Beniamino"
+        progress_label.text = "🔎 Esplorazione %d/3   •   ✨ Segreti %d/%d   •   %s   •   %s" % [
+            objectives,
             found,
             total,
-            GameManager.collected_beniamini.size()
+            trial,
+            beniamino
         ]
 
 func show_interaction(title: String, text: String) -> void:
