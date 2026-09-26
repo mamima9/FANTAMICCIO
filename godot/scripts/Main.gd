@@ -66,9 +66,12 @@ func _update_mobile_context() -> void:
     if not hud or not hud.has_method("set_mobile_interaction"):
         return
     var found := ""
-    for child in $NPCs.get_children():
-        if child is Area2D and child.get("player_near") == true:
-            found = "PARLA"
+    for group in [$NPCs, $Citizens/Cittadini]:
+        for child in group.get_children():
+            if child is Area2D and child.get("player_near") == true:
+                found = "PARLA"
+                break
+        if found != "":
             break
     if found == "":
         for child in $WorldInteractables.get_children():
@@ -86,6 +89,12 @@ func mobile_interact() -> void:
     if npc:
         for child in npc.get_children():
             if child is Area2D and child.has_method("interact") and child.player_near:
+                child.interact()
+                return
+    var citizens = get_node_or_null("Citizens/Cittadini")
+    if citizens:
+        for child in citizens.get_children():
+            if child is Area2D and child.has_method("interact") and child.get("player_near"):
                 child.interact()
                 return
     var world = get_node_or_null("WorldInteractables")
