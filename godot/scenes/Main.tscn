@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=23 format=3]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1"]
 [ext_resource type="Texture2D" path="res://art/quercia-map.svg" id="2"]
@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://scripts/AmbientLife.gd" id="13"]
 [ext_resource type="Script" path="res://scripts/WorldInteractable.gd" id="14"]
 [ext_resource type="Script" path="res://scripts/QuestWorld.gd" id="15"]
+[ext_resource type="Script" path="res://scripts/WorldDecoration.gd" id="16"]
 
 [sub_resource type="RectangleShape2D" id="PlayerShape"]
 size = Vector2(34, 28)
@@ -96,6 +97,10 @@ shape = SubResource("BorderShapeV")
 z_index = 10
 script = ExtResource("9")
 
+[node name="WorldDecoration" type="Node2D" parent="."]
+z_index = 12
+script = ExtResource("16")
+
 [node name="AmbientLife" type="Node2D" parent="."]
 z_index = 18
 script = ExtResource("13")
@@ -168,6 +173,7 @@ script = ExtResource("12")
 position = Vector2(720, 530)
 script = ExtResource("6")
 npc_name = "Custode delle Querce"
+role = "custode"
 trial_id = ""
 quest_step = 0
 dialogue = ["Le querce non mostrano mai il loro segreto a chi corre senza guardare.", "Segui il sentiero con i segni dorati: il primo indizio è vicino alla quercia più antica.", "Quando il vento cambia, le prove cominciano."]
@@ -189,6 +195,7 @@ theme_override_font_sizes/font_size = 12
 position = Vector2(650, 365)
 script = ExtResource("6")
 npc_name = "Vecchio della Bottega"
+role = "vecchio"
 trial_id = ""
 quest_step = 1
 dialogue = ["Ho visto il simbolo del Miccio oltre la piazza, tra i sentieri delle querce.", "Non serve essere veloci: devi scegliere il percorso giusto.", "Cerca tre segni dorati. Quando li avrai trovati, saprai dove iniziare."]
@@ -210,6 +217,7 @@ theme_override_font_sizes/font_size = 12
 position = Vector2(1490, 710)
 script = ExtResource("6")
 npc_name = "Contradaiolo"
+role = "contradaiolo"
 trial_id = "quercia"
 quest_step = 2
 dialogue = ["La prova della Quercia è una corsa, ma il bosco ti farà perdere la strada.", "Non fidarti del primo sentiero che vedi.", "Quando trovi la Quercia Antica, la prova sarà pronta."]
