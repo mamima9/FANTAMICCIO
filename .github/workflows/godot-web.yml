@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - "godot/**"
-      - "export_presets.cfg"
+      - "godot/export_presets.cfg"
       - ".github/workflows/godot-web.yml"
   workflow_dispatch:
 
