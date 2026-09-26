@@ -23,6 +23,17 @@ func _ready() -> void:
     add_child(prompt)
     queue_redraw()
 
+func interact() -> void:
+    var quest = get_tree().current_scene.get_node_or_null("QuestManager")
+    if quest_required_step >= 0 and quest and quest.step < quest_required_step:
+        var locked_hud = get_tree().current_scene.get_node_or_null("HUD")
+        if locked_hud and locked_hud.has_method("show_toast"):
+            locked_hud.show_toast("Prima segui la storia.")
+        return
+    var hud = get_tree().current_scene.get_node_or_null("HUD")
+    if hud and hud.has_method("show_dialogue"):
+        hud.show_dialogue(title, text)
+
 func _process(delta: float) -> void:
     pulse += delta
     if player_near:
