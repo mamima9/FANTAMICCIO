@@ -18,9 +18,11 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
     pulse += delta
 
-    var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+    # Use the shared input layer so keyboard and the current mobile joystick
+    # follow exactly the same path.
+    var input := InputManager.get_move_vector()
 
-    # Fallback diretto: funziona anche se il browser/Web export non ha caricato le actions.
+    # Direct keyboard fallback keeps desktop movement reliable in web exports.
     var keyboard := Vector2(
         float(Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT)) -
         float(Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)),
@@ -29,12 +31,6 @@ func _physics_process(delta: float) -> void:
     )
     if keyboard.length() > input.length():
         input = keyboard.normalized()
-
-    var joystick = get_tree().current_scene.get_node_or_null("MobileJoystick/JoystickSurface")
-    if joystick and joystick.has_method("get_axis"):
-        var mobile_input: Vector2 = joystick.get_axis()
-        if mobile_input.length() > input.length():
-            input = mobile_input
 
     velocity = input * speed
     moving = input.length() > 0.05
@@ -60,8 +56,9 @@ func _physics_process(delta: float) -> void:
     if get_slide_collision_count() > 0 and input.length() > 0.05:
         velocity = velocity.slide(get_slide_collision(0).get_normal())
 
-    global_position.x = clamp(global_position.x, 80.0, 2224.0)
-    global_position.y = clamp(global_position.y, 80.0, 1216.0)
+    # The playable map is 1280x720. Keep the player inside the actual world.
+    global_position.x = clamp(global_position.x, 80.0, 1200.0)
+    global_position.y = clamp(global_position.y, 80.0, 640.0)
     queue_redraw()
 
 func _draw() -> void:
