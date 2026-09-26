@@ -5,6 +5,7 @@ extends CanvasLayer
 @onready var objective_label: Label = $Objective
 @onready var progress_label: Label = $Progress
 var toast_time := 0.0
+var intro_time := 0.0
 
 func _ready() -> void:
     toast.visible = false
@@ -27,6 +28,12 @@ func show_toast(message: String) -> void:
     toast.text = message
     toast.visible = true
     toast_time = 3.5
+
+func show_trial_intro(trial_title: String, trial_goal: String) -> void:
+    toast.text = "◆  " + trial_title + "  ◆\\n" + trial_goal + "\\n\\nPREPARATI..." 
+    toast.visible = true
+    toast.modulate.a = 1.0
+    toast_time = 2.4
 
 func show_dialogue(speaker: String, message: String) -> void:
     toast.text = speaker + "  •  " + message
