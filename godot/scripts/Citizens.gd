@@ -59,8 +59,10 @@ func _spawn_population() -> void:
         p.add_theme_color_override("font_color",Color("#fff0b0"))
         p.add_theme_font_size_override("font_size",11)
         n.add_child(p)
-        container.add_child(n)
         n.position=positions[i]
+        n.home=positions[i]
+        n.target=positions[i]
+        container.add_child(n)
 
 func _dialogues(i:int) -> Array[String]:
     var common=[
