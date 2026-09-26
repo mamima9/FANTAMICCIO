@@ -22,7 +22,13 @@ func _ready() -> void:
     queue_redraw()
 
 func _is_mobile() -> bool:
-    return OS.has_feature("web_android") or OS.has_feature("web_ios") or OS.has_feature("android") or OS.has_feature("ios")
+    if OS.has_feature("android") or OS.has_feature("ios"):
+        return true
+    if OS.has_feature("web"):
+        var ua = JavaScriptBridge.eval("navigator.userAgent || ''")
+        var text = str(ua).to_lower()
+        return text.contains("android") or text.contains("iphone") or text.contains("ipad") or text.contains("ipod") or text.contains("mobile")
+    return false
 
 func _notification(what: int) -> void:
     if what == NOTIFICATION_RESIZED and touch_id == -1:
