@@ -37,6 +37,23 @@ func _ready() -> void:
     if $QuestWorld.has_method("refresh"):
         $QuestWorld.refresh()
 
+func mobile_interact() -> void:
+    var npc = get_node_or_null("NPCs")
+    if npc:
+        for child in npc.get_children():
+            if child is Area2D and child.has_method("interact") and child.player_near:
+                child.interact()
+                return
+    var world = get_node_or_null("WorldInteractables")
+    if world:
+        for child in world.get_children():
+            if child is Area2D and child.has_method("interact") and child.player_near:
+                child.interact()
+                return
+    var qw = get_node_or_null("QuestWorld")
+    if qw and qw.has_method("_interact"):
+        qw._interact()
+
 func refresh_objective() -> void:
     if $HUD.has_method("set_location"):
         $HUD.set_location("BOSCO DELLA QUERCIA", quest.get_objective())
