@@ -46,7 +46,7 @@ func _draw() -> void:
     draw_rect(Rect2(Vector2.ZERO, WORLD_SIZE), Color("#6f9b55"))
 
 func _process(_delta: float) -> void:
-    if world and world.has_method("get_map_progress"):
+    if world:
         hud.set_map_progress(
             world.current_map_id,
             GameManager.discovered_secrets.size(),
