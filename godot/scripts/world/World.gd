@@ -20,7 +20,7 @@ func _ready() -> void:
     add_child(exit_nodes)
     load_map(GameManager.current_map)
 
-func load_map(map_id: String) -> void:
+func load_map(map_id: String, entry_direction: String = "") -> void:
     if not MapData.MAPS.has(map_id):
         map_id = "quercia"
 
@@ -35,7 +35,7 @@ func load_map(map_id: String) -> void:
     _build_map_interaction()
     _build_beniamino()
 
-    player.global_position = current_data["spawn"]
+    player.global_position = _spawn_for_entry(entry_direction)
     map_changed.emit(map_id)
     queue_redraw()
 
@@ -48,10 +48,28 @@ func _clear_world() -> void:
         child.queue_free()
 
 func _build_boundaries() -> void:
-    _add_wall(Vector2(640, -15), Vector2(1280, 30))
-    _add_wall(Vector2(640, 735), Vector2(1280, 30))
-    _add_wall(Vector2(-15, 360), Vector2(30, 720))
-    _add_wall(Vector2(1295, 360), Vector2(30, 720))
+    # Leave a real opening in the middle of each side so the player can cross maps.
+    _add_wall(Vector2(320, -15), Vector2(640, 30))
+    _add_wall(Vector2(960, -15), Vector2(640, 30))
+    _add_wall(Vector2(320, 735), Vector2(640, 30))
+    _add_wall(Vector2(960, 735), Vector2(640, 30))
+    _add_wall(Vector2(-15, 180), Vector2(30, 360))
+    _add_wall(Vector2(-15, 540), Vector2(30, 360))
+    _add_wall(Vector2(1295, 180), Vector2(30, 360))
+    _add_wall(Vector2(1295, 540), Vector2(30, 360))
+
+func _spawn_for_entry(entry_direction: String) -> Vector2:
+    match entry_direction:
+        "up":
+            return Vector2(640, 100)
+        "down":
+            return Vector2(640, 620)
+        "left":
+            return Vector2(110, 360)
+        "right":
+            return Vector2(1170, 360)
+        _:
+            return current_data["spawn"]
 
 func _add_wall(position: Vector2, size: Vector2) -> void:
     var body := StaticBody2D.new()
@@ -74,6 +92,7 @@ func _build_exits() -> void:
         area.collision_layer = 4
         area.collision_mask = 1
         area.set_meta("target", target)
+        area.set_meta("direction", direction)
         var shape_node := CollisionShape2D.new()
         var shape := RectangleShape2D.new()
         shape.size = Vector2(EXIT_SIZE, 150) if direction in ["left", "right"] else Vector2(150, EXIT_SIZE)
@@ -97,9 +116,11 @@ func _on_exit_body_entered(body: Node2D, area: Area2D) -> void:
     if body != player:
         return
     var target := str(area.get_meta("target"))
+    var direction := str(area.get_meta("direction"))
     if target.is_empty():
         return
-    load_map(target)
+    var entry := {"up": "down", "down": "up", "left": "right", "right": "left"}.get(direction, "")
+    load_map(target, entry)
 
 func _build_landmarks() -> void:
     var accent: Color = current_data["accent"]
