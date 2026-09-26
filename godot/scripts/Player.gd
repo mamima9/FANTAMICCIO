@@ -55,6 +55,11 @@ func _physics_process(delta: float) -> void:
             sprite.frame = 0
 
     move_and_slide()
+
+    # Quando trovi un ostacolo, scorri lungo il bordo invece di restare incastrato.
+    if get_slide_collision_count() > 0 and input.length() > 0.05:
+        velocity = velocity.slide(get_slide_collision(0).get_normal())
+
     global_position.x = clamp(global_position.x, 80.0, 2224.0)
     global_position.y = clamp(global_position.y, 80.0, 1216.0)
     queue_redraw()
