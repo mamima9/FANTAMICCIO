@@ -14,6 +14,7 @@ var collision_nodes := Node2D.new()
 var exit_nodes := Node2D.new()
 var background_request: HTTPRequest
 var asset_generation := 0
+var hotspot_nodes := Node2D.new()
 
 @onready var player: CharacterBody2D = get_parent().get_node("Player")
 
@@ -21,6 +22,7 @@ func _ready() -> void:
     add_child(map_nodes)
     add_child(collision_nodes)
     add_child(exit_nodes)
+    add_child(hotspot_nodes)
     load_map(GameManager.current_map)
 
 func load_map(map_id: String, entry_direction: String = "") -> void:
@@ -39,6 +41,7 @@ func load_map(map_id: String, entry_direction: String = "") -> void:
     _build_map_interaction()
     _build_npc()
     _build_beniamino()
+    _build_map_hotspots()
 
     player.global_position = _spawn_for_entry(entry_direction)
     map_changed.emit(map_id)
@@ -53,6 +56,8 @@ func _clear_world() -> void:
     for child in collision_nodes.get_children():
         child.queue_free()
     for child in exit_nodes.get_children():
+        child.queue_free()
+    for child in hotspot_nodes.get_children():
         child.queue_free()
 
 func _build_background() -> void:
@@ -199,6 +204,54 @@ func _build_map_interaction() -> void:
     shape_node.shape = shape
     area.add_child(shape_node)
     map_nodes.add_child(area)
+
+func _build_map_hotspots() -> void:
+    # Each Contrada gets small exploration points so the world is more than
+    # a walk from the entrance to the trial and Beniamino.
+    var specs: Array = []
+    match current_map_id:
+        "quercia":
+            specs = [["Radice antica", Vector2(280, 250), "Una radice enorme attraversa il terreno. Sembra indicare il cuore della Quercia.", "radice"]]
+        "ranocchio":
+            specs = [["Stagno dei Ranocchi", Vector2(260, 470), "L'acqua si muove... qualcosa sta per saltare fuori.", "stagno"]]
+        "leondoro":
+            specs = [["Arena d'oro", Vector2(930, 220), "Qui si allenano i campioni. Il bersaglio della prova sembra ancora caldo.", "arena"]]
+        "lucertola":
+            specs = [["Muro del fuoco", Vector2(285, 500), "Piccole scintille corrono tra le pietre. La Lucertola sembra conoscere il passaggio.", "fuoco"]]
+        "pozzo":
+            specs = [["Pozzo antico", Vector2(260, 250), "Dal fondo arriva una luce intermittente. Non sembra una luce normale.", "pozzo"]]
+        "madonnina":
+            specs = [["Edicola della Madonnina", Vector2(930, 500), "Un piccolo luogo di raccoglimento custodisce un simbolo della Contrada.", "edicola"]]
+        "cervia":
+            specs = [["Sentiero dei cervi", Vector2(280, 430), "Tracce fresche nel terreno. Qualcuno è passato da poco.", "tracce"]]
+        "ponte":
+            specs = [["Passerella del Ponte", Vector2(950, 240), "Le assi scricchiolano sotto i piedi. Meglio attraversare con attenzione.", "passerella"]]
+
+    for spec in specs:
+        var hotspot := Area2D.new()
+        hotspot.position = spec[1]
+        hotspot.collision_layer = 2
+        hotspot.collision_mask = 0
+        hotspot.set_meta("hotspot_id", current_map_id + "_" + str(spec[3]))
+        hotspot.set_meta("hotspot_title", str(spec[0]))
+        hotspot.set_meta("hotspot_text", str(spec[2]))
+        hotspot.set_script(load("res://scripts/world/Interactable.gd"))
+        hotspot.display_name = str(spec[0])
+        var shape_node := CollisionShape2D.new()
+        var shape := CircleShape2D.new()
+        shape.radius = 52.0
+        shape_node.shape = shape
+        hotspot.add_child(shape_node)
+        hotspot_nodes.add_child(hotspot)
+
+        # A subtle visual marker, deliberately small so it doesn't cover the real map art.
+        var marker := Polygon2D.new()
+        marker.polygon = PackedVector2Array([
+            Vector2(-13, 13), Vector2(0, -16), Vector2(13, 13)
+        ])
+        marker.color = Color(current_data["accent"], 0.75)
+        marker.position = Vector2(0, -45)
+        hotspot.add_child(marker)
 
 func _build_beniamino() -> void:
     var beniamino := Area2D.new()
