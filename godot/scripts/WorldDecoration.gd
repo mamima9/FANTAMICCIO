@@ -1,9 +1,11 @@
 extends Node2D
 
-# Procedural environmental pass: depth, vegetation, landmarks and collision.
-# Keeps the world lightweight for Web export while making the Quercia feel explorable.
+# Collisioni coerenti con gli elementi realmente disegnati.
+# I sentieri restano sempre attraversabili: gli alberi vicini ai percorsi
+# vengono esclusi automaticamente dal sistema di collisione.
 
 var pulse := 0.0
+
 var trees := [
     Vector2(150,150), Vector2(330,255), Vector2(520,145), Vector2(700,190),
     Vector2(920,125), Vector2(1370,145), Vector2(1570,220), Vector2(1800,130),
@@ -13,16 +15,23 @@ var trees := [
     Vector2(280,505), Vector2(505,720), Vector2(760,520), Vector2(1560,470),
     Vector2(1810,610), Vector2(2070,510), Vector2(1440,820), Vector2(1880,820)
 ]
+
 var rocks := [
     Vector2(430,430), Vector2(570,560), Vector2(900,470), Vector2(1010,850),
     Vector2(1260,510), Vector2(1650,700), Vector2(1940,450), Vector2(2020,760)
 ]
+
 var benches := [Vector2(910,720), Vector2(1320,930), Vector2(1660,560)]
-var collision_nodes: Array[StaticBody2D] = []
 var fences := [
     [Vector2(560,330), Vector2(680,330)],
     [Vector2(880,930), Vector2(1010,930)],
     [Vector2(1600,330), Vector2(1710,330)]
+]
+
+var paths := [
+    [Vector2(90,1060),Vector2(350,950),Vector2(600,900),Vector2(820,760),Vector2(1030,680),Vector2(1250,650),Vector2(1490,560),Vector2(1760,470),Vector2(2110,420)],
+    [Vector2(430,1120),Vector2(620,1010),Vector2(760,860),Vector2(760,610),Vector2(720,430),Vector2(640,300)],
+    [Vector2(1020,680),Vector2(1100,820),Vector2(1320,930),Vector2(1530,960)]
 ]
 
 func _ready() -> void:
@@ -34,68 +43,74 @@ func _process(delta: float) -> void:
     queue_redraw()
 
 func _build_collisions() -> void:
-    # Collisioni strette sul tronco: la chioma resta attraversabile.
     for p in trees:
-        var body := StaticBody2D.new()
-        body.position = p + Vector2(0, 24)
-        body.name = "TreeCollision"
-        var shape := CollisionShape2D.new()
-        var circle := CircleShape2D.new()
-        circle.radius = 13.0
-        shape.shape = circle
-        body.add_child(shape)
-        add_child(body)
-        collision_nodes.append(body)
+        # Lasciamo completamente liberi i corridoi dei sentieri.
+        if _near_any_path(p, 70.0):
+            continue
+        _circle_collision(p + Vector2(0, 8), 23.0, "Tree")
 
-    # Rocce: ostacolo piccolo e coerente con il disegno.
     for p in rocks:
-        var body := StaticBody2D.new()
-        body.position = p + Vector2(0, 2)
-        body.name = "RockCollision"
-        var shape := CollisionShape2D.new()
-        var circle := CircleShape2D.new()
-        circle.radius = 14.0
-        shape.shape = circle
-        body.add_child(shape)
-        add_child(body)
-        collision_nodes.append(body)
+        _circle_collision(p, 18.0, "Rock")
+
+    # La vegetazione non deve creare muri invisibili sulle zone esplorabili.
+    # Le recinzioni sono invece ostacoli lineari reali.
+    for fence in fences:
+        _segment_collision(fence[0], fence[1], 10.0, "Fence")
+
+func _near_any_path(point: Vector2, distance: float) -> bool:
+    for path in paths:
+        for i in range(path.size() - 1):
+            if _distance_to_segment(point, path[i], path[i + 1]) <= distance:
+                return true
+    return false
+
+func _distance_to_segment(p: Vector2, a: Vector2, b: Vector2) -> float:
+    var ab := b - a
+    var length_sq := ab.length_squared()
+    if length_sq <= 0.001:
+        return p.distance_to(a)
+    var t := clamp((p - a).dot(ab) / length_sq, 0.0, 1.0)
+    return p.distance_to(a.lerp(b, t))
+
+func _circle_collision(pos: Vector2, radius: float, label: String) -> void:
+    var body := StaticBody2D.new()
+    body.position = pos
+    body.name = label
+    var shape := CollisionShape2D.new()
+    var circle := CircleShape2D.new()
+    circle.radius = radius
+    shape.shape = circle
+    body.add_child(shape)
+    add_child(body)
+
+func _segment_collision(a: Vector2, b: Vector2, thickness: float, label: String) -> void:
+    var body := StaticBody2D.new()
+    body.position = (a + b) * 0.5
+    body.name = label
+    var shape := CollisionShape2D.new()
+    var rect := RectangleShape2D.new()
+    rect.size = Vector2(a.distance_to(b), thickness)
+    shape.shape = rect
+    shape.rotation = (b - a).angle()
+    body.add_child(shape)
+    add_child(body)
 
 func _draw() -> void:
-    # Woodland clearings.
     draw_circle(Vector2(760,620), 155.0, Color(0.45,0.63,0.36,0.16))
     draw_circle(Vector2(1490,690), 180.0, Color(0.43,0.60,0.34,0.13))
     draw_circle(Vector2(1120,820), 150.0, Color(0.52,0.68,0.40,0.11))
 
-    # Main trail network with darker edge + warm center.
-    _path([
-        Vector2(90,1060),Vector2(350,950),Vector2(600,900),Vector2(820,760),
-        Vector2(1030,680),Vector2(1250,650),Vector2(1490,560),Vector2(1760,470),Vector2(2110,420)
-    ], 82.0)
-    _path([
-        Vector2(430,1120),Vector2(620,1010),Vector2(760,860),Vector2(760,610),Vector2(720,430),Vector2(640,300)
-    ], 58.0)
-    _path([
-        Vector2(1020,680),Vector2(1100,820),Vector2(1320,930),Vector2(1530,960)
-    ], 48.0)
+    for path in paths:
+        _path(path, 72.0)
 
     for p in trees:
         _draw_tree(p)
-
     for p in rocks:
         _draw_rock(p)
-
     for p in benches:
         _draw_bench(p)
-
     for fence in fences:
         _draw_fence(fence[0], fence[1])
-
-    # Golden route markers are environmental, not UI arrows.
-    for i in 3:
-        var p := [Vector2(805,545),Vector2(1040,700),Vector2(1335,585)][i]
-        var glow := 10.0 + sin(pulse * 3.0 + i) * 3.0
-        draw_circle(p, glow + 8.0, Color(1,0.78,0.24,0.08))
-        draw_circle(p, 3.0, Color("#f4cf63"))
 
 func _path(points: Array, width: float) -> void:
     var packed := PackedVector2Array(points)
@@ -115,10 +130,7 @@ func _draw_tree(p: Vector2) -> void:
 
 func _draw_rock(p: Vector2) -> void:
     draw_ellipse(p + Vector2(0,8), Vector2(18,7), Color(0.05,0.08,0.04,0.20))
-    var pts := PackedVector2Array([
-        p+Vector2(-18,5),p+Vector2(-12,-8),p+Vector2(0,-14),
-        p+Vector2(17,-6),p+Vector2(13,7),p+Vector2(-4,11)
-    ])
+    var pts := PackedVector2Array([p+Vector2(-18,5),p+Vector2(-12,-8),p+Vector2(0,-14),p+Vector2(17,-6),p+Vector2(13,7),p+Vector2(-4,11)])
     draw_colored_polygon(pts, Color("#6e725f"))
     draw_line(p+Vector2(-8,-5),p+Vector2(8,-8),Color("#92947d"),2)
 
