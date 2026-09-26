@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://scenes/TrialGame.tscn" id="8"]
 [ext_resource type="Script" path="res://scripts/WorldFX.gd" id="9"]
 [ext_resource type="Script" path="res://scripts/MobileJoystick.gd" id="10"]
+[ext_resource type="Script" path="res://scripts/Beniamino.gd" id="11"]
 
 [sub_resource type="RectangleShape2D" id="PlayerShape"]
 size = Vector2(34, 28)
@@ -87,7 +88,7 @@ drag_vertical_enabled = true
 position = Vector2(720, 530)
 script = ExtResource("6")
 npc_name = "Custode delle Querce"
-trial_id = "quercia"
+trial_id = ""
 dialogue = ["Le querce non mostrano mai il loro segreto a chi corre senza guardare.", "Segui il sentiero con i segni dorati: il primo indizio è vicino alla quercia più antica.", "Quando il vento cambia, le prove cominciano."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NPCs/CustodeDelleQuerce"]
@@ -107,7 +108,7 @@ theme_override_font_sizes/font_size = 12
 position = Vector2(650, 365)
 script = ExtResource("6")
 npc_name = "Vecchio della Bottega"
-trial_id = "quercia"
+trial_id = ""
 dialogue = ["Ho visto il simbolo del Miccio oltre la piazza, tra i sentieri delle querce.", "Non serve essere veloci: devi scegliere il percorso giusto.", "Cerca tre segni dorati. Quando li avrai trovati, saprai dove iniziare."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NPCs/VecchioDellaBottega"]
@@ -142,6 +143,11 @@ text = "E  •  PARLA"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(1,0.92,0.68,1)
 theme_override_font_sizes/font_size = 12
+
+[node name="Beniamino" type="Area2D" parent="."]
+position = Vector2(1740, 520)
+z_index = 90
+script = ExtResource("11")
 
 [node name="ChallengeManager" type="Node" parent="."]
 script = ExtResource("7")
