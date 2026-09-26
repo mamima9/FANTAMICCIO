@@ -5,19 +5,27 @@ signal changed(step: int)
 var step := 0
 var complete := false
 var discoveries := 0
+var active_npc := ""
 
 const OBJECTIVES := [
     "Parla al Custode delle Querce.",
-    "Hai il primo indizio. Cerca il Vecchio della Bottega.",
-    "Segui i tre segni dorati e trova il Contradaiolo.",
-    "La prova è pronta. Torna dal Contradaiolo."
+    "Hai l'indizio del Custode. Trova il Vecchio della Bottega.",
+    "Hai il secondo indizio. Segui il bosco e trova il Contradaiolo.",
+    "Hai tutti gli indizi. Torna dal Contradaiolo per affrontare la prova."
 ]
 
 func _ready() -> void:
     step = 0
+    complete = false
+    discoveries = 0
 
 func can_talk(required_step: int) -> bool:
-    return required_step == step or (required_step == 3 and complete)
+    if complete:
+        return false
+    return required_step == step
+
+func can_start_trial(trial_id: String) -> bool:
+    return not complete and trial_id != "" and step >= 3 and discoveries >= 3
 
 func advance() -> void:
     if complete:
@@ -26,14 +34,17 @@ func advance() -> void:
     changed.emit(step)
     _refresh_world()
 
-func discover_clue(index: int) -> void:
+func discover_clue(index: int) -> bool:
     if complete:
-        return
-    if index != step - 1:
-        return
-    discoveries = max(discoveries, index + 1)
+        return false
+    if index != discoveries:
+        return false
+    if index >= 3:
+        return false
+    discoveries += 1
     changed.emit(step)
     _refresh_world()
+    return true
 
 func mark_complete() -> void:
     complete = true
@@ -45,6 +56,9 @@ func get_objective() -> String:
     if complete:
         return "Beniamino trovato. La Quercia è stata completata."
     return OBJECTIVES[step]
+
+func get_progress_text() -> String:
+    return "%d / 3 indizi" % discoveries
 
 func _refresh_world() -> void:
     var main = get_tree().current_scene
