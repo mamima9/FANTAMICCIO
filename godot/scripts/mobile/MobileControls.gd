@@ -9,16 +9,28 @@ var center := Vector2.ZERO
 var knob := Vector2.ZERO
 var axis := Vector2.ZERO
 var touch_id := -1
+var fullscreen_button: Button
 
 func _ready() -> void:
     process_mode = Node.PROCESS_MODE_ALWAYS
     mouse_filter = Control.MOUSE_FILTER_IGNORE
     _reposition()
     get_viewport().size_changed.connect(_reposition)
+    fullscreen_button = Button.new()
+    fullscreen_button.text = "FULLSCREEN"
+    fullscreen_button.visible = _is_mobile()
+    fullscreen_button.mouse_filter = Control.MOUSE_FILTER_STOP
+    fullscreen_button.position = Vector2(max(8.0, get_viewport_rect().size.x - 150.0), 18.0)
+    fullscreen_button.size = Vector2(132.0, 42.0)
+    fullscreen_button.modulate = Color(1.0, 0.88, 0.55, 0.92)
+    fullscreen_button.pressed.connect(_toggle_fullscreen)
+    add_child(fullscreen_button)
     queue_redraw()
 
 func _reposition() -> void:
     var size := get_viewport_rect().size
+    if fullscreen_button:
+        fullscreen_button.position = Vector2(max(8.0, size.x - 150.0), 18.0)
     center = Vector2(margin + radius, size.y - margin - radius)
     knob = center
     queue_redraw()
@@ -74,3 +86,17 @@ func _draw() -> void:
     draw_arc(center, radius, 0.0, TAU, 64, Color("#e6b44d"), 3.0)
     draw_circle(knob, knob_radius, Color("#e6b44d"))
     draw_circle(knob, knob_radius - 7.0, Color("#6b421b"))
+
+
+func _is_mobile() -> bool:
+    if OS.has_feature("android") or OS.has_feature("ios"):
+        return true
+    if OS.has_feature("web"):
+        var ua = JavaScriptBridge.eval("navigator.userAgent || ''")
+        var text := str(ua).to_lower()
+        return text.contains("mobile") or text.contains("android") or text.contains("iphone") or text.contains("ipad")
+    return false
+
+func _toggle_fullscreen() -> void:
+    if OS.has_feature("web"):
+        JavaScriptBridge.eval("if (document.fullscreenElement) { document.exitFullscreen(); } else if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }")
