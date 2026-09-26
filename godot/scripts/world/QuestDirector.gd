@@ -53,9 +53,11 @@ func _ready() -> void:
         if world.has_signal("map_changed"):
             world.map_changed.connect(_on_map_changed)
         _rebuild_npcs(world.current_map_id)
+    _rebuild_citizens(world.current_map_id)
 
 func _on_map_changed(map_id: String) -> void:
     _rebuild_npcs(map_id)
+    _rebuild_citizens(map_id)
 
 func _rebuild_npcs(map_id: String) -> void:
     if not world:
@@ -83,3 +85,62 @@ func _rebuild_npcs(map_id: String) -> void:
         shape.shape = circle
         npc.add_child(shape)
         world.map_nodes.add_child(npc)
+
+
+func _rebuild_citizens(map_id: String) -> void:
+    if not world:
+        return
+    var citizen_script = load("res://scripts/Citizens.gd")
+    for child in world.map_nodes.get_children():
+        if child.get_script() == citizen_script:
+            child.queue_free()
+
+    var theme_data: Dictionary = {
+        "cervia":[Color("#f1eee1"),Color("#7eb7c7")],
+        "leondoro":[Color("#e6c63f"),Color("#c94f45")],
+        "lucertola":[Color("#c84f45"),Color("#4f8d4b")],
+        "madonnina":[Color("#416ea8"),Color("#e2bf3b")],
+        "ponte":[Color("#c84e48"),Color("#416ea8")],
+        "pozzo":[Color("#eee9dc"),Color("#c84f45")],
+        "quercia":[Color("#3f6f45"),Color("#d4af37")],
+        "ranocchio":[Color("#e2c83f"),Color("#4f8c4e")]
+    }
+    var colors: Array = theme_data.get(map_id, theme_data["quercia"])
+    var names := ["Abitante della Contrada","Ragazza della Piazza","Anziano della Contrada","Artigiano","Contradaiola","Ragazzo del Borgo"]
+    var positions := [
+        Vector2(160,150), Vector2(300,560), Vector2(520,160),
+        Vector2(760,560), Vector2(930,150), Vector2(1100,560)
+    ]
+
+    for i in positions.size():
+        var citizen := Area2D.new()
+        citizen.set_script(citizen_script)
+        citizen.name = "Cittadino_%02d" % (i + 1)
+        citizen.citizen_name = names[i]
+        citizen.contrada_id = map_id
+        citizen.contrada_color = colors[0]
+        citizen.accent_color = colors[1]
+        citizen.dialogue = [
+            "La Contrada è più grande della piazza. Guarda anche i sentieri laterali.",
+            "Hai già parlato con gli abitanti? Ognuno conosce un pezzo della storia."
+        ]
+        citizen.wander_radius = 45.0 + float(i % 3) * 20.0
+        citizen.position = positions[i]
+
+        var shape_node := CollisionShape2D.new()
+        var shape := CircleShape2D.new()
+        shape.radius = 30.0
+        shape_node.shape = shape
+        citizen.add_child(shape_node)
+
+        var prompt := Label.new()
+        prompt.name = "Prompt"
+        prompt.text = "E • PARLA"
+        prompt.position = Vector2(-45,-55)
+        prompt.size = Vector2(90,22)
+        prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+        prompt.add_theme_color_override("font_color", Color("#fff0b0"))
+        prompt.add_theme_font_size_override("font_size", 10)
+        citizen.add_child(prompt)
+
+        world.map_nodes.add_child(citizen)
