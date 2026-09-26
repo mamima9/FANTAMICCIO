@@ -7,55 +7,156 @@ var title := ""
 var instruction := ""
 var progress := 0
 var target := 6
-var time_left := 18.0
+var time_left := 25.0
 var active := false
 var mode := 0
-var pulse := 0.0
-var target_pos := Vector2(0.5, 0.55)
+var elapsed := 0.0
+var rng := RandomNumberGenerator.new()
+
+# Shared interaction state.
+var points: Array[Vector2] = []
+var used: Array[bool] = []
+var sequence: Array[int] = []
+var sequence_step := 0
+var target_color := 0
+var balance := 0.0
+var round_index := 0
+var target_pos := Vector2(640, 390)
+
+const COLORS := [
+    Color("#d94a45"),
+    Color("#4d86c5"),
+    Color("#e4bd43"),
+    Color("#6ba35b")
+]
+const SYMBOLS := ["★", "◆", "●", "✦", "▲", "✚", "☘", "✿"]
 
 func start(id: String) -> void:
     contrada_id = id
     var data := MapData.get_map(id)
     title = "Prova " + str(data["name"])
     mode = _mode_for(id)
+    active = true
     progress = 0
     target = 6
-    time_left = 18.0
-    active = true
-    instruction = _instruction_for(mode)
+    elapsed = 0.0
+    time_left = 25.0
+    round_index = 0
+    balance = 0.0
+    rng.randomize()
+    _setup_mode()
     visible = true
     set_process(true)
+    grab_focus()
     queue_redraw()
 
 func _mode_for(id: String) -> int:
-    var modes := {"quercia": 0, "ranocchio": 1, "leondoro": 2, "lucertola": 3, "pozzo": 4, "madonnina": 5, "cervia": 6, "ponte": 7}
-    return modes.get(id, 0)
+    return {
+        "quercia": 0,
+        "ranocchio": 1,
+        "leondoro": 2,
+        "lucertola": 3,
+        "pozzo": 4,
+        "madonnina": 5,
+        "cervia": 6,
+        "ponte": 7
+    }.get(id, 0)
 
-func _instruction_for(value: int) -> String:
-    var texts := [
-        "Raccogli 6 foglie prima che scada il tempo.",
-        "Segui il ritmo: fai 6 salti.",
-        "Colpisci il bersaglio 6 volte.",
-        "Trova 6 simboli nascosti.",
-        "Attiva 6 luci del pozzo.",
-        "Abbina 6 colori nel minor tempo possibile.",
-        "Supera 6 checkpoint.",
-        "Mantieni l'equilibrio per 6 secondi."
-    ]
-    return texts[value]
+func _setup_mode() -> void:
+    points.clear()
+    used.clear()
+    sequence.clear()
+    sequence_step = 0
+
+    match mode:
+        0:
+            instruction = "Raccogli tutte le foglie prima che il vento le porti via."
+            for i in target:
+                points.append(Vector2(240 + (i % 3) * 390, 235 + (i / 3) * 180))
+                used.append(false)
+        1:
+            instruction = "Tocca quando il Ranocchio atterra sul bersaglio."
+        2:
+            instruction = "Colpisci il bersaglio d'oro al centro per 6 volte."
+            target_pos = Vector2(640, 390)
+        3:
+            instruction = "Trova il simbolo indicato: cambia posizione a ogni round."
+            for y in 4:
+                for x in 4:
+                    points.append(Vector2(430 + x * 105, 245 + y * 78))
+            used.resize(16)
+            for i in used.size():
+                used[i] = false
+        4:
+            instruction = "Accendi le luci seguendo la sequenza."
+            for i in 6:
+                sequence.append(i)
+        5:
+            instruction = "Abbina il colore richiesto. Hai un solo tentativo per round."
+            target_color = rng.randi_range(0, COLORS.size() - 1)
+        6:
+            instruction = "Attraversa i checkpoint nell'ordine corretto."
+            for i in target:
+                points.append(Vector2(250 + i * 135, 365 + sin(i * 1.7) * 120))
+        7:
+            instruction = "Mantieni l'equilibrio. Usa ← → oppure tocca i lati dello schermo."
+            time_left = 15.0
 
 func _process(delta: float) -> void:
     if not active:
         return
+
+    elapsed += delta
     time_left -= delta
-    pulse += delta
-    target_pos = Vector2(
-        0.5 + sin(pulse * (1.2 + mode * 0.1)) * 0.28,
-        0.53 + cos(pulse * (1.0 + mode * 0.08)) * 0.18
-    )
-    if time_left <= 0.0:
-        _finish(false)
+
+    match mode:
+        1:
+            _update_frog()
+        2:
+            _update_target(delta)
+        7:
+            _update_balance(delta)
+
+    if time_left <= 0.0 and active:
+        if mode == 7 and elapsed >= 10.0 and abs(balance) < 0.75:
+            _finish(true)
+        else:
+            _finish(false)
+
     queue_redraw()
+
+func _update_frog() -> void:
+    # The landing window is a short, readable rhythm moment.
+    pass
+
+func _update_target(delta: float) -> void:
+    target_pos = Vector2(
+        640.0 + sin(elapsed * 2.0) * 330.0,
+        390.0 + cos(elapsed * 2.7) * 150.0
+    )
+
+func _update_balance(delta: float) -> void:
+    var keyboard := Input.get_axis("ui_left", "ui_right")
+    balance += keyboard * delta * 1.35
+    balance += sin(elapsed * 1.9) * delta * 0.18
+    balance = clamp(balance, -1.2, 1.2)
+
+    if elapsed >= 10.0:
+        progress = 6
+
+func _input(event: InputEvent) -> void:
+    if not active:
+        return
+
+    if event.is_action_pressed("ui_left") and mode == 7:
+        balance = clamp(balance - 0.22, -1.2, 1.2)
+    elif event.is_action_pressed("ui_right") and mode == 7:
+        balance = clamp(balance + 0.22, -1.2, 1.2)
+    elif event is InputEventKey and event.pressed and not event.echo:
+        if mode == 4 and event.keycode >= KEY_1 and event.keycode <= KEY_6:
+            _light_action(event.keycode - KEY_1)
+        elif mode == 5 and event.keycode >= KEY_1 and event.keycode <= KEY_4:
+            _color_action(event.keycode - KEY_1)
 
 func _gui_input(event: InputEvent) -> void:
     if not active:
@@ -66,16 +167,103 @@ func _gui_input(event: InputEvent) -> void:
         _action(event.position)
 
 func _action(position: Vector2) -> void:
-    var size := size
-    var center := Vector2(size.x * target_pos.x, size.y * target_pos.y)
+    match mode:
+        0:
+            _leaf_action(position)
+        1:
+            _frog_action()
+        2:
+            if position.distance_to(target_pos) <= 82.0:
+                progress += 1
+                if progress >= target:
+                    _finish(true)
+        3:
+            _lizard_action(position)
+        4:
+            _well_action(position)
+        5:
+            _color_touch_action(position)
+        6:
+            _checkpoint_action(position)
+        7:
+            var half := size.x * 0.5
+            balance = clamp(balance + (-0.28 if position.x < half else 0.28), -1.2, 1.2)
 
-    var hit_radius := 100.0
-    if mode == 1:
-        hit_radius = 150.0
-    elif mode == 7:
-        hit_radius = 125.0
+func _leaf_action(position: Vector2) -> void:
+    for i in points.size():
+        if used[i]:
+            continue
+        if position.distance_to(points[i]) <= 65.0:
+            used[i] = true
+            progress += 1
+            if progress >= target:
+                _finish(true)
+            return
 
-    if position.distance_to(center) <= hit_radius:
+func _frog_action() -> void:
+    var phase := fmod(elapsed * 2.7, TAU)
+    var landing_window := abs(sin(phase))
+    if landing_window < 0.18:
+        progress += 1
+        if progress >= target:
+            _finish(true)
+
+func _lizard_action(position: Vector2) -> void:
+    var wanted := (round_index * 3 + 2) % SYMBOLS.size()
+    for i in points.size():
+        if used[i]:
+            continue
+        if position.distance_to(points[i]) <= 36.0:
+            if i == wanted:
+                used[i] = true
+                progress += 1
+                round_index += 1
+                if progress >= target:
+                    _finish(true)
+            else:
+                time_left = max(0.0, time_left - 2.0)
+            return
+
+func _well_action(position: Vector2) -> void:
+    for i in 6:
+        var p := Vector2(425 + (i % 3) * 215, 310 + (i / 3) * 170)
+        if position.distance_to(p) <= 58.0:
+            _light_action(i)
+            return
+
+func _light_action(index: int) -> void:
+    if sequence_step >= sequence.size():
+        return
+    if index == sequence[sequence_step]:
+        sequence_step += 1
+        progress = sequence_step
+        if sequence_step >= sequence.size():
+            _finish(true)
+    else:
+        sequence_step = 0
+        progress = 0
+        time_left = max(0.0, time_left - 1.5)
+
+func _color_action(index: int) -> void:
+    if index == target_color:
+        progress += 1
+        target_color = rng.randi_range(0, COLORS.size() - 1)
+        if progress >= target:
+            _finish(true)
+    else:
+        time_left = max(0.0, time_left - 2.0)
+
+func _color_touch_action(position: Vector2) -> void:
+    for i in COLORS.size():
+        var rect := Rect2(360 + i * 145, 405, 110, 80)
+        if rect.has_point(position):
+            _color_action(i)
+            return
+
+func _checkpoint_action(position: Vector2) -> void:
+    if progress >= points.size():
+        return
+    if position.distance_to(points[progress]) <= 65.0:
         progress += 1
         if progress >= target:
             _finish(true)
@@ -97,19 +285,114 @@ func _draw() -> void:
 
     var data := MapData.get_map(contrada_id)
     var accent: Color = data["accent"]
+    draw_rect(Rect2(Vector2.ZERO, size), Color(0.025, 0.018, 0.012, 0.97))
+    draw_rect(Rect2(34, 28, size.x - 68, size.y - 56), Color(0.075, 0.048, 0.025, 0.99))
+    draw_rect(Rect2(34, 28, size.x - 68, size.y - 56), accent, false, 3.0)
 
-    draw_rect(Rect2(Vector2.ZERO, size), Color(0.025, 0.02, 0.015, 0.96))
-    draw_rect(Rect2(40, 35, size.x - 80, size.y - 70), Color(0.08, 0.055, 0.035, 0.98))
-    draw_rect(Rect2(40, 35, size.x - 80, size.y - 70), accent, false, 3.0)
+    draw_string(ThemeDB.fallback_font, Vector2(64, 78), title, HORIZONTAL_ALIGNMENT_LEFT, -1, 30, Color("#fff1c7"))
+    draw_string(ThemeDB.fallback_font, Vector2(64, 110), instruction, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(1, 0.95, 0.84, 0.92))
+    draw_string(ThemeDB.fallback_font, Vector2(64, 145), "PROGRESSO %d / %d    TEMPO %02d" % [progress, target, int(ceil(time_left))], HORIZONTAL_ALIGNMENT_LEFT, -1, 17, accent)
 
-    draw_string(ThemeDB.fallback_font, Vector2(70, 90), title, HORIZONTAL_ALIGNMENT_LEFT, -1, 30, Color("#fff1c7"))
-    draw_string(ThemeDB.fallback_font, Vector2(70, 125), instruction, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(1, 0.95, 0.84, 0.9))
-    draw_string(ThemeDB.fallback_font, Vector2(70, 160), "Progressi: %d / %d    Tempo: %02d" % [progress, target, int(ceil(time_left))], HORIZONTAL_ALIGNMENT_LEFT, -1, 17, accent)
+    match mode:
+        0:
+            _draw_leaves(accent)
+        1:
+            _draw_frog(accent)
+        2:
+            _draw_target(accent)
+        3:
+            _draw_lizard(accent)
+        4:
+            _draw_well(accent)
+        5:
+            _draw_colors(accent)
+        6:
+            _draw_checkpoints(accent)
+        7:
+            _draw_balance(accent)
 
-    var center := Vector2(size.x * target_pos.x, size.y * target_pos.y)
-    draw_circle(center, 100, Color(accent, 0.12))
-    draw_circle(center, 62, Color(accent, 0.26))
-    draw_circle(center, 36, accent)
-    draw_circle(center, 18, Color("#fff2c8"))
+func _draw_leaves(accent: Color) -> void:
+    for i in points.size():
+        if used[i]:
+            continue
+        var p := points[i] + Vector2(sin(elapsed * 2.0 + i) * 8.0, cos(elapsed * 1.7 + i) * 5.0)
+        draw_circle(p, 34, Color(accent, 0.15))
+        draw_colored_polygon(PackedVector2Array([
+            p + Vector2(0, -27), p + Vector2(22, 5), p + Vector2(0, 30), p + Vector2(-22, 5)
+        ]), Color("#78a85a"))
+        draw_line(p + Vector2(0, -20), p + Vector2(0, 22), Color("#e4c96b"), 3)
 
-    draw_string(ThemeDB.fallback_font, Vector2(size.x / 2 - 80, size.y - 80), "TOCCA / CLICCA IL BERSAGLIO", HORIZONTAL_ALIGNMENT_CENTER, 160, 14, Color(1, 0.92, 0.72, 0.85))
+func _draw_frog(accent: Color) -> void:
+    var phase := fmod(elapsed * 2.7, TAU)
+    var jump := max(0.0, sin(phase))
+    var p := Vector2(640, 430 - jump * 170)
+    draw_circle(Vector2(640, 455), 55, Color(accent, 0.15))
+    draw_ellipse(p + Vector2(0, 10), Vector2(54, 34), Color("#62a55f"))
+    draw_circle(p + Vector2(-24, -18), 15, Color("#83bd6e"))
+    draw_circle(p + Vector2(24, -18), 15, Color("#83bd6e"))
+    draw_circle(p + Vector2(-24, -18), 5, Color("#1d2116"))
+    draw_circle(p + Vector2(24, -18), 5, Color("#1d2116"))
+    draw_arc(Vector2(640, 455), 70, 0, TAU, 40, accent, 4)
+    draw_string(ThemeDB.fallback_font, Vector2(530, 545), "TOCCA QUANDO ATTERRA", HORIZONTAL_ALIGNMENT_CENTER, 220, 17, Color("#fff1c7"))
+
+func _draw_target(accent: Color) -> void:
+    draw_circle(target_pos, 105, Color(accent, 0.10))
+    draw_circle(target_pos, 76, Color("#d6ad4d"))
+    draw_circle(target_pos, 51, Color("#fff0bf"))
+    draw_circle(target_pos, 27, Color("#a8392f"))
+    draw_string(ThemeDB.fallback_font, target_pos + Vector2(-70, 145), "COLPISCI", HORIZONTAL_ALIGNMENT_CENTER, 140, 16, Color("#fff1c7"))
+
+func _draw_lizard(accent: Color) -> void:
+    var wanted := (round_index * 3 + 2) % SYMBOLS.size()
+    draw_string(ThemeDB.fallback_font, Vector2(500, 190), "TROVA: " + SYMBOLS[wanted], HORIZONTAL_ALIGNMENT_CENTER, 280, 26, accent)
+    for i in points.size():
+        var p := points[i]
+        var rect := Rect2(p - Vector2(42, 30), Vector2(84, 60))
+        draw_rect(rect, Color("#38271a"))
+        draw_rect(rect, accent if not used[i] else Color("#5b4630"), false, 3)
+        if not used[i]:
+            var symbol := SYMBOLS[(i + round_index * 2) % SYMBOLS.size()]
+            draw_string(ThemeDB.fallback_font, p + Vector2(-15, 12), symbol, HORIZONTAL_ALIGNMENT_CENTER, 30, 24, Color("#fff1c7"))
+
+func _draw_well(accent: Color) -> void:
+    draw_circle(Vector2(640, 390), 105, Color("#252c36"))
+    draw_circle(Vector2(640, 390), 75, Color("#111820"))
+    for i in 6:
+        var p := Vector2(425 + (i % 3) * 215, 310 + (i / 3) * 170)
+        var lit := i == sequence[sequence_step] if sequence_step < sequence.size() else false
+        draw_circle(p, 48, Color("#f4d86a", 0.9) if lit else Color("#4a4b49"))
+        draw_circle(p, 31, Color("#fff1b0") if lit else Color("#222524"))
+        draw_string(ThemeDB.fallback_font, p + Vector2(-8, 7), str(i + 1), HORIZONTAL_ALIGNMENT_CENTER, 16, 17, Color("#261b12"))
+
+func _draw_colors(accent: Color) -> void:
+    draw_string(ThemeDB.fallback_font, Vector2(520, 255), "ABBINA QUESTO COLORE", HORIZONTAL_ALIGNMENT_CENTER, 240, 18, Color("#fff1c7"))
+    draw_rect(Rect2(605, 285, 70, 70), COLORS[target_color])
+    for i in COLORS.size():
+        var rect := Rect2(360 + i * 145, 405, 110, 80)
+        draw_rect(rect, COLORS[i])
+        draw_string(ThemeDB.fallback_font, Vector2(rect.position.x, rect.position.y + 110), str(i + 1), HORIZONTAL_ALIGNMENT_CENTER, 110, 16, Color("#fff1c7"))
+
+func _draw_checkpoints(accent: Color) -> void:
+    for i in points.size():
+        var active_point := i == progress
+        draw_circle(points[i], 44 if active_point else 28, Color(accent, 0.20))
+        draw_circle(points[i], 26 if active_point else 16, accent if active_point else Color("#66513b"))
+        draw_string(ThemeDB.fallback_font, points[i] + Vector2(-7, 7), str(i + 1), HORIZONTAL_ALIGNMENT_CENTER, 14, 15, Color("#fff5d8"))
+        if i < points.size() - 1:
+            draw_line(points[i], points[i + 1], Color(1, 0.9, 0.7, 0.3), 4)
+
+func _draw_balance(accent: Color) -> void:
+    var bar := Rect2(220, 365, 840, 48)
+    draw_rect(bar, Color("#2d241a"))
+    draw_rect(Rect2(500, 365, 280, 48), Color("#527b4e", 0.45))
+    var marker_x := 640.0 + balance * 420.0
+    draw_circle(Vector2(marker_x, 389), 24, accent)
+    draw_circle(Vector2(marker_x, 389), 10, Color("#fff2c8"))
+    draw_string(ThemeDB.fallback_font, Vector2(420, 500), "← SINISTRA       DESTRA →", HORIZONTAL_ALIGNMENT_CENTER, 440, 18, Color("#fff1c7"))
+
+func draw_ellipse(center: Vector2, radii: Vector2, color: Color) -> void:
+    var polygon := PackedVector2Array()
+    for i in 24:
+        var angle := TAU * float(i) / 24.0
+        polygon.append(center + Vector2(cos(angle) * radii.x, sin(angle) * radii.y))
+    draw_colored_polygon(polygon, color)
