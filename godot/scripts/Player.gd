@@ -5,6 +5,8 @@ var facing := Vector2.DOWN
 var moving := false
 var bob := 0.0
 var pulse := 0.0
+var step_phase := 0.0
+var last_step := 0.0
 
 @onready var sprite: Sprite2D = $Sprite
 
@@ -40,6 +42,10 @@ func _physics_process(delta: float) -> void:
     if moving:
         facing = input.normalized()
         bob += delta * 12.0
+        step_phase += delta * 9.0
+        if sin(step_phase) > 0.92 and last_step <= 0.0:
+            last_step = 0.16
+        last_step = max(0.0, last_step - delta)
         if is_instance_valid(sprite):
             sprite.position.y = sin(bob) * 2.0
             sprite.frame = int(Time.get_ticks_msec() / 130.0) % 4
@@ -57,7 +63,11 @@ func _draw() -> void:
     # Corpo procedurale di sicurezza: il personaggio resta visibile anche
     # se il browser tarda a caricare lo SpriteSheet SVG.
     var bob_y := sin(bob) * 2.0 if moving else 0.0
-    draw_ellipse(Vector2(0, 18), Vector2(17, 6), Color(0.03,0.02,0.015,0.38))
+    var squash := 1.0 + (0.035 * sin(step_phase * 2.0) if moving else 0.0)
+    draw_ellipse(Vector2(0, 18), Vector2(17 * squash, 6 / squash), Color(0.03,0.02,0.015,0.38))
+    if moving and last_step > 0.0:
+        draw_circle(Vector2(-8, 17), 2.2, Color(0.55,0.43,0.28,0.22))
+        draw_circle(Vector2(8, 17), 1.6, Color(0.55,0.43,0.28,0.18))
     draw_circle(Vector2(0, -10 + bob_y), 16, Color("#d9a56b"))
     draw_rect(Rect2(-14, 4 + bob_y, 28, 28), Color("#6f8f55"))
     draw_rect(Rect2(-18, -28 + bob_y, 36, 9), Color("#d1ad52"))
