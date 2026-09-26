@@ -39,6 +39,9 @@ func set_map_progress(map_id: String, found: int, total: int) -> void:
             beniamino
         ]
 
+func is_dialogue_open() -> bool:
+    return panel.visible
+
 func show_interaction(title: String, text: String) -> void:
     speaker.text = title
     body.text = text
@@ -49,6 +52,9 @@ func close_interaction() -> void:
     panel.visible = false
 
 func _on_interact_pressed() -> void:
+    if panel.visible:
+        close_interaction()
+        return
     var player = get_tree().current_scene.get_node_or_null("Player")
     if player and player.has_method("interact"):
         player.interact()
