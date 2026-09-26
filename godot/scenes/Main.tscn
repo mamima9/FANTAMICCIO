@@ -17,6 +17,7 @@
 [ext_resource type="Script" path="res://scripts/QuestWorld.gd" id="15"]
 [ext_resource type="Script" path="res://scripts/WorldDecoration.gd" id="16"]
 [ext_resource type="Script" path="res://scripts/ExplorationSecrets.gd" id="17"]
+[ext_resource type="Script" path="res://scripts/Citizens.gd" id="18"]
 
 [sub_resource type="RectangleShape2D" id="PlayerShape"]
 size = Vector2(34, 28)
@@ -35,22 +36,22 @@ corner_radius_bottom_left = 8
 
 
 [sub_resource type="RectangleShape2D" id="BuildingShape"]
-size = Vector2(300, 180)
+size = Vector2(220, 80)
 
 [sub_resource type="RectangleShape2D" id="BorgoShape"]
-size = Vector2(330, 190)
+size = Vector2(250, 90)
 
 [sub_resource type="RectangleShape2D" id="CasaShape"]
-size = Vector2(300, 185)
+size = Vector2(230, 85)
 
 [sub_resource type="RectangleShape2D" id="BottegaShape"]
-size = Vector2(280, 155)
+size = Vector2(210, 75)
 
 [sub_resource type="CircleShape2D" id="PondShape"]
-radius = 65.0
+radius = 48.0
 
 [sub_resource type="CircleShape2D" id="AncientTreeShape"]
-radius = 82.0
+radius = 48.0
 
 [sub_resource type="RectangleShape2D" id="BorderShapeH"]
 size = Vector2(2304, 40)
@@ -219,6 +220,12 @@ script = ExtResource("15")
 [node name="ExplorationSecrets" type="Node2D" parent="."]
 z_index = 28
 script = ExtResource("17")
+
+[node name="Citizens" type="Node2D" parent="."]
+z_index = 80
+script = ExtResource("18")
+
+[node name="Cittadini" type="Node2D" parent="Citizens"]
 
 [node name="QuestManager" type="Node" parent="."]
 script = ExtResource("12")
@@ -470,3 +477,135 @@ horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_colors/font_color = Color(1,0.93,0.72,1)
 theme_override_font_sizes/font_size = 20
+[node name="Cittadino1" type="Area2D" parent="Citizens/Cittadini"]
+position = Vector2(420, 520)
+script = ExtResource("18")
+citizen_name = "Abitante della Quercia"
+contrada_color = Color(0.31,0.50,0.26,1)
+accent_color = Color(0.83,0.66,0.30,1)
+dialogue = ["Che bel bosco oggi.","Se cerchi la piazza, segui il sentiero dorato."]
+wander_radius = 55.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Citizens/Cittadini/Cittadino1"]
+shape = SubResource("NPCShape")
+
+[node name="Prompt" type="Label" parent="Citizens/Cittadini/Cittadino1"]
+offset_left = -55.0
+offset_top = -55.0
+offset_right = 55.0
+offset_bottom = -30.0
+text = "E  •  PARLA"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1,0.92,0.68,1)
+theme_override_font_sizes/font_size = 11
+
+[node name="Cittadino2" type="Area2D" parent="Citizens/Cittadini"]
+position = Vector2(940, 310)
+script = ExtResource("18")
+citizen_name = "Contradaiola della Quercia"
+contrada_color = Color(0.31,0.50,0.26,1)
+accent_color = Color(0.83,0.66,0.30,1)
+dialogue = ["Qui veniamo a passeggiare.","La Quercia Antica è più a est."]
+wander_radius = 55.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Citizens/Cittadini/Cittadino2"]
+shape = SubResource("NPCShape")
+
+[node name="Prompt" type="Label" parent="Citizens/Cittadini/Cittadino2"]
+offset_left = -55.0
+offset_top = -55.0
+offset_right = 55.0
+offset_bottom = -30.0
+text = "E  •  PARLA"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1,0.92,0.68,1)
+theme_override_font_sizes/font_size = 11
+
+[node name="Cittadino3" type="Area2D" parent="Citizens/Cittadini"]
+position = Vector2(1340, 900)
+script = ExtResource("18")
+citizen_name = "Ragazzo della Quercia"
+contrada_color = Color(0.31,0.50,0.26,1)
+accent_color = Color(0.83,0.66,0.30,1)
+dialogue = ["Ho visto qualcosa brillare tra gli alberi.","Forse vale la pena esplorare laggiù."]
+wander_radius = 55.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Citizens/Cittadini/Cittadino3"]
+shape = SubResource("NPCShape")
+
+[node name="Prompt" type="Label" parent="Citizens/Cittadini/Cittadino3"]
+offset_left = -55.0
+offset_top = -55.0
+offset_right = 55.0
+offset_bottom = -30.0
+text = "E  •  PARLA"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1,0.92,0.68,1)
+theme_override_font_sizes/font_size = 11
+
+[node name="Cittadino4" type="Area2D" parent="Citizens/Cittadini"]
+position = Vector2(1730, 720)
+script = ExtResource("18")
+citizen_name = "Contradaiolo della Quercia"
+contrada_color = Color(0.31,0.50,0.26,1)
+accent_color = Color(0.83,0.66,0.30,1)
+dialogue = ["Ogni angolo del bosco ha una storia.","Non fermarti alla strada principale."]
+wander_radius = 55.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Citizens/Cittadini/Cittadino4"]
+shape = SubResource("NPCShape")
+
+[node name="Prompt" type="Label" parent="Citizens/Cittadini/Cittadino4"]
+offset_left = -55.0
+offset_top = -55.0
+offset_right = 55.0
+offset_bottom = -30.0
+text = "E  •  PARLA"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1,0.92,0.68,1)
+theme_override_font_sizes/font_size = 11
+
+[node name="Cittadino5" type="Area2D" parent="Citizens/Cittadini"]
+position = Vector2(2050, 860)
+script = ExtResource("18")
+citizen_name = "Anziana della Quercia"
+contrada_color = Color(0.31,0.50,0.26,1)
+accent_color = Color(0.83,0.66,0.30,1)
+dialogue = ["Una volta qui c'erano solo querce.","Gli abitanti conoscono sentieri che non trovi sulla mappa."]
+wander_radius = 55.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Citizens/Cittadini/Cittadino5"]
+shape = SubResource("NPCShape")
+
+[node name="Prompt" type="Label" parent="Citizens/Cittadini/Cittadino5"]
+offset_left = -55.0
+offset_top = -55.0
+offset_right = 55.0
+offset_bottom = -30.0
+text = "E  •  PARLA"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1,0.92,0.68,1)
+theme_override_font_sizes/font_size = 11
+
+[node name="Cittadino6" type="Area2D" parent="Citizens/Cittadini"]
+position = Vector2(380, 930)
+script = ExtResource("18")
+citizen_name = "Bambina della Quercia"
+contrada_color = Color(0.31,0.50,0.26,1)
+accent_color = Color(0.83,0.66,0.30,1)
+dialogue = ["Hai visto i conigli? Sono sempre qui.","Mi piace venire nella radura."]
+wander_radius = 55.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Citizens/Cittadini/Cittadino6"]
+shape = SubResource("NPCShape")
+
+[node name="Prompt" type="Label" parent="Citizens/Cittadini/Cittadino6"]
+offset_left = -55.0
+offset_top = -55.0
+offset_right = 55.0
+offset_bottom = -30.0
+text = "E  •  PARLA"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1,0.92,0.68,1)
+theme_override_font_sizes/font_size = 11
+
