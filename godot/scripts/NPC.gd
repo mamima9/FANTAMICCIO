@@ -3,6 +3,7 @@ extends Area2D
 @export var npc_name := "Custode"
 @export_multiline var dialogue: Array[String] = []
 @export var trial_id := ""
+@export var quest_step := -1
 var player_near := false
 var dialogue_index := 0
 var ready_for_trial := false
@@ -34,6 +35,12 @@ func _accent_for_name() -> Color:
 
 func _on_body_entered(body: Node) -> void:
     if body.name == "Player":
+        var quest = get_tree().current_scene.get_node_or_null("QuestManager")
+        if quest and quest_step >= 0 and not quest.can_talk(quest_step):
+            $Prompt.text = "INDIZIO NON ANCORA DISPONIBILE"
+            $Prompt.visible = true
+            player_near = true
+            return
         player_near = true
         $Prompt.visible = true
         $Prompt.text = "E  •  PARLA"
@@ -44,6 +51,13 @@ func _on_body_exited(body: Node) -> void:
         $Prompt.visible = false
 
 func interact() -> void:
+    var quest = get_tree().current_scene.get_node_or_null("QuestManager")
+    if quest and quest_step >= 0 and not quest.can_talk(quest_step):
+        var hud_locked = get_tree().current_scene.get_node_or_null("HUD")
+        if hud_locked and hud_locked.has_method("show_toast"):
+            hud_locked.show_toast(quest.get_objective())
+        return
+
     if ready_for_trial and trial_id != "":
         var main = get_tree().current_scene
         if main.has_method("start_trial"):
@@ -61,6 +75,8 @@ func interact() -> void:
         dialogue_index += 1
     else:
         ready_for_trial = trial_id != ""
+        if quest and quest_step >= 0:
+            quest.advance()
         if ready_for_trial:
             $Prompt.text = "E  •  INIZIA PROVA"
 
