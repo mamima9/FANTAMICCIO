@@ -31,5 +31,5 @@ func progress(event_name: String, contrada_id: String) -> void:
 func _post_message(payload: Dictionary) -> void:
     if not OS.has_feature("web"):
         return
-    var encoded := JSON.stringify(payload).replace("\", "\\").replace("'", "\'")
+    var encoded := JSON.stringify(payload)
     JavaScriptBridge.eval("window.parent.postMessage(" + encoded + ", '*');")
