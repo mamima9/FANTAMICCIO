@@ -102,10 +102,3 @@ func show_dialogue(speaker: String, message: String) -> void:
     toast.visible = true
     toast_time = 6.0
 
-func _process(delta: float) -> void:
-    if toast_time > 0.0:
-        toast_time -= delta
-        toast.modulate.a = min(1.0, toast_time * 2.0)
-        if toast_time <= 0.0:
-            toast.visible = false
-            toast.modulate.a = 1.0
