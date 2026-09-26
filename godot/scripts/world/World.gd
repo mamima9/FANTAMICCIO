@@ -29,6 +29,7 @@ func load_map(map_id: String, entry_direction: String = "") -> void:
     current_data = MapData.get_map(map_id)
     GameManager.set_map(map_id)
     _clear_world()
+    _build_background()
     _build_boundaries()
     _build_exits()
     _build_map_collision()
@@ -42,6 +43,24 @@ func load_map(map_id: String, entry_direction: String = "") -> void:
     map_changed.emit(map_id)
     WebBridge.progress("map_changed", map_id)
     queue_redraw()
+
+func _build_background() -> void:
+    var path := "res://assets/maps/" + current_map_id + "-bg.png"
+    if not ResourceLoader.exists(path):
+        return
+    var texture := load(path) as Texture2D
+    if texture == null:
+        return
+    var sprite := Sprite2D.new()
+    sprite.texture = texture
+    sprite.centered = false
+    sprite.position = Vector2.ZERO
+    sprite.scale = Vector2(
+        WORLD_SIZE.x / float(texture.get_width()),
+        WORLD_SIZE.y / float(texture.get_height())
+    )
+    sprite.z_index = -100
+    map_nodes.add_child(sprite)
 
 func _clear_world() -> void:
     for child in map_nodes.get_children():
