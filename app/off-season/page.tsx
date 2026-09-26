@@ -65,6 +65,7 @@ export default function OffSeasonPage() {
             : existing.current_map ?? null,
           completed_trials: event.data.trials ?? existing.completed_trials ?? {},
           beniamini: event.data.beniami ?? existing.beniamini ?? {},
+          exploration: event.data.exploration ?? existing.exploration ?? {},
           updated_at: new Date().toISOString(),
         },
       };
