@@ -46,6 +46,9 @@ radius = 42.0
 [sub_resource type="CircleShape2D" id="NPCShape"]
 radius = 55.0
 
+[sub_resource type="CircleShape2D" id="InteractShape"]
+radius = 58.0
+
 [sub_resource type="StyleBoxFlat" id="NPCPanel"]
 bg_color = Color(0.12,0.08,0.05,0.92)
 border_width_left = 2
@@ -104,17 +107,26 @@ script = ExtResource("14")
 title = "La fontana delle Querce"
 text = "L'acqua riflette tre segni dorati. Uno di loro indica il sentiero che non sembra il più breve."
 
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldInteractables/Fontana"]
+shape = SubResource("InteractShape")
+
 [node name="QuerciaAntica" type="Area2D" parent="WorldInteractables"]
 position = Vector2(1510,400)
 script = ExtResource("14")
 title = "La Quercia Antica"
 text = "Un vecchio nastro dorato è legato al tronco. Qualcuno ti sta aspettando oltre il bosco."
 
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldInteractables/QuerciaAntica"]
+shape = SubResource("InteractShape")
+
 [node name="Stagno" type="Area2D" parent="WorldInteractables"]
 position = Vector2(1240,350)
 script = ExtResource("14")
 title = "Lo Stagno"
 text = "Tra i riflessi dell'acqua intravedi un simbolo del Miccio."
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldInteractables/Stagno"]
+shape = SubResource("InteractShape")
 
 [node name="Player" type="CharacterBody2D" parent="."]
 script = ExtResource("3")
