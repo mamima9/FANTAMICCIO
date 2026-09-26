@@ -68,12 +68,6 @@ func _on_body_exited(body: Node) -> void:
         $Prompt.visible = false
 
 func interact() -> void:
-    var hud = get_tree().current_scene.get_node_or_null("HUD")
-    if hud and hud.has_node("DialoguePanel") and hud.get_node("DialoguePanel").visible:
-        # Il secondo E chiude il box; il terzo continua il dialogo tramite prompt.
-        hud.close_dialogue()
-        return
-
     var quest = get_tree().current_scene.get_node_or_null("QuestManager")
     if quest and quest_step >= 0 and not quest.can_talk(quest_step):
         if hud and hud.has_method("show_toast"):
