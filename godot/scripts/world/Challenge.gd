@@ -23,6 +23,10 @@ func interact() -> void:
 
 func _draw() -> void:
     var accent := MapData.get_map(contrada_id)["accent"] if MapData.MAPS.has(contrada_id) else Color("#d6ad4d")
+    var pulse := 1.0 + sin(Time.get_ticks_msec() * 0.004) * 0.08
+    draw_circle(Vector2.ZERO, 31 * pulse, Color(accent, 0.10))
     draw_circle(Vector2.ZERO, 24, accent.darkened(0.25))
     draw_circle(Vector2.ZERO, 17, accent)
     draw_string(ThemeDB.fallback_font, Vector2(-28, 40), "PROVA", HORIZONTAL_ALIGNMENT_CENTER, 56, 11, Color("#fff0c0"))
+    if GameManager.trial_completed(contrada_id):
+        draw_string(ThemeDB.fallback_font, Vector2(-22, -31), "✓", HORIZONTAL_ALIGNMENT_CENTER, 44, 20, Color("#d9f0a1"))
