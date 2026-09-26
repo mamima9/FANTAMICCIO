@@ -10,6 +10,9 @@ func _ready() -> void:
     _load_local_icon()
     queue_redraw()
 
+func get_title() -> String:
+    return display_name
+
 func _load_local_icon() -> void:
     var path := "res://assets/beniamini/" + contrada_id + ".png"
     if not ResourceLoader.exists(path):
