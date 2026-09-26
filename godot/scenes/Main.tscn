@@ -26,7 +26,7 @@ limit_right = 1280
 limit_bottom = 720
 
 [node name="MobileLayer" type="CanvasLayer" parent="."]
-layer = 50
+layer = 200
 
 [node name="MobileControls" type="Control" parent="MobileLayer"]
 layout_mode = 3
