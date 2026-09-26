@@ -30,8 +30,9 @@ jobs:
 
       - name: Prepare map assets
         run: |
-          mkdir -p godot/assets/maps
+          mkdir -p godot/assets/maps godot/assets/beniamini
           cp public/contrade/*-bg.png godot/assets/maps/
+          cp public/contrade/cervia.png public/contrade/leondoro.png public/contrade/lucertola.png public/contrade/madonnina.png public/contrade/ponte.png public/contrade/pozzo.png public/contrade/quercia.png public/contrade/ranocchio.png godot/assets/beniamini/
 
       - name: Prepare Godot
         run: |
