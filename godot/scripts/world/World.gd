@@ -46,9 +46,22 @@ func load_map(map_id: String, entry_direction: String = "") -> void:
     queue_redraw()
 
 func _build_background() -> void:
-    # Render the playable top-down map procedurally. The old PNGs were
-    # decorative/oversized artwork and did not match the 1280x720 world.
-    has_background = false
+    # Authored top-down map artwork. Gameplay objects remain separate so
+    # quest logic can evolve without destroying the visual world.
+    var path := "res://art/maps/%s.svg" % current_map_id
+    var texture := load(path) as Texture2D
+    if texture == null:
+        has_background = false
+        return
+
+    var background := Sprite2D.new()
+    background.texture = texture
+    background.position = Vector2.ZERO
+    background.centered = false
+    background.z_index = -100
+    background.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+    map_nodes.add_child(background)
+    has_background = true
 
 func _clear_world() -> void:
     for child in map_nodes.get_children():
