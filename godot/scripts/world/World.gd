@@ -253,6 +253,7 @@ func _build_map_hotspots() -> void:
         hotspot.title = str(spec[0])
         hotspot.text = str(spec[2])
         hotspot.secret_id = current_map_id + "_secret"
+        hotspot.required_exploration_steps = 3
         var shape_node := CollisionShape2D.new()
         var shape := CircleShape2D.new()
         shape.radius = 52.0
