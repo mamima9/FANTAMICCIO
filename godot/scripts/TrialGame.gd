@@ -415,7 +415,6 @@ func _win() -> void:
     message.text = "PROVA SUPERATA! Il Beniamino ti aspetta."
     retry_button.visible = false
     won.emit(id)
-    await get_tree().create_timer(1.4).timeout
     root.visible = false
 
 func _fail(reason: String) -> void:
