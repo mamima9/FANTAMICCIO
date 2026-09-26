@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-const GODOT_URL = "https://mamima9.github.io/FANTAMICCIO/?v=231";
+const GODOT_URL = "https://mamima9.github.io/FANTAMICCIO/?v=233";
 
 export default function OffSeasonPage() {
   const [loaded, setLoaded] = useState(false);
