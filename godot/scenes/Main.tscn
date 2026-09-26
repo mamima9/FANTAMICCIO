@@ -106,15 +106,14 @@ shape = SubResource("PlayerShape")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 enabled = true
-position_smoothing_enabled = true
-position_smoothing_speed = 7.0
+position_smoothing_enabled = false
 position = Vector2(600,900)
-limit_left = 0
-limit_top = 0
-limit_right = 2304
-limit_bottom = 1296
-drag_horizontal_enabled = true
-drag_vertical_enabled = true
+limit_left = -100000
+limit_top = -100000
+limit_right = 100000
+limit_bottom = 100000
+drag_horizontal_enabled = false
+drag_vertical_enabled = false
 
 
 [node name="QuestManager" type="Node" parent="."]
