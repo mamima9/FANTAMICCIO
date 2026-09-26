@@ -45,13 +45,23 @@ func interact() -> void:
             main.show_interaction(display_name, "La prova della Contrada non è ancora completata.")
         return
 
-    if not GameManager.has_beniamino(contrada_id):
-        GameManager.unlock_beniamino(contrada_id)
-        SaveManager.save_game()
-        WebBridge.progress("beniamino_unlocked", contrada_id)
+    if GameManager.has_beniamino(contrada_id):
+        var already_main = get_tree().current_scene
+        if already_main and already_main.has_method("show_interaction"):
+            already_main.show_interaction(display_name, "Questo Beniamino è già nella tua collezione.")
+        return
+
+    GameManager.unlock_beniamino(contrada_id)
+    SaveManager.save_game()
+    WebBridge.progress("beniamino_unlocked", contrada_id)
+
+    var total := GameManager.beniamino_count()
     var main = get_tree().current_scene
     if main and main.has_method("show_interaction"):
-        main.show_interaction(display_name, "Hai trovato il Beniamino! Ora appartiene alla tua collezione.")
+        if total >= 8:
+            main.show_interaction(display_name, "🏆 OTTAVI COMPLETATI! Hai raccolto tutti gli 8 Beniamini delle Contrade. Ora vai alla Tregua per cercare il Barone.")
+        else:
+            main.show_interaction(display_name, "Hai trovato il Beniamino!\n\nCOLLEZIONE: %d/8" % total)
 
 func _draw() -> void:
     var accent := MapData.get_map(contrada_id)["accent"] if MapData.MAPS.has(contrada_id) else Color("#d6ad4d")
