@@ -13,27 +13,14 @@ var pulse := 0.0
 var accent := Color("#d4af37")
 var idle_phase := 0.0
 var talking_glow := 0.0
-var mobile_button: Button
 
 
 func _ready() -> void:
     body_entered.connect(_on_body_entered)
     body_exited.connect(_on_body_exited)
     $Prompt.visible = false
-    _setup_mobile_prompt()
     accent = _accent_for_name()
     queue_redraw()
-
-func _setup_mobile_prompt() -> void:
-    mobile_button = Button.new()
-    mobile_button.text = "PARLA"
-    mobile_button.visible = false
-    mobile_button.custom_minimum_size = Vector2(116, 52)
-    mobile_button.position = Vector2(-58, 58)
-    mobile_button.z_index = 20
-    mobile_button.add_theme_font_size_override("font_size", 16)
-    mobile_button.pressed.connect(interact)
-    add_child(mobile_button)
 
 func _process(delta: float) -> void:
     pulse += delta
@@ -73,14 +60,11 @@ func _on_body_entered(body: Node) -> void:
         return
     $Prompt.visible = true
     $Prompt.text = "E  •  PARLA"
-    if mobile_button:
-        mobile_button.visible = OS.has_feature("web_android") or OS.has_feature("web_ios") or OS.has_feature("android") or OS.has_feature("ios")
 
 func _on_body_exited(body: Node) -> void:
     if body.name == "Player":
         player_near = false
         $Prompt.visible = false
-        if mobile_button: mobile_button.visible = false
 
 func interact() -> void:
     var quest = get_tree().current_scene.get_node_or_null("QuestManager")
