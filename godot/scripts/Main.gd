@@ -33,6 +33,7 @@ func _ready() -> void:
     $RegionalWorld.set_contrada(contrada_id)
     $WorldDecoration.contrada_id = contrada_id
     $Citizens.set_contrada(contrada_id)
+    $QuestManager.set_contrada(contrada_id)
     _configure_regional_quest()
     trial_game.won.connect(_on_trial_won)
     trial_game.failed.connect(_on_trial_failed)
@@ -178,7 +179,7 @@ func _on_trial_won(id: String) -> void:
     beniamino.position = Vector2(1740, 520)
     beniamino.reveal()
     quest.mark_complete()
-    $HUD.show_toast("PROVA SUPERATA  •  Il Beniamino è apparso nel bosco!")
+    $HUD.show_toast("PROVA SUPERATA  •  Il Beniamino della %s è apparso!" % REGIONAL_NAMES.get(contrada_id, "Contrada"))
 
 func _on_trial_failed(_id: String) -> void:
     player.visible = true
