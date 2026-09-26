@@ -1,6 +1,24 @@
 extends Node2D
 
 var pulse := 0.0
+var contrada_id := "quercia"
+const REGIONAL_CLUES := {
+ "cervia":["Una pietra porta il simbolo del cervo: indica la strada verso Beltrame.","Una campanella spezzata rivela il sentiero più sicuro.","Tre tacche sulla torre: la prova è pronta."],
+ "leondoro":["Un'impronta conduce verso la tana del leone.","Un nastro rosso indica dove non entrare.","Il ruggito annuncia la prova."],
+ "lucertola":["Una pietra della Ripa porta una lucertola incisa.","Le tracce indicano il bivio meno luminoso.","La terza pietra conferma la via."],
+ "madonnina":["Un filo di paglia porta un simbolo blu.","Tra i covoni compare una seconda traccia.","La memoria dei segni ti condurrà al pagliaio."],
+ "ponte":["Una tavola incisa indica il primo passaggio.","Il fiume rivela il ritmo delle assi.","L'ultima tavola conduce alla prova."],
+ "pozzo":["Una moneta vicino al pozzo indica la prima traccia.","Una pietra bagnata nasconde il secondo indizio.","Il simbolo del Miccio completa il mistero."],
+ "quercia":["Una corteccia graffiata indica il sentiero verso il bosco interno.","Un nastro dorato rivela una deviazione.","Tre tacche sul tronco: il Contradaiolo ti aspetta."],
+ "ranocchio":["Un segno verde appare vicino allo stagno.","Le impronte delle rane indicano la sequenza delle ninfee.","Il loto riflette il simbolo della prova."]
+}
+func set_contrada(id:String) -> void:
+    contrada_id=id.to_lower()
+    var data=REGIONAL_CLUES.get(contrada_id,REGIONAL_CLUES["quercia"])
+    for i in data.size():
+        CLUE_TEXTS[i]=data[i]
+    queue_redraw()
+
 var player_near := -1
 var clue_positions := [Vector2(805, 545), Vector2(1040, 700), Vector2(1335, 585)]
 var gate_position := Vector2(1390, 650)
