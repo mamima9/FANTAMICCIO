@@ -85,14 +85,33 @@ func _draw_ranocchio(g) -> void:
 
 
 func _draw_quercia(g) -> void:
+    draw_rect(Rect2(35,75,690,450), Color("#263c27"), true)
+    draw_polyline(PackedVector2Array([Vector2(60,470),Vector2(155,400),Vector2(240,380),Vector2(330,315),Vector2(430,280),Vector2(520,340),Vector2(665,125)]), Color("#9a794e"), 52, true)
+    draw_polyline(PackedVector2Array([Vector2(155,400),Vector2(255,300),Vector2(365,235)]), Color("#b08c58"), 28, true)
+    draw_polyline(PackedVector2Array([Vector2(365,235),Vector2(450,190),Vector2(545,355)]), Color("#8a6a46"), 30, true)
+    for i in 10:
+        var tree := Vector2(75.0 + float((i * 137) % 620), 105.0 + float((i * 83) % 360))
+        draw_circle(tree, 27, Color("#172719"))
+        draw_circle(tree + Vector2(0,-9), 21, Color("#4f7540"))
+    for obstacle in g.quercia_obstacles:
+        draw_rect(obstacle, Color("#543622"), true)
+        draw_line(obstacle.position + Vector2(8,8), obstacle.end - Vector2(8,8), Color("#9b7047"), 3)
+        draw_circle(obstacle.position + Vector2(14,5), 5, Color("#395631"))
     for i in g.golden_signs.size():
         var p: Vector2 = g.golden_signs[i]
+        var pulse := 2.0 + sin(Time.get_ticks_msec()*0.006 + i) * 3.0
+        draw_circle(p, 25.0 + pulse, Color(1,0.79,0.25,0.13))
         draw_circle(p, 20, Color("#d4af37") if not g.sign_found[i] else Color("#6b5520"))
-        draw_circle(p, 12, Color("#fff0a8"))
+        draw_circle(p, 12, Color("#fff0a8") if not g.sign_found[i] else Color("#806b38"))
         draw_string(ThemeDB.fallback_font, p + Vector2(-5,6), str(i+1), HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#3a2a12"))
-    draw_circle(g.ancient_tree, 48, Color("#4b3020"))
-    draw_circle(g.ancient_tree + Vector2(0,-22), 62, Color("#42613a"))
-    draw_string(ThemeDB.fallback_font, g.ancient_tree + Vector2(-55,82), "QUERCIA ANTICA", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("#f7e7b0"))
+    draw_circle(g.ancient_tree, 58, Color("#39271b"))
+    draw_circle(g.ancient_tree + Vector2(0,-28), 72, Color("#4b733f"))
+    draw_circle(g.ancient_tree + Vector2(-35,-15), 43, Color("#587f46"))
+    draw_circle(g.ancient_tree + Vector2(34,-20), 47, Color("#3e6538"))
+    draw_string(ThemeDB.fallback_font, g.ancient_tree + Vector2(-62,82), "QUERCIA ANTICA", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("#f7e7b0"))
+    draw_rect(Rect2(525,485,150,10), Color("#15120d"), true)
+    draw_rect(Rect2(525,485,150 * (g.quercia_stamina / 100.0),10), Color("#d4af37"), true)
+    draw_string(ThemeDB.fallback_font, Vector2(525,478), "ENERGIA", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#f7e7b0"))
     _draw_player(g.player_pos, Color("#9fd37a"))
 
 func _draw_ponte(g) -> void:
