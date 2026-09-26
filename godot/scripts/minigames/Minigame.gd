@@ -231,13 +231,13 @@ func _action(position: Vector2) -> void:
             balance = clamp(balance + (-0.28 if position.x < half else 0.28), -1.2, 1.2)
 
 func _root_touch_action(position: Vector2) -> void:
-    var center := Vector2(640, 565)
+    var center := Vector2(640, 595)
     var delta := position - center
-    if delta.length() > 150.0:
+    if delta.length() > 155.0:
         return
     if abs(delta.x) > abs(delta.y):
         _root_slide(Vector2i(1 if delta.x > 0 else -1, 0))
-    elif abs(delta.y) > 20.0:
+    elif abs(delta.y) > 18.0:
         _root_slide(Vector2i(0, 1 if delta.y > 0 else -1))
 
 func _root_slide(direction: Vector2i) -> void:
@@ -464,7 +464,21 @@ func _draw_root_gym(accent: Color) -> void:
     draw_string(ThemeDB.fallback_font, goal_p + Vector2(-35, 6), "♥", HORIZONTAL_ALIGNMENT_CENTER, 70, 24, Color("#fff1c7"))
 
     draw_string(ThemeDB.fallback_font, Vector2(395, 540), "←  ↑  ↓  →   SCIVOLA TRA LE RADICI", HORIZONTAL_ALIGNMENT_CENTER, 490, 19, Color("#fff1c7"))
-    draw_string(ThemeDB.fallback_font, Vector2(410, 575), "PASSA UNA VOLTA SOLA SU OGNI RADICE", HORIZONTAL_ALIGNMENT_CENTER, 460, 15, Color(1, 0.95, 0.82, 0.85))
+    # Touch D-pad: the puzzle remains fully playable without a physical keyboard.
+    var cx := 640.0
+    var cy := 595.0
+    var btn := 52.0
+    for item in [
+        [Vector2(cx, cy - 58), "↑"],
+        [Vector2(cx, cy + 58), "↓"],
+        [Vector2(cx - 58, cy), "←"],
+        [Vector2(cx + 58, cy), "→"]
+    ]:
+        var bp: Vector2 = item[0]
+        draw_circle(bp, btn * 0.5, Color(0.05, 0.035, 0.02, 0.9))
+        draw_circle(bp, btn * 0.5, accent, false, 3.0)
+        draw_string(ThemeDB.fallback_font, bp + Vector2(-10, 9), str(item[1]), HORIZONTAL_ALIGNMENT_CENTER, 20, 22, Color("#fff1c7"))
+    draw_string(ThemeDB.fallback_font, Vector2(410, 670), "PASSA UNA VOLTA SOLA SU OGNI RADICE", HORIZONTAL_ALIGNMENT_CENTER, 460, 15, Color(1, 0.95, 0.82, 0.85))
     if not root_fall_message.is_empty():
         draw_string(ThemeDB.fallback_font, Vector2(390, 615), root_fall_message, HORIZONTAL_ALIGNMENT_CENTER, 500, 19, Color("#e4bd43"))
 
