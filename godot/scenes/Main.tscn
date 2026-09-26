@@ -142,14 +142,14 @@ texture_filter = 1
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
 shape = SubResource("PlayerShape")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="Player"]
 enabled = true
 position_smoothing_enabled = false
-position = Vector2(600,900)
-limit_left = -100000
-limit_top = -100000
-limit_right = 100000
-limit_bottom = 100000
+position = Vector2(0,0)
+limit_left = 0
+limit_top = 0
+limit_right = 2304
+limit_bottom = 1296
 drag_horizontal_enabled = false
 drag_vertical_enabled = false
 
