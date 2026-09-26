@@ -12,6 +12,8 @@
 [ext_resource type="Script" path="res://scripts/MobileJoystick.gd" id="10"]
 [ext_resource type="Script" path="res://scripts/Beniamino.gd" id="11"]
 [ext_resource type="Script" path="res://scripts/QuestManager.gd" id="12"]
+[ext_resource type="Script" path="res://scripts/AmbientLife.gd" id="13"]
+[ext_resource type="Script" path="res://scripts/WorldInteractable.gd" id="14"]
 
 [sub_resource type="RectangleShape2D" id="PlayerShape"]
 size = Vector2(34, 28)
@@ -89,6 +91,30 @@ shape = SubResource("BorderShapeV")
 [node name="WorldFX" type="Node2D" parent="."]
 z_index = 10
 script = ExtResource("9")
+
+[node name="AmbientLife" type="Node2D" parent="."]
+z_index = 18
+script = ExtResource("13")
+
+[node name="WorldInteractables" type="Node2D" parent="."]
+
+[node name="Fontana" type="Area2D" parent="WorldInteractables"]
+position = Vector2(830,740)
+script = ExtResource("14")
+title = "La fontana delle Querce"
+text = "L'acqua riflette tre segni dorati. Uno di loro indica il sentiero che non sembra il più breve."
+
+[node name="QuerciaAntica" type="Area2D" parent="WorldInteractables"]
+position = Vector2(1510,400)
+script = ExtResource("14")
+title = "La Quercia Antica"
+text = "Un vecchio nastro dorato è legato al tronco. Qualcuno ti sta aspettando oltre il bosco."
+
+[node name="Stagno" type="Area2D" parent="WorldInteractables"]
+position = Vector2(1240,350)
+script = ExtResource("14")
+title = "Lo Stagno"
+text = "Tra i riflessi dell'acqua intravedi un simbolo del Miccio."
 
 [node name="Player" type="CharacterBody2D" parent="."]
 script = ExtResource("3")
