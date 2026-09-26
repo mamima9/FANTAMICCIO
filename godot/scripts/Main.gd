@@ -3,7 +3,7 @@ extends Node2D
 @onready var trial_game: CanvasLayer = $TrialGame
 
 const WORLD_SIZE := Vector2(2304, 1296)
-const PLAYER_START := Vector2(1152, 760)
+const PLAYER_START := Vector2(600, 900)
 
 @onready var player: CharacterBody2D = $Player
 @onready var map: Sprite2D = $Map
