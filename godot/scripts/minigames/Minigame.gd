@@ -29,6 +29,9 @@ var root_walls: Array[Vector2i] = []
 var root_moves := 0
 var root_visited: Dictionary = {}
 var root_fall_message := ""
+var mobile_hint_alpha := 0.0
+var lizard_jump_timer := 0.0
+var lizard_fire_cooldown := 0.0
 
 const COLORS := [
     Color("#d94a45"),
@@ -137,6 +140,9 @@ func _process(delta: float) -> void:
             _update_frog()
         2:
             _update_target(delta)
+        3:
+            lizard_jump_timer = max(0.0, lizard_jump_timer - delta)
+            lizard_fire_cooldown = max(0.0, lizard_fire_cooldown - delta)
         7:
             _update_balance(delta)
 
@@ -238,6 +244,7 @@ func _root_slide(direction: Vector2i) -> void:
     if not active or mode != 0:
         return
     var current := root_cell
+    var traversed: Array[Vector2i] = []
     while true:
         var next := current + direction
         if next.x < 0 or next.x >= root_grid_size.x or next.y < 0 or next.y >= root_grid_size.y:
@@ -245,22 +252,30 @@ func _root_slide(direction: Vector2i) -> void:
         if root_walls.has(next):
             break
         current = next
-    if current == root_cell:
+        traversed.append(current)
+
+    if traversed.is_empty():
         return
+
+    # Like the classic ice-floor gym: every floor tile crossed counts.
+    # Crossing any already-used tile a second time makes the floor/root give way.
+    for tile in traversed:
+        if tile == root_goal:
+            continue
+        var visits := int(root_visited.get(tile, 0)) + 1
+        root_visited[tile] = visits
+        if visits >= 2:
+            root_fall_message = "CRACK! La radice cede... si riparte!"
+            root_cell = Vector2i(0, 5)
+            root_visited.clear()
+            root_visited[root_cell] = 1
+            root_moves = 0
+            time_left = max(0.0, time_left - 2.5)
+            queue_redraw()
+            return
+
     root_cell = current
     root_moves += 1
-    root_visited[root_cell] = int(root_visited.get(root_cell, 0)) + 1
-
-    # Second passage over the same root tile breaks it: fall and restart.
-    if root_visited[root_cell] >= 2 and root_cell != root_goal:
-        root_fall_message = "CRACK! La radice cede... si riparte!"
-        root_cell = Vector2i(0, 5)
-        root_visited.clear()
-        root_visited[root_cell] = 1
-        root_moves = 0
-        time_left = max(0.0, time_left - 2.5)
-        return
-
     progress = root_moves
     if root_cell == root_goal:
         _finish(true)
@@ -285,34 +300,50 @@ func _frog_action() -> void:
             _finish(true)
 
 func _lizard_action(position: Vector2) -> void:
-    # Tap/click near an obstacle or platform marker to interact.
+    if mode != 3:
+        return
+    # Touching the lower-left area jumps; touching the lower-right fires.
+    if position.y > size.y - 150.0:
+        if position.x < size.x * 0.5:
+            _lizard_jump()
+        else:
+            _lizard_fire()
+
+func _lizard_fire() -> void:
+    if mode != 3 or lizard_fire_cooldown > 0.0:
+        return
+    lizard_fire_cooldown = 0.35
+    # Fire clears the next target only when the obstacle is in the fire lane.
+    var nearest := -1
+    var nearest_distance := INF
     for i in points.size():
         if used[i]:
             continue
-        if position.distance_to(points[i]) <= 65.0:
-            used[i] = true
-            progress += 1
-            if progress >= target:
-                _finish(true)
-            return
+        var d := abs(points[i].x - (220.0 + fmod(elapsed * 115.0, 820.0)))
+        if d < nearest_distance:
+            nearest_distance = d
+            nearest = i
+    if nearest >= 0 and nearest_distance < 180.0:
+        used[nearest] = true
+        progress += 1
+        if progress >= target:
+            _finish(true)
 
-func _lizard_fire() -> void:
+func _lizard_jump() -> void:
     if mode != 3:
         return
-    # Fire breath clears the next obstacle.
+    lizard_jump_timer = 0.65
+    # A jump clears the next low obstacle.
+    var runner_x := 220.0 + fmod(elapsed * 115.0, 820.0)
     for i in points.size():
-        if not used[i]:
+        if used[i]:
+            continue
+        if abs(points[i].x - runner_x) < 150.0 and points[i].y > 400.0:
             used[i] = true
             progress += 1
             break
     if progress >= target:
         _finish(true)
-
-func _lizard_jump() -> void:
-    if mode != 3:
-        return
-    # Jump gives a short burst of progress and avoids a ground hazard.
-    elapsed += 0.35
 
 func _well_action(position: Vector2) -> void:
     for i in 6:
@@ -475,6 +506,8 @@ func _draw_lizard_run(accent: Color) -> void:
     var lizard := Vector2(220 + fmod(elapsed * 115.0, 820.0), 450)
     var bob := sin(elapsed * 8.0) * 5.0
     lizard.y += bob
+    if lizard_jump_timer > 0.0:
+        lizard.y -= 105.0 * min(1.0, lizard_jump_timer / 0.65)
     draw_ellipse(lizard, Vector2(48, 27), Color("#79a95a"))
     draw_circle(lizard + Vector2(35, -18), 20, Color("#91c36c"))
     draw_circle(lizard + Vector2(40, -21), 5, Color("#1c2417"))
@@ -488,7 +521,13 @@ func _draw_lizard_run(accent: Color) -> void:
     ]), Color("#e4bd43"))
     draw_circle(flame + Vector2(35, 0), 14, Color("#fff0a8"))
 
-    draw_string(ThemeDB.fallback_font, Vector2(400, 620), "↑ SALTA     SPAZIO / TAP: SPUTA FUOCO", HORIZONTAL_ALIGNMENT_CENTER, 480, 18, Color("#fff1c7"))
+    draw_rect(Rect2(120, 565, 250, 78), Color(0.04, 0.03, 0.02, 0.88))
+    draw_rect(Rect2(910, 565, 250, 78), Color(0.04, 0.03, 0.02, 0.88))
+    draw_rect(Rect2(120, 565, 250, 78), accent, false, 3)
+    draw_rect(Rect2(910, 565, 250, 78), accent, false, 3)
+    draw_string(ThemeDB.fallback_font, Vector2(150, 613), "SALTA", HORIZONTAL_ALIGNMENT_CENTER, 190, 22, Color("#fff1c7"))
+    draw_string(ThemeDB.fallback_font, Vector2(940, 613), "🔥 FUOCO", HORIZONTAL_ALIGNMENT_CENTER, 190, 22, Color("#fff1c7"))
+    draw_string(ThemeDB.fallback_font, Vector2(390, 620), "↑ / TAP SINISTRA     SPAZIO / TAP DESTRA", HORIZONTAL_ALIGNMENT_CENTER, 500, 16, Color("#fff1c7"))
 
 func _draw_well(accent: Color) -> void:
     draw_circle(Vector2(640, 390), 105, Color("#252c36"))
