@@ -4,6 +4,10 @@ extends CanvasLayer
 @onready var location_label: Label = $Location
 @onready var objective_label: Label = $Objective
 @onready var progress_label: Label = $Progress
+@onready var dialogue_panel: PanelContainer = $DialoguePanel
+@onready var dialogue_speaker: Label = $DialoguePanel/Speaker
+@onready var dialogue_text: Label = $DialoguePanel/VBox/Text
+@onready var dialogue_continue: Label = $DialoguePanel/VBox/Continue
 var toast_time := 0.0
 var intro_time := 0.0
 var mobile_interact: Button
@@ -12,6 +16,7 @@ var mobile_fullscreen: Button
 
 func _ready() -> void:
     toast.visible = false
+    dialogue_panel.visible = false
     if _is_mobile():
         _setup_mobile_controls()
     if has_node("Location"):
@@ -98,7 +103,16 @@ func show_trial_intro(trial_title: String, trial_goal: String) -> void:
     toast_time = 2.4
 
 func show_dialogue(speaker: String, message: String) -> void:
-    toast.text = speaker + "  •  " + message
-    toast.visible = true
-    toast_time = 6.0
+    # I dialoghi narrativi hanno un box dedicato: niente più testo piccolo
+    # che scompare mentre il giocatore sta leggendo.
+    dialogue_panel.visible = true
+    dialogue_speaker.text = speaker
+    dialogue_text.text = message
+    dialogue_continue.text = "E  •  CONTINUA"
+    toast.visible = false
+    toast_time = 0.0
+
+func close_dialogue() -> void:
+    if dialogue_panel:
+        dialogue_panel.visible = false
 
