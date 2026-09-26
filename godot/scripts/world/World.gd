@@ -5,12 +5,15 @@ signal nearby_interactable_changed(interactable: Area2D)
 
 const WORLD_SIZE := Vector2(1280, 720)
 const EXIT_SIZE := 80.0
+const ASSET_BASE_URL := "https://raw.githubusercontent.com/mamima9/FANTAMICCIO/main/public/contrade/"
 
 var current_map_id := "quercia"
 var current_data: Dictionary = {}
 var map_nodes := Node2D.new()
 var collision_nodes := Node2D.new()
 var exit_nodes := Node2D.new()
+var background_request: HTTPRequest
+var asset_generation := 0
 
 @onready var player: CharacterBody2D = get_parent().get_node("Player")
 
@@ -27,8 +30,10 @@ func load_map(map_id: String, entry_direction: String = "") -> void:
     current_map_id = map_id
     current_data = MapData.get_map(map_id)
     GameManager.set_map(map_id)
+    asset_generation += 1
 
     _clear_world()
+    _build_background()
     _build_boundaries()
     _build_exits()
     _build_landmarks()
@@ -41,6 +46,9 @@ func load_map(map_id: String, entry_direction: String = "") -> void:
     queue_redraw()
 
 func _clear_world() -> void:
+    if is_instance_valid(background_request):
+        background_request.queue_free()
+        background_request = null
     for child in map_nodes.get_children():
         child.queue_free()
     for child in collision_nodes.get_children():
@@ -48,16 +56,43 @@ func _clear_world() -> void:
     for child in exit_nodes.get_children():
         child.queue_free()
 
-func _build_boundaries() -> void:
-    # Leave a real opening in the middle of each side so the player can cross maps.
-    _add_wall(Vector2(320, -15), Vector2(640, 30))
-    _add_wall(Vector2(960, -15), Vector2(640, 30))
-    _add_wall(Vector2(320, 735), Vector2(640, 30))
-    _add_wall(Vector2(960, 735), Vector2(640, 30))
-    _add_wall(Vector2(-15, 180), Vector2(30, 360))
-    _add_wall(Vector2(-15, 540), Vector2(30, 360))
-    _add_wall(Vector2(1295, 180), Vector2(30, 360))
-    _add_wall(Vector2(1295, 540), Vector2(30, 360))
+func _build_background() -> void:
+    # The real FantaMiccio Contrada background is loaded from the repository.
+    # This keeps the web build small while using the same assets as the main site.
+    var request := HTTPRequest.new()
+    request.timeout = 12.0
+    background_request = request
+    map_nodes.add_child(request)
+    var generation := asset_generation
+    request.request_completed.connect(_on_background_loaded.bind(generation, request))
+    var url := ASSET_BASE_URL + current_map_id + "-bg.png"
+    var err := request.request(url)
+    if err != OK:
+        request.queue_free()
+        background_request = null
+
+func _on_background_loaded(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray, generation: int, request: HTTPRequest) -> void:
+    if generation != asset_generation or request != background_request:
+        return
+    if result != HTTPRequest.RESULT_SUCCESS or response_code < 200 or response_code >= 300:
+        return
+
+    var image := Image.new()
+    if image.load_png_from_buffer(body) != OK:
+        return
+
+    var texture := ImageTexture.create_from_image(image)
+    var sprite := Sprite2D.new()
+    sprite.texture = texture
+    sprite.centered = false
+    sprite.position = Vector2.ZERO
+    if image.get_width() > 0 and image.get_height() > 0:
+        sprite.scale = Vector2(WORLD_SIZE.x / image.get_width(), WORLD_SIZE.y / image.get_height())
+    sprite.z_index = -100
+    map_nodes.add_child(sprite)
+    request.queue_free()
+    background_request = null
+    queue_redraw()
 
 func _spawn_for_entry(entry_direction: String) -> Vector2:
     match entry_direction:
@@ -85,6 +120,17 @@ func _add_wall(position: Vector2, size: Vector2) -> void:
     body.add_child(shape_node)
     collision_nodes.add_child(body)
 
+func _build_boundaries() -> void:
+    # Keep the four central openings clear for map transitions.
+    _add_wall(Vector2(160, -15), Vector2(320, 30))
+    _add_wall(Vector2(1120, -15), Vector2(320, 30))
+    _add_wall(Vector2(160, 735), Vector2(320, 30))
+    _add_wall(Vector2(1120, 735), Vector2(320, 30))
+    _add_wall(Vector2(-15, 90), Vector2(30, 180))
+    _add_wall(Vector2(-15, 630), Vector2(30, 180))
+    _add_wall(Vector2(1295, 90), Vector2(30, 180))
+    _add_wall(Vector2(1295, 630), Vector2(30, 180))
+
 func _build_exits() -> void:
     var neighbors: Dictionary = current_data["neighbors"]
     for direction in neighbors:
@@ -94,6 +140,7 @@ func _build_exits() -> void:
         area.collision_mask = 1
         area.set_meta("target", target)
         area.set_meta("direction", direction)
+
         var shape_node := CollisionShape2D.new()
         var shape := RectangleShape2D.new()
         shape.size = Vector2(EXIT_SIZE, 150) if direction in ["left", "right"] else Vector2(150, EXIT_SIZE)
@@ -133,10 +180,7 @@ func _build_landmarks() -> void:
     ]:
         _draw_landmark(position, base.darkened(0.18), accent)
 
-    # Central landmark differs per territory.
-    var center := Vector2(640, 360)
-    draw_set_transform(Vector2.ZERO)
-    _draw_centerpiece(center, accent)
+    _draw_centerpiece(Vector2(640, 360), accent)
 
 func _draw_landmark(position: Vector2, base: Color, accent: Color) -> void:
     var node := Node2D.new()
@@ -204,27 +248,12 @@ func _draw() -> void:
     if current_data.is_empty():
         return
 
-    var base: Color = current_data["color"]
+    # Real map art is supplied by the Contrada background asset.
+    # Keep only a readable title/transition hint over it.
     var accent: Color = current_data["accent"]
-
-    draw_rect(Rect2(Vector2.ZERO, WORLD_SIZE), base)
-
-    # Roads and plazas.
-    draw_rect(Rect2(0, 305, WORLD_SIZE.x, 110), base.lightened(0.16))
-    draw_rect(Rect2(585, 0, 110, WORLD_SIZE.y), base.lightened(0.16))
-    draw_rect(Rect2(420, 225, 440, 270), base.lightened(0.27))
-
-    # Decorative stripes tied to each Contrada.
-    for i in range(8):
-        var x := 450.0 + i * 50.0
-        draw_rect(Rect2(x, 238, 32, 10), accent, true)
-
     draw_string(ThemeDB.fallback_font, Vector2(32, 44), str(current_data["name"]), HORIZONTAL_ALIGNMENT_LEFT, -1, 28, Color("#fff5d8"))
-    draw_string(ThemeDB.fallback_font, Vector2(32, 70), "Esplora • Interagisci • Trova il Beniamino", HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color(1, 0.96, 0.82, 0.82))
+    draw_string(ThemeDB.fallback_font, Vector2(32, 70), "Esplora • Interagisci • Trova il Beniamino", HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color(1, 0.96, 0.82, 0.92))
 
-    _draw_direction_labels()
-
-func _draw_direction_labels() -> void:
     var neighbors: Dictionary = current_data["neighbors"]
     var labels := {
         "up": Vector2(600, 35),
@@ -235,4 +264,4 @@ func _draw_direction_labels() -> void:
     for direction in neighbors:
         var target: String = neighbors[direction]
         var data: Dictionary = MapData.get_map(target)
-        draw_string(ThemeDB.fallback_font, labels[direction], "→ " + str(data["name"]), HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color(1, 0.95, 0.75, 0.78))
+        draw_string(ThemeDB.fallback_font, labels[direction], "→ " + str(data["name"]), HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color(1, 0.95, 0.75, 0.9))
