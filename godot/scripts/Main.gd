@@ -15,6 +15,8 @@ const REGIONAL_NAMES := {
     "quercia":"LA QUERCIA  •  QUERCETA",
     "ranocchio":"IL RANOCCHIO"
 }
+const BENIAMINO_POSITIONS := {"cervia":Vector2(1500,330),"leondoro":Vector2(1510,430),"lucertola":Vector2(1450,700),"madonnina":Vector2(1510,410),"ponte":Vector2(1500,560),"pozzo":Vector2(1510,420),"quercia":Vector2(1510,390),"ranocchio":Vector2(1510,430)}
+const BENIAMINO_NAMES := {"cervia":"CERVIA","leondoro":"LEON D'ORO","lucertola":"LUCERTOLA","madonnina":"MADONNINA","ponte":"PONTE","pozzo":"POZZO","quercia":"QUERCIA","ranocchio":"RANOCCHIO"}
 const REGIONAL_LOCATIONS := {
     "cervia":"BOSCHI DI BELTRAME","leondoro":"MARZOCCHINO","lucertola":"LA RIPA",
     "madonnina":"CORTILI DELLA MADONNINA","ponte":"VIE DEL PONTE","pozzo":"PIAZZE DEL POZZO",
@@ -176,7 +178,8 @@ func _on_trial_won(id: String) -> void:
     $Player/Camera2D.enabled = true
     $Player/Camera2D.position = Vector2.ZERO
     beniamino.beniamino_id = id
-    beniamino.position = Vector2(1740, 520)
+    beniamino.beniamino_name = BENIAMINO_NAMES.get(contrada_id, "BENIAMINO")
+    beniamino.position = BENIAMINO_POSITIONS.get(contrada_id, Vector2(1510,390))
     beniamino.reveal()
     quest.mark_complete()
     $HUD.show_toast("PROVA SUPERATA  •  Il Beniamino della %s è apparso!" % REGIONAL_NAMES.get(contrada_id, "Contrada"))
