@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3]
+[gd_scene load_steps=28 format=3]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1"]
 [ext_resource type="Texture2D" path="res://art/quercia-map.svg" id="2"]
@@ -73,9 +73,29 @@ texture_filter = 1
 
 [node name="WorldCollisions" type="StaticBody2D" parent="."]
 
-[node name="CentralBuilding" type="CollisionShape2D" parent="WorldCollisions"]
-position = Vector2(1152, 648)
+[node name="PiazzaQuerce" type="CollisionShape2D" parent="WorldCollisions"]
+position = Vector2(1110, 610)
 shape = SubResource("BuildingShape")
+
+[node name="Borgo" type="CollisionShape2D" parent="WorldCollisions"]
+position = Vector2(385, 285)
+shape = SubResource("BorgoShape")
+
+[node name="CasaDelleQuerce" type="CollisionShape2D" parent="WorldCollisions"]
+position = Vector2(1900, 332)
+shape = SubResource("CasaShape")
+
+[node name="Bottega" type="CollisionShape2D" parent="WorldCollisions"]
+position = Vector2(1890, 897)
+shape = SubResource("BottegaShape")
+
+[node name="Stagno" type="CollisionShape2D" parent="WorldCollisions"]
+position = Vector2(1240, 350)
+shape = SubResource("PondShape")
+
+[node name="QuerciaAntica" type="CollisionShape2D" parent="WorldCollisions"]
+position = Vector2(1510, 400)
+shape = SubResource("AncientTreeShape")
 
 [node name="TopBorder" type="CollisionShape2D" parent="WorldCollisions"]
 position = Vector2(1152, 20)
