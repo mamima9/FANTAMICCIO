@@ -25,9 +25,9 @@ func _ready() -> void:
     prompt.text = "Esplora il bosco  •  avvicinati agli abitanti  •  E per parlare"
 
     $Player/Camera2D.enabled = true
-    $Camera2D.position_smoothing_enabled = false
-    $Camera2D.global_position = player.global_position
-    $Camera2D.zoom = Vector2(1.0, 1.0)
+    $Player/Camera2D.position_smoothing_enabled = false
+    $Player/Camera2D.global_position = player.global_position
+    $Player/Camera2D.zoom = Vector2(1.0, 1.0)
 
     if $HUD.has_method("set_location"):
         $HUD.set_location("BOSCO DELLA QUERCIA", "Trova gli indizi degli abitanti")
@@ -41,7 +41,7 @@ func refresh_objective() -> void:
 
 func _process(_delta: float) -> void:
     if not trial_game.active:
-        $Camera2D.position = player.position
+        $Player/Camera2D.position = player.position
 
 func start_trial(id: String) -> void:
     if Challenges.get_challenge(id).is_empty():
@@ -51,7 +51,7 @@ func start_trial(id: String) -> void:
     trial_game.start(id)
     player.visible = false
     player.set_physics_process(false)
-    $Camera2D.enabled = false
+    $Player/Camera2D.enabled = false
 
 func start_quercia_trial() -> void:
     start_trial("quercia")
@@ -59,7 +59,7 @@ func start_quercia_trial() -> void:
 func _on_trial_won(id: String) -> void:
     player.visible = true
     player.set_physics_process(true)
-    $Camera2D.enabled = true
+    $Player/Camera2D.enabled = true
     beniamino.beniamino_id = id
     beniamino.position = Vector2(1740, 520)
     beniamino.reveal()
@@ -69,5 +69,5 @@ func _on_trial_won(id: String) -> void:
 func _on_trial_failed(_id: String) -> void:
     player.visible = true
     player.set_physics_process(true)
-    $Camera2D.enabled = true
+    $Player/Camera2D.enabled = true
     $HUD.show_toast("La prova ti aspetta ancora. Riprova quando vuoi.")
