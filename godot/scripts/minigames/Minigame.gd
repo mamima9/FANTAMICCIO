@@ -87,6 +87,7 @@ func _finish(success: bool) -> void:
     set_process(false)
     if success:
         GameManager.complete_trial(contrada_id)
+        SaveManager.save_game()
         WebBridge.progress("trial_completed", contrada_id)
     finished.emit(success)
 
