@@ -42,6 +42,8 @@ func load_map(map_id: String, entry_direction: String = "") -> void:
     _build_npc()
     _build_beniamino()
     _build_map_hotspots()
+    _build_map_objectives()
+    _build_dynamic_event()
 
     player.global_position = _spawn_for_entry(entry_direction)
     map_changed.emit(map_id)
@@ -266,6 +268,71 @@ func _build_map_hotspots() -> void:
         marker.position = Vector2(0, -45)
         hotspot.add_child(marker)
 
+
+func _build_map_objectives() -> void:
+    var specs := {
+        "quercia": [
+            ["Radice incisa", Vector2(220, 210), "Tre segni sul tronco formano una freccia. Hai trovato la prima traccia."],
+            ["Foglia dorata", Vector2(540, 220), "Una foglia dorata è incastrata tra le radici. La traccia continua."],
+            ["Cuore della quercia", Vector2(820, 500), "Il terreno vibra leggermente. Hai seguito tutta la pista delle radici."]
+        ],
+        "ranocchio": [
+            ["Cerchio sull'acqua", Vector2(220, 480), "Un'onda forma un cerchio perfetto. È il primo segnale dello stagno."],
+            ["Impronta sul fango", Vector2(520, 520), "Una piccola impronta palmata indica il prossimo punto."],
+            ["Canna sonora", Vector2(820, 300), "La canna vibra con un CRA. Hai completato il percorso dei Ranocchi."]
+        ],
+        "leondoro": [
+            ["Bersaglio ammaccato", Vector2(260, 210), "Il primo bersaglio porta un segno fresco. Qualcuno si sta allenando."],
+            ["Moneta nell'arena", Vector2(620, 230), "Una moneta dorata riflette la luce e indica la zona successiva."],
+            ["Podio d'oro", Vector2(900, 500), "Il podio è illuminato. La pista dell'arena è completa."]
+        ],
+        "lucertola": [
+            ["Pietra calda", Vector2(230, 500), "La pietra emette una scintilla: è l'inizio del percorso."],
+            ["Fessura luminosa", Vector2(570, 430), "La luce passa tra due rocce. Il sentiero del fuoco continua."],
+            ["Brace finale", Vector2(900, 280), "Una brace si accende davanti a te. Hai seguito tutte le scintille."]
+        ],
+        "pozzo": [
+            ["Secchio vuoto", Vector2(210, 220), "Il secchio oscilla da solo. Primo indizio del pozzo."],
+            ["Eco blu", Vector2(560, 300), "Un'eco luminosa risponde dal sottosuolo."],
+            ["Pietra del fondo", Vector2(850, 500), "La pietra riflette la luce del pozzo. La sequenza è completa."]
+        ],
+        "madonnina": [
+            ["Candela spenta", Vector2(230, 230), "Una candela si accende per un istante. Prima traccia trovata."],
+            ["Fiore bianco", Vector2(560, 500), "Un fiore è stato lasciato accanto al sentiero."],
+            ["Simbolo nascosto", Vector2(900, 250), "Il simbolo finale completa il piccolo percorso della Madonnina."]
+        ],
+        "cervia": [
+            ["Prima impronta", Vector2(230, 430), "Un'impronta fresca attraversa il sentiero."],
+            ["Ramo spezzato", Vector2(560, 260), "Il ramo è stato spezzato da poco. Le tracce continuano."],
+            ["Radura", Vector2(900, 470), "La pista arriva alla radura. Hai seguito il cervo fino alla fine."]
+        ],
+        "ponte": [
+            ["Prima asse", Vector2(220, 250), "L'asse scricchiola ma regge. Primo punto sicuro."],
+            ["Nodo della corda", Vector2(560, 470), "Un nodo nuovo indica il passaggio successivo."],
+            ["Campana del ponte", Vector2(900, 240), "La campana suona al tuo arrivo. Attraversamento completato."]
+        ]
+    }
+    if not specs.has(current_map_id):
+        return
+
+    var objective_script = load("res://scripts/world/ExplorationObjective.gd")
+    var index := 1
+    for spec in specs[current_map_id]:
+        var objective := Area2D.new()
+        objective.position = spec[1]
+        objective.set_script(objective_script)
+        objective.map_id = current_map_id
+        objective.objective_step = index
+        objective.objective_title = str(spec[0])
+        objective.objective_text = str(spec[2])
+        var shape_node := CollisionShape2D.new()
+        var shape := CircleShape2D.new()
+        shape.radius = 42.0
+        shape_node.shape = shape
+        objective.add_child(shape_node)
+        hotspot_nodes.add_child(objective)
+        index += 1
+
 func _build_dynamic_event() -> void:
     var specs := {
         "quercia": ["Fruscio delle radici", Vector2(760, 250), "Le foglie si muovono senza vento. Per un istante una radice sembra indicare una direzione precisa."],
@@ -333,6 +400,15 @@ func _draw() -> void:
 
 
 func get_secret_count() -> int:
-    # One meaningful discovery per Contrada; all eight are part of the
-    # exploration layer rather than the main trial.
-    return 1
+    return 8
+
+func get_map_progress() -> Dictionary:
+    return {
+        "map_id": current_map_id,
+        "objectives": GameManager.exploration_progress(current_map_id),
+        "objective_total": 3,
+        "secrets": GameManager.discovered_secrets.size(),
+        "secret_total": get_secret_count(),
+        "trial_done": GameManager.trial_completed(current_map_id),
+        "beniamino_done": GameManager.has_beniamino(current_map_id)
+    }
