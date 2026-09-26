@@ -5,6 +5,20 @@ extends Node2D
 # vengono esclusi automaticamente dal sistema di collisione.
 
 var pulse := 0.0
+@export var contrada_id := "quercia"
+
+# Identità ambientale delle otto Contrade. Le future mappe riutilizzano
+# questo stesso sistema invece di avere decorazioni generiche.
+const REGIONAL_THEMES := {
+    "cervia": {"element":"CERVI", "habitat":"bosco aperto"},
+    "lucertola": {"element":"LUCERTOLE", "habitat":"RIPA"},
+    "madonnina": {"element":"PAGLIAI", "habitat":"cortili e campi"},
+    "quercia": {"element":"QUERCE", "habitat":"bosco"},
+    "leondoro": {"element":"LEONCINI", "habitat":"marzocchino"},
+    "ponte": {"element":"PONTI", "habitat":"passaggi e corsi d’acqua"},
+    "pozzo": {"element":"POZZI", "habitat":"piazze e cortili"},
+    "ranocchio": {"element":"STAGNI E RANE", "habitat":"zone umide"}
+}
 
 var trees := [
     Vector2(150,150), Vector2(330,255), Vector2(520,145), Vector2(700,190),
@@ -22,6 +36,8 @@ var rocks := [
 ]
 
 var benches := [Vector2(910,720), Vector2(1320,930), Vector2(1660,560)]
+var secret_groves := [Vector2(300, 760), Vector2(1850, 930), Vector2(2050, 350)]
+
 var fences := [
     [Vector2(560,330), Vector2(680,330)],
     [Vector2(880,930), Vector2(1010,930)],
@@ -56,6 +72,10 @@ func _build_collisions() -> void:
     # Le recinzioni sono invece ostacoli lineari reali.
     for fence in fences:
         _segment_collision(fence[0], fence[1], 10.0, "Fence")
+
+    # Piccoli tronchi delle radure segrete: ostacoli leggibili, non muri.
+    for p in secret_groves:
+        _circle_collision(p, 11.0, "SecretGroveTree")
 
 func _near_any_path(point: Vector2, distance: float) -> bool:
     for path in paths:
@@ -111,6 +131,25 @@ func _draw() -> void:
         _draw_bench(p)
     for fence in fences:
         _draw_fence(fence[0], fence[1])
+
+    # Quercia: il territorio deve avere una firma visiva riconoscibile.
+    if contrada_id == "quercia":
+        for p in secret_groves:
+            _draw_oak_marker(p)
+        _draw_oak_grove(Vector2(300, 760), 1.0)
+        _draw_oak_grove(Vector2(1850, 930), 0.85)
+
+func _draw_oak_marker(p: Vector2) -> void:
+    draw_circle(p + Vector2(0, 16), 22.0, Color(0.10,0.18,0.08,0.18))
+    draw_circle(p, 4.0, Color("#d4af37"))
+    draw_arc(p, 12.0 + sin(pulse * 3.0) * 2.0, 0.0, TAU, 18, Color(1,0.82,0.30,0.32), 2.0)
+
+func _draw_oak_grove(center: Vector2, s: float) -> void:
+    for i in 5:
+        var angle := TAU * float(i) / 5.0
+        var p := center + Vector2(cos(angle) * 58.0, sin(angle) * 38.0)
+        _draw_tree(p)
+    draw_arc(center + Vector2(0,18), 86.0 * s, 0.0, TAU, 32, Color(0.86,0.72,0.34,0.18), 2.0)
 
 func _path(points: Array, width: float) -> void:
     var packed := PackedVector2Array(points)
