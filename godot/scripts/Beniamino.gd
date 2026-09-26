@@ -1,6 +1,7 @@
 extends Area2D
 
 @export var beniamino_id := "quercia"
+@export var beniamino_name := "QUERCIA"
 var pulse := 0.0
 var collected := false
 var collect_flash := 0.0
@@ -48,4 +49,4 @@ func _draw() -> void:
     draw_circle(Vector2(-7, bob-4), 4, Color("#4a3528"))
     draw_circle(Vector2(7, bob-4), 4, Color("#4a3528"))
     draw_arc(Vector2.ZERO + Vector2(0,bob), 31, -2.6, -0.55, 18, Color(1,0.9,0.45,0.9), 3)
-    draw_string(ThemeDB.fallback_font, Vector2(-55, 55+bob), "BENIAMINO", HORIZONTAL_ALIGNMENT_CENTER, 110, 13, Color("#fff0b0"))
+    draw_string(ThemeDB.fallback_font, Vector2(-55, 55+bob), beniamino_name.to_upper(), HORIZONTAL_ALIGNMENT_CENTER, 110, 13, Color("#fff0b0"))
