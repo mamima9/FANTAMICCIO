@@ -9,6 +9,7 @@ const PLAYER_START := Vector2(1152, 760)
 @onready var map: Sprite2D = $Map
 @onready var prompt: Label = $HUD/Prompt
 @onready var title: Label = $HUD/Title
+@onready var beniamino: Area2D = $Beniamino
 
 func _ready() -> void:
     trial_game.won.connect(_on_trial_won)
@@ -49,7 +50,10 @@ func _on_trial_won(id: String) -> void:
     player.visible = true
     player.set_physics_process(true)
     $Camera2D.enabled = true
-    $HUD.show_toast("PROVA SUPERATA  •  Beniamino: " + id.to_upper())
+    beniamino.beniamino_id = id
+    beniamino.position = Vector2(1740, 520)
+    beniamino.reveal()
+    $HUD.show_toast("PROVA SUPERATA  •  Il Beniamino è apparso nel bosco!")
 
 func _on_trial_failed(_id: String) -> void:
     player.visible = true
