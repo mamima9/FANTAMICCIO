@@ -1,19 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase/client";
 
 const GODOT_URL = "https://mamima9.github.io/FANTAMICCIO/";
 
 export default function OffSeasonPage() {
   const [loaded, setLoaded] = useState(false);
+  const [gameUrl, setGameUrl] = useState(GODOT_URL);
 
   useEffect(() => {
+    let mounted = true;
+    const loadProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !mounted) return;
+      const { data } = await supabase.from("profiles").select("contrada_id").eq("id", user.id).maybeSingle();
+      const contrada = data?.contrada_id ? String(data.contrada_id).toLowerCase() : "";
+      if (mounted && contrada) setGameUrl(GODOT_URL + "?contrada=" + encodeURIComponent(contrada));
+    };
+    loadProfile();
+
     const onMessage = (event: MessageEvent) => {
       if (event.origin !== "https://mamima9.github.io") return;
       if (event.data?.type === "fantamiccio-godot-ready") setLoaded(true);
     };
     window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
+    return () => { mounted = false; window.removeEventListener("message", onMessage); };
   }, []);
 
   return (
@@ -29,7 +41,7 @@ export default function OffSeasonPage() {
 
       <iframe
         title="FantaMiccio Off Season"
-        src={GODOT_URL}
+        src={gameUrl}
         className="block w-full h-full border-0"
         allow="fullscreen; autoplay; gamepad"
         allowFullScreen
