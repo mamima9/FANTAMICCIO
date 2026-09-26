@@ -41,9 +41,6 @@ func _on_nearby_interactable_changed(interactable: Area2D) -> void:
 func show_interaction(title: String, text: String) -> void:
     hud.show_interaction(title, text)
 
-func _draw() -> void:
-    # Fallback under the real Contrada background.
-    draw_rect(Rect2(Vector2.ZERO, WORLD_SIZE), Color("#6f9b55"))
 
 func _process(_delta: float) -> void:
     if world:
