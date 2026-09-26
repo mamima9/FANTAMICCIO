@@ -37,6 +37,26 @@ func _ready() -> void:
     if $QuestWorld.has_method("refresh"):
         $QuestWorld.refresh()
 
+func _update_mobile_context() -> void:
+    var hud = get_node_or_null("HUD")
+    if not hud or not hud.has_method("set_mobile_interaction"):
+        return
+    var found := ""
+    for child in $NPCs.get_children():
+        if child is Area2D and child.get("player_near") == true:
+            found = "PARLA"
+            break
+    if found == "":
+        for child in $WorldInteractables.get_children():
+            if child is Area2D and child.get("player_near") == true:
+                found = "OSSERVA"
+                break
+    if found == "":
+        var qw = get_node_or_null("QuestWorld")
+        if qw and qw.get("player_near") != -1:
+            found = "SCOPRI"
+    hud.set_mobile_interaction(found != "", found)
+
 func mobile_interact() -> void:
     var npc = get_node_or_null("NPCs")
     if npc:
