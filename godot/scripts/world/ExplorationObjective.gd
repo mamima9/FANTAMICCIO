@@ -2,7 +2,7 @@ extends Area2D
 
 @export var map_id := ""
 @export var objective_step := 1
-@export var objective_title := "Obiettivo"
+@export var objective_title := "Indizio"
 @export_multiline var objective_text := "Hai trovato un indizio."
 
 const TOTAL_STEPS := 3
@@ -28,16 +28,25 @@ func get_title() -> String:
 
 func interact() -> void:
     var progress := GameManager.exploration_progress(map_id)
+    var story := GameManager.narrative_step(map_id)
+
     if completed:
         var main := get_tree().current_scene
         if main and main.has_method("show_interaction"):
             main.show_interaction(objective_title, "Indizio già raccolto. Esplorazione: %d/%d." % [progress, TOTAL_STEPS])
         return
 
+    # The story must be discovered in sequence: NPC -> clue -> NPC -> clue.
+    if story < objective_step:
+        var main := get_tree().current_scene
+        if main and main.has_method("show_interaction"):
+            main.show_interaction(objective_title, "Questo indizio è ancora nascosto. Parla prima con gli abitanti della Contrada.")
+        return
+
     if objective_step != progress + 1:
         var main := get_tree().current_scene
         if main and main.has_method("show_interaction"):
-            main.show_interaction(objective_title, "Questo indizio si attiverà più avanti. Segui l'ordine della traccia.")
+            main.show_interaction(objective_title, "Questo indizio si attiverà più avanti. Segui la storia nell'ordine corretto.")
         return
 
     GameManager.complete_exploration_step(map_id, objective_step)
@@ -49,7 +58,7 @@ func interact() -> void:
     if objective_step == TOTAL_STEPS:
         message += "\n\n🏁 Hai completato l'esplorazione della Contrada!"
     else:
-        message += "\nCerca la traccia successiva."
+        message += "\nParla con il prossimo abitante per continuare."
     var main := get_tree().current_scene
     if main and main.has_method("show_interaction"):
         main.show_interaction(objective_title, message)
@@ -62,9 +71,9 @@ func _draw() -> void:
         draw_circle(Vector2.ZERO, 8.0, Color("#dff4a2"))
         draw_string(ThemeDB.fallback_font, Vector2(-5, 5), "✓", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#4a6b2a"))
         return
-    var active := GameManager.exploration_progress(map_id) == objective_step - 1
+    var active := GameManager.narrative_step(map_id) >= objective_step and GameManager.exploration_progress(map_id) == objective_step - 1
     var pulse := 1.0 + sin(phase * 3.0) * 0.10
-    var alpha := 0.22 if active else 0.08
+    var alpha := 0.22 if active else 0.06
     draw_circle(Vector2.ZERO, 18.0 * pulse, Color(accent, alpha))
-    draw_circle(Vector2.ZERO, 7.0, accent if active else Color(0.75, 0.75, 0.75, 0.55))
+    draw_circle(Vector2.ZERO, 7.0, accent if active else Color(0.75, 0.75, 0.75, 0.35))
     draw_string(ThemeDB.fallback_font, Vector2(-4, -12), str(objective_step), HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#fff0c0"))
