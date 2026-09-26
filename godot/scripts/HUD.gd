@@ -12,6 +12,7 @@ var toast_time := 0.0
 var intro_time := 0.0
 var mobile_interact: Button
 var mobile_fullscreen: Button
+var mobile_close: Button
 
 
 func _ready() -> void:
@@ -25,7 +26,13 @@ func _ready() -> void:
         objective_label.modulate.a = 0.78
 
 func _is_mobile() -> bool:
-    return OS.has_feature("web_android") or OS.has_feature("web_ios") or OS.has_feature("android") or OS.has_feature("ios")
+    if OS.has_feature("android") or OS.has_feature("ios"):
+        return true
+    if OS.has_feature("web"):
+        var ua = JavaScriptBridge.eval("navigator.userAgent || ''")
+        var text = str(ua).to_lower()
+        return text.contains("android") or text.contains("iphone") or text.contains("ipad") or text.contains("ipod") or text.contains("mobile")
+    return false
 
 func _setup_mobile_controls() -> void:
     mobile_interact = Button.new()
@@ -46,6 +53,16 @@ func _setup_mobile_controls() -> void:
     mobile_fullscreen.add_theme_font_size_override("font_size", 24)
     mobile_fullscreen.pressed.connect(_toggle_fullscreen)
     add_child(mobile_fullscreen)
+
+    mobile_close = Button.new()
+    mobile_close.name = "MobileCloseDialogue"
+    mobile_close.text = "✕"
+    mobile_close.visible = false
+    mobile_close.custom_minimum_size = Vector2(52,52)
+    mobile_close.add_theme_font_size_override("font_size", 20)
+    mobile_close.pressed.connect(close_dialogue)
+    add_child(mobile_close)
+
     _layout_mobile()
 
 func _process(delta: float) -> void:
@@ -64,6 +81,8 @@ func _layout_mobile() -> void:
         mobile_interact.position = Vector2(s.x - 145.0, s.y - 150.0)
     if mobile_fullscreen:
         mobile_fullscreen.position = Vector2(s.x - 70.0, 20.0)
+    if mobile_close:
+        mobile_close.position = Vector2(s.x - 82.0, max(22.0, s.y - 245.0))
 
 func set_mobile_interaction(visible: bool, label: String = "INTERAGISCI") -> void:
     if mobile_interact:
@@ -106,6 +125,8 @@ func show_dialogue(speaker: String, message: String) -> void:
     # I dialoghi narrativi hanno un box dedicato: niente più testo piccolo
     # che scompare mentre il giocatore sta leggendo.
     dialogue_panel.visible = true
+    if mobile_close:
+        mobile_close.visible = true
     dialogue_speaker.text = speaker
     dialogue_text.text = message
     dialogue_continue.text = "E  •  CONTINUA"
@@ -115,4 +136,6 @@ func show_dialogue(speaker: String, message: String) -> void:
 func close_dialogue() -> void:
     if dialogue_panel:
         dialogue_panel.visible = false
+    if mobile_close:
+        mobile_close.visible = false
 
