@@ -137,9 +137,9 @@ func _build_map_interaction() -> void:
     area.collision_layer = 2
     area.collision_mask = 0
     area.position = Vector2(640, 360)
-    area.set_script(load("res://scripts/world/Interactable.gd"))
-    area.title = str(current_data["name"])
-    area.text = str(current_data["description"]) + " Qui inizia la prova della Contrada."
+    area.set_script(load("res://scripts/world/Challenge.gd"))
+    area.contrada_id = current_map_id
+    area.display_name = "Prova " + str(current_data["name"])
     var shape_node := CollisionShape2D.new()
     var shape := CircleShape2D.new()
     shape.radius = 75.0
