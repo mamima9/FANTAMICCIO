@@ -51,7 +51,7 @@ export const BENIAMINI: Beniamino[] = [
     id: "pozzo",
     nome: "Pozzo",
     contradaId: "6",
-    image: "/account/pozzozz.png",
+    image: "/account/pozzo.png",
     tipo: "mappa",
   },
 
