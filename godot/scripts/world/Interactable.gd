@@ -10,11 +10,15 @@ func _ready() -> void:
     monitoring = true
     monitorable = true
 
+func get_title() -> String:
+    return title
+
 func interact() -> void:
-    if required_exploration_steps > 0 and GameManager.exploration_progress(GameManager.current_map) < required_exploration_steps:
+    var progress := GameManager.exploration_progress(GameManager.current_map)
+    if required_exploration_steps > 0 and progress < required_exploration_steps:
         var main := get_tree().current_scene
         if main and main.has_method("show_interaction"):
-            main.show_interaction(title, "🔎 Prima completa le 3 tracce di esplorazione della Contrada.")
+            main.show_interaction(title, "Prima completa le 3 tracce di esplorazione della Contrada (%d/3)." % progress)
         return
 
     if not secret_id.is_empty() and not GameManager.secret_discovered(secret_id):
@@ -23,7 +27,7 @@ func interact() -> void:
         WebBridge.progress("secret_discovered", GameManager.current_map)
         var main = get_tree().current_scene
         if main and main.has_method("show_interaction"):
-            main.show_interaction(title, "✨ Segreto scoperto!\n\n" + text)
+            main.show_interaction(title, "SEGRETO SCOPERTO!\n\n" + text)
         return
 
     var main = get_tree().current_scene
