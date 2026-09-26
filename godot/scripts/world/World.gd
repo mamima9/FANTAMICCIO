@@ -171,9 +171,9 @@ func _build_map_interaction() -> void:
     area.collision_layer = 2
     area.collision_mask = 0
     var positions := {
-        "cervia":Vector2(640,125),"leondoro":Vector2(870,360),"lucertola":Vector2(640,540),
-        "madonnina":Vector2(900,390),"ponte":Vector2(640,600),"pozzo":Vector2(650,360),
-        "quercia":Vector2(850,500),"ranocchio":Vector2(900,240)
+        "cervia":Vector2(640,125),"leondoro":Vector2(900,220),"lucertola":Vector2(850,380),
+        "madonnina":Vector2(900,390),"ponte":Vector2(640,376),"pozzo":Vector2(690,300),
+        "quercia":Vector2(835,300),"ranocchio":Vector2(1020,190)
     }
     area.position = positions.get(current_map_id, Vector2(640,360))
     area.set_script(load("res://scripts/world/Challenge.gd"))
@@ -330,7 +330,6 @@ func _draw() -> void:
     if current_data.is_empty():
         return
     _draw_terrain()
-    _draw_map_landmarks()
     _draw_navigation()
     draw_string(ThemeDB.fallback_font, Vector2(28, 38), str(current_data["name"]), HORIZONTAL_ALIGNMENT_LEFT, -1, 28, Color("#fff5d8"))
     draw_string(ThemeDB.fallback_font, Vector2(28, 64), "Esplora  •  parla  •  segui gli indizi", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("#fff0c4"))
