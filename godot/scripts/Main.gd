@@ -32,6 +32,7 @@ func _ready() -> void:
     contrada_id = _read_contrada()
     $RegionalWorld.set_contrada(contrada_id)
     $Citizens.set_contrada(contrada_id)
+    _configure_regional_quest()
     trial_game.won.connect(_on_trial_won)
     trial_game.failed.connect(_on_trial_failed)
 
@@ -57,6 +58,47 @@ func _ready() -> void:
         $QuestWorld.set_contrada(contrada_id)
     if $QuestWorld.has_method("refresh"):
         $QuestWorld.refresh()
+
+
+func _configure_regional_quest() -> void:
+    var themes = {
+        "cervia":["Custode di Beltrame","Contradaiolo della Cervia","Campanaro"],
+        "leondoro":["Custode del Marzocchino","Contradaiolo del Leone","Guardiano della Tana"],
+        "lucertola":["Custode della Ripa","Contradaiolo della Lucertola","Guida della Ripa"],
+        "madonnina":["Custode dei Pagliai","Contradaiola della Madonnina","Guardiano del Pagliaio"],
+        "ponte":["Custode del Ponte","Contradaiolo del Ponte","Maestro delle Tavole"],
+        "pozzo":["Custode del Pozzo","Contradaiolo del Pozzo","Investigatore del Miccio"],
+        "quercia":["Custode delle Querce","Vecchio della Bottega","Contradaiolo"],
+        "ranocchio":["Custode dello Stagno","Contradaiolo del Ranocchio","Guardiano del Loto"]
+    }
+    var d = themes.get(contrada_id,themes["quercia"])
+    var nodes = [$NPCs/CustodeDelleQuerce,$NPCs/VecchioDellaBottega,$NPCs/Contradaiolo]
+    var positions = [Vector2(650,430),Vector2(900,650),Vector2(1500,700)]
+    for i in nodes.size():
+        nodes[i].npc_name=d[i]
+        nodes[i].position=positions[i]
+        nodes[i].trial_id=contrada_id if i==2 else ""
+        nodes[i].dialogue=[
+            "La nostra Contrada custodisce una storia che non trovi sulla mappa.",
+            "Segui i segni, parla con gli abitanti e osserva ogni luogo.",
+            "Quando avrai raccolto i tre indizi, la prova della Contrada sarà pronta."
+        ]
+    $NPCs/CustodeDelleQuerce.dialogue=[
+        "Benvenuto nella nostra Contrada.",
+        "Qui il territorio è parte della storia: esploralo senza fretta.",
+        "Cerca il primo segno vicino ai luoghi che gli abitanti ti indicano."
+    ]
+    $NPCs/VecchioDellaBottega.dialogue=[
+        "Il primo indizio ti ha portato fin qui.",
+        "Ora cerca un luogo che racconti davvero la nostra Contrada.",
+        "Quando trovi il secondo segno, continua verso la gente della piazza."
+    ]
+    $NPCs/Contradaiolo.dialogue=[
+        "Hai seguito tutta la storia. Il territorio ti ha lasciato tre segni.",
+        "La prova di questa Contrada è pronta.",
+        "Quando vuoi, affrontala."
+    ]
+
 
 func _process(_delta: float) -> void:
     _update_mobile_context()
