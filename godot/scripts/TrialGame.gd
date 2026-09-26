@@ -212,11 +212,21 @@ func _handle_point_input(p: Vector2) -> void:
 
 func _movement() -> Vector2:
     var v := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+    var keyboard := Vector2(
+        float(Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT)) -
+        float(Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)),
+        float(Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN)) -
+        float(Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP))
+    )
+    if keyboard.length() > v.length():
+        v = keyboard.normalized()
+
     var joystick = get_tree().current_scene.get_node_or_null("MobileJoystick/JoystickSurface")
     if joystick and joystick.has_method("get_axis"):
-        var j := joystick.get_axis()
+        var j: Vector2 = joystick.get_axis()
         if j.length() > v.length():
             v = j
+
     if v.length() > 1.0:
         v = v.normalized()
     return v
