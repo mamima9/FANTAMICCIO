@@ -29,8 +29,8 @@ func set_prompt(text: String) -> void:
 func set_map_progress(map_id: String, found: int, total: int) -> void:
     if progress_label:
         var objectives := GameManager.exploration_progress(map_id)
-        var trial := "✓ Prova" if GameManager.trial_completed(map_id) else "○ Prova"
-        var beniamino := "✓ Beniamino" if GameManager.has_beniamino(map_id) else "○ Beniamino"
+        var trial := "PROVA: COMPLETA" if GameManager.trial_completed(map_id) else "PROVA: DA FARE"
+        var beniamino := "BENIAMINO: OTTENUTO" if GameManager.has_beniamino(map_id) else "BENIAMINO: DA TROVARE"
         progress_label.text = "ESPLORAZIONE %d/3   |   SEGRETI %d/%d   |   %s   |   %s" % [
             objectives,
             found,
