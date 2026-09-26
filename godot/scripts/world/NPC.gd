@@ -1,5 +1,6 @@
 extends Area2D
 
+@export var title := "Abitante"
 @export var npc_name := "Abitante"
 @export_multiline var dialogue := "Benvenuto a FantaMiccio!"
 
