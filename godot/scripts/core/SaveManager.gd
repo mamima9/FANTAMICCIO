@@ -7,7 +7,8 @@ func save_game() -> void:
         "map": GameManager.current_map,
         "beniami": GameManager.collected_beniamini,
         "trials": GameManager.completed_trials,
-        "secrets": GameManager.discovered_secrets
+        "secrets": GameManager.discovered_secrets,
+        "exploration": GameManager.exploration_objectives
     }
     var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
     if file:
@@ -26,3 +27,4 @@ func load_game() -> void:
     GameManager.collected_beniamini = parsed.get("beniami", {})
     GameManager.completed_trials = parsed.get("trials", {})
     GameManager.discovered_secrets = parsed.get("secrets", {})
+    GameManager.exploration_objectives = parsed.get("exploration", {})
