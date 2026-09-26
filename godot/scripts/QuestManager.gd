@@ -6,13 +6,22 @@ var step := 0
 var complete := false
 var discoveries := 0
 var active_npc := ""
+var contrada_id := "quercia"
 
-const OBJECTIVES := [
-    "Parla al Custode delle Querce.",
-    "Hai l'indizio del Custode. Trova il Vecchio della Bottega.",
-    "Hai il secondo indizio. Segui il bosco e trova il Contradaiolo.",
-    "Hai tutti gli indizi. Torna dal Contradaiolo per affrontare la prova."
-]
+const OBJECTIVES_BY_CONTRADA := {
+ "cervia":["Parla al Custode di Beltrame.","Trova il secondo indizio vicino alla Torre.","Segui i segni fino al Campanaro.","Hai tutti gli indizi. Affronta la Torre di Beltrame."],
+ "leondoro":["Parla al Custode del Marzocchino.","Segui le tracce verso la tana.","Trova il terzo indizio tra i cuccioli.","Hai tutti gli indizi. Affronta la Tana del Leone."],
+ "lucertola":["Parla al Custode della Ripa.","Trova il secondo segno sulle pietre.","Segui le tracce fino al bivio.","Hai tutti gli indizi. Affronta la Via della Ripa."],
+ "madonnina":["Parla alla Custode dei Pagliai.","Cerca il secondo simbolo tra i covoni.","Memorizza l'ultimo segno.","Hai tutti gli indizi. Affronta il Pagliaio Perduto."],
+ "ponte":["Parla al Custode del Ponte.","Trova la tavola con il primo segno.","Segui il ritmo dell'acqua.","Hai tutti gli indizi. Affronta il Ponte di Tavole."],
+ "pozzo":["Parla al Custode del Pozzo.","Cerca la pietra bagnata.","Ricostruisci il mistero del Miccio.","Hai tutti gli indizi. Affronta il Mistero del Miccio."],
+ "quercia":["Parla al Custode delle Querce.","Trova il secondo segno nel bosco.","Segui le tre tracce dorate.","Hai tutti gli indizi. Affronta la Corsa tra le Querce."],
+ "ranocchio":["Parla al Custode dello Stagno.","Segui le impronte delle rane.","Trova il segno del Loto.","Hai tutti gli indizi. Affronta il Loto d'Oro."]
+}
+
+func set_contrada(id:String) -> void:
+    contrada_id = id.to_lower()
+    changed.emit(step)
 
 func _ready() -> void:
     step = 0
@@ -55,7 +64,7 @@ func mark_complete() -> void:
 func get_objective() -> String:
     if complete:
         return "Beniamino trovato. La Quercia è stata completata."
-    return OBJECTIVES[step]
+    var objectives:Array = OBJECTIVES_BY_CONTRADA.get(contrada_id, OBJECTIVES_BY_CONTRADA["quercia"])\n    return objectives[step]
 
 func get_progress_text() -> String:
     return "%d / 3 indizi" % discoveries
