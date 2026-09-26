@@ -7,6 +7,7 @@ var collected := false
 func _ready() -> void:
     visible = false
     monitoring = true
+    body_entered.connect(_on_body_entered)
     queue_redraw()
 
 func reveal() -> void:
@@ -14,6 +15,17 @@ func reveal() -> void:
     visible = true
     pulse = 0.0
     queue_redraw()
+
+func _on_body_entered(body: Node) -> void:
+    if body.name != "Player" or collected:
+        return
+    collected = true
+    visible = false
+    var hud = get_tree().current_scene.get_node_or_null("HUD")
+    if hud and hud.has_method("set_progress"):
+        hud.set_progress("BENIAMINI", "1 / 8")
+    if hud and hud.has_method("show_toast"):
+        hud.show_toast("BENIAMINO DELLA QUERCIA OTTENUTO!  +1")
 
 func _process(delta: float) -> void:
     if not visible:
