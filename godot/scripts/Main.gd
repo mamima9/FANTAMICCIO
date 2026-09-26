@@ -26,13 +26,13 @@ func _ready() -> void:
 
     $Player/Camera2D.enabled = true
     $Player/Camera2D.position_smoothing_enabled = false
-    $Player/Camera2D.global_position = player.global_position
+    $Player/Camera2D.position = Vector2.ZERO
     $Player/Camera2D.zoom = Vector2(1.0, 1.0)
 
     if $HUD.has_method("set_location"):
-        $HUD.set_location("BOSCO DELLA QUERCIA", "Trova gli indizi degli abitanti")
+        $HUD.set_location("BOSCO DELLA QUERCIA", quest.get_objective())
     if $HUD.has_method("set_progress"):
-        $HUD.set_progress("BENIAMINI", "0 / 8")
+        $HUD.set_progress("INDIZI  •  BENIAMINI", "0 / 3  •  0 / 8")
     refresh_objective()
     if $QuestWorld.has_method("refresh"):
         $QuestWorld.refresh()
@@ -40,13 +40,14 @@ func _ready() -> void:
 func refresh_objective() -> void:
     if $HUD.has_method("set_location"):
         $HUD.set_location("BOSCO DELLA QUERCIA", quest.get_objective())
-
-func _process(_delta: float) -> void:
-    if not trial_game.active:
-        $Player/Camera2D.position = player.position
+    if $HUD.has_method("set_progress"):
+        $HUD.set_progress("INDIZI  •  BENIAMINI", "%d / 3  •  0 / 8" % quest.discoveries)
 
 func start_trial(id: String) -> void:
     if Challenges.get_challenge(id).is_empty():
+        return
+    if quest and quest.has_method("can_start_trial") and not quest.can_start_trial(id):
+        $HUD.show_toast("Prima completa tutti e 3 gli indizi del bosco.")
         return
     if $HUD.has_method("show_trial_intro"):
         $HUD.show_trial_intro(Challenges.get_challenge(id).get("title", "PROVA"), Challenges.get_challenge(id).get("goal", ""))
@@ -55,13 +56,11 @@ func start_trial(id: String) -> void:
     player.set_physics_process(false)
     $Player/Camera2D.enabled = false
 
-func start_quercia_trial() -> void:
-    start_trial("quercia")
-
 func _on_trial_won(id: String) -> void:
     player.visible = true
     player.set_physics_process(true)
     $Player/Camera2D.enabled = true
+    $Player/Camera2D.position = Vector2.ZERO
     beniamino.beniamino_id = id
     beniamino.position = Vector2(1740, 520)
     beniamino.reveal()
@@ -72,4 +71,5 @@ func _on_trial_failed(_id: String) -> void:
     player.visible = true
     player.set_physics_process(true)
     $Player/Camera2D.enabled = true
+    $Player/Camera2D.position = Vector2.ZERO
     $HUD.show_toast("La prova ti aspetta ancora. Riprova quando vuoi.")
