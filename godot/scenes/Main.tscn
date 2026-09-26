@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://scripts/WorldInteractable.gd" id="14"]
 [ext_resource type="Script" path="res://scripts/QuestWorld.gd" id="15"]
 [ext_resource type="Script" path="res://scripts/WorldDecoration.gd" id="16"]
+[ext_resource type="Script" path="res://scripts/ExplorationSecrets.gd" id="17"]
 
 [sub_resource type="RectangleShape2D" id="PlayerShape"]
 size = Vector2(34, 28)
@@ -184,6 +185,10 @@ drag_vertical_enabled = false
 z_index = 25
 script = ExtResource("15")
 
+[node name="ExplorationSecrets" type="Node2D" parent="."]
+z_index = 28
+script = ExtResource("17")
+
 [node name="QuestManager" type="Node" parent="."]
 script = ExtResource("12")
 
@@ -246,6 +251,52 @@ dialogue = ["La prova della Quercia è una corsa, ma il bosco ti farà perdere l
 shape = SubResource("NPCShape")
 
 [node name="Prompt" type="Label" parent="NPCs/Contradaiolo"]
+offset_left = -75.0
+offset_top = -55.0
+offset_right = 75.0
+offset_bottom = -30.0
+text = "E  •  PARLA"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1,0.92,0.68,1)
+theme_override_font_sizes/font_size = 12
+
+[node name="NarratoreDelBosco" type="Area2D" parent="NPCs"]
+position = Vector2(1120, 930)
+script = ExtResource("6")
+npc_name = "Narratore del Bosco"
+role = "vecchio"
+trial_id = ""
+quest_step = -1
+ambient_only = true
+dialogue = ["Se sei arrivato fin qui, hai già capito una cosa: la Quercia non finisce nella piazza.", "Guarda sempre cosa c'è dietro il sentiero principale."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NPCs/NarratoreDelBosco"]
+shape = SubResource("NPCShape")
+
+[node name="Prompt" type="Label" parent="NPCs/NarratoreDelBosco"]
+offset_left = -75.0
+offset_top = -55.0
+offset_right = 75.0
+offset_bottom = -30.0
+text = "E  •  PARLA"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1,0.92,0.68,1)
+theme_override_font_sizes/font_size = 12
+
+[node name="RagazzoDelleQuerce" type="Area2D" parent="NPCs"]
+position = Vector2(1850, 600)
+script = ExtResource("6")
+npc_name = "Ragazzo delle Querce"
+role = "contradaiolo"
+trial_id = ""
+quest_step = -1
+ambient_only = true
+dialogue = ["Da questa parte il bosco è più fitto.", "Ho visto un segno dorato vicino alle vecchie querce."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NPCs/RagazzoDelleQuerce"]
+shape = SubResource("NPCShape")
+
+[node name="Prompt" type="Label" parent="NPCs/RagazzoDelleQuerce"]
 offset_left = -75.0
 offset_top = -55.0
 offset_right = 75.0
