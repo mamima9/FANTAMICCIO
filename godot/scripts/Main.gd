@@ -34,6 +34,8 @@ func _ready() -> void:
     if $HUD.has_method("set_progress"):
         $HUD.set_progress("BENIAMINI", "0 / 8")
     refresh_objective()
+    if $QuestWorld.has_method("refresh"):
+        $QuestWorld.refresh()
 
 func refresh_objective() -> void:
     if $HUD.has_method("set_location"):
