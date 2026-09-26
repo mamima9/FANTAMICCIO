@@ -228,7 +228,10 @@ func _handle_point_input(p: Vector2) -> void:
         _route_click(p)
 
 func _movement() -> Vector2:
-    var v := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+    # Use the same input abstraction as the overworld. This keeps WASD,
+    # arrows and the mobile virtual joystick working inside every trial.
+    var v: Vector2 = InputManager.get_move_vector()
+
     var keyboard := Vector2(
         float(Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT)) -
         float(Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)),
@@ -237,12 +240,6 @@ func _movement() -> Vector2:
     )
     if keyboard.length() > v.length():
         v = keyboard.normalized()
-
-    var joystick = get_tree().current_scene.get_node_or_null("MobileJoystick/JoystickSurface")
-    if joystick and joystick.has_method("get_axis"):
-        var j: Vector2 = joystick.get_axis()
-        if j.length() > v.length():
-            v = j
 
     if v.length() > 1.0:
         v = v.normalized()
