@@ -36,7 +36,6 @@ func load_map(map_id: String, entry_direction: String = "") -> void:
     _build_background()
     _build_boundaries()
     _build_exits()
-    _build_landmarks()
     _build_map_interaction()
     _build_npc()
     _build_beniamino()
@@ -169,34 +168,6 @@ func _on_exit_body_entered(body: Node2D, area: Area2D) -> void:
         return
     var entry := {"up": "down", "down": "up", "left": "right", "right": "left"}.get(direction, "")
     load_map(target, entry)
-
-func _build_landmarks() -> void:
-    var accent: Color = current_data["accent"]
-    var base: Color = current_data["color"]
-
-    for position in [
-        Vector2(150, 150), Vector2(350, 125), Vector2(930, 135),
-        Vector2(1110, 235), Vector2(200, 560), Vector2(1040, 560)
-    ]:
-        _draw_landmark(position, base.darkened(0.18), accent)
-
-    _draw_centerpiece(Vector2(640, 360), accent)
-
-func _draw_landmark(position: Vector2, base: Color, accent: Color) -> void:
-    var node := Node2D.new()
-    node.position = position
-    node.set_script(load("res://scripts/world/Landmark.gd"))
-    node.set_meta("base", base)
-    node.set_meta("accent", accent)
-    map_nodes.add_child(node)
-
-func _draw_centerpiece(position: Vector2, accent: Color) -> void:
-    var node := Node2D.new()
-    node.position = position
-    node.set_script(load("res://scripts/world/Centerpiece.gd"))
-    node.set_meta("accent", accent)
-    node.set_meta("map_id", current_map_id)
-    map_nodes.add_child(node)
 
 func _build_npc() -> void:
     var npc := Area2D.new()
