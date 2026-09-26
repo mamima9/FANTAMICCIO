@@ -24,7 +24,8 @@ func progress(event_name: String, contrada_id: String) -> void:
         "event": event_name,
         "contrada": contrada_id,
         "beniami": GameManager.collected_beniamini,
-        "trials": GameManager.completed_trials
+        "trials": GameManager.completed_trials,
+        "exploration": GameManager.exploration_objectives
     })
 
 func _post_message(payload: Dictionary) -> void:
