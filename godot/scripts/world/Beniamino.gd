@@ -19,6 +19,7 @@ func interact() -> void:
 
     if not GameManager.has_beniamino(contrada_id):
         GameManager.unlock_beniamino(contrada_id)
+        SaveManager.save_game()
         WebBridge.progress("beniamino_unlocked", contrada_id)
     var main = get_tree().current_scene
     if main and main.has_method("show_interaction"):
