@@ -50,15 +50,6 @@ func _spawn_population() -> void:
         sh.radius=34.0
         cs.shape=sh
         n.add_child(cs)
-        var p=Label.new()
-        p.name="Prompt"
-        p.text="E  •  PARLA"
-        p.position=Vector2(-55,-55)
-        p.size=Vector2(110,24)
-        p.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
-        p.add_theme_color_override("font_color",Color("#fff0b0"))
-        p.add_theme_font_size_override("font_size",11)
-        n.add_child(p)
         n.position=positions[i]
         n.home=positions[i]
         n.target=positions[i]
@@ -88,7 +79,6 @@ func _ready() -> void:
     wait = rng.randf_range(1.0, 3.0)
     body_entered.connect(_on_body_entered)
     body_exited.connect(_on_body_exited)
-    $Prompt.visible = false
     queue_redraw()
 
 func _process(delta: float) -> void:
@@ -107,12 +97,10 @@ func _process(delta: float) -> void:
 func _on_body_entered(body: Node) -> void:
     if body.name == "Player":
         player_near = true
-        $Prompt.visible = true
 
 func _on_body_exited(body: Node) -> void:
     if body.name == "Player":
         player_near = false
-        $Prompt.visible = false
 
 func interact() -> void:
     var hud = get_tree().current_scene.get_node_or_null("HUD")
