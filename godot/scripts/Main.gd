@@ -24,8 +24,10 @@ func _ready() -> void:
     title.text = "LA QUERCIA  •  QUERCETA"
     prompt.text = "Esplora il bosco  •  avvicinati agli abitanti  •  E per parlare"
 
-    $Camera2D.position = player.position
-    $Camera2D.zoom = Vector2(0.86, 0.86)
+    $Camera2D.enabled = true
+    $Camera2D.position_smoothing_enabled = false
+    $Camera2D.global_position = player.global_position
+    $Camera2D.zoom = Vector2(1.0, 1.0)
 
     if $HUD.has_method("set_location"):
         $HUD.set_location("BOSCO DELLA QUERCIA", "Trova gli indizi degli abitanti")
