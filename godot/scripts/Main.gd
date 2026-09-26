@@ -46,6 +46,8 @@ func _process(_delta: float) -> void:
 func start_trial(id: String) -> void:
     if Challenges.get_challenge(id).is_empty():
         return
+    if $HUD.has_method("show_trial_intro"):
+        $HUD.show_trial_intro(Challenges.get_challenge(id).get("title", "PROVA"), Challenges.get_challenge(id).get("goal", ""))
     trial_game.start(id)
     player.visible = false
     player.set_physics_process(false)
