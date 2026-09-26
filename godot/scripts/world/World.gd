@@ -33,6 +33,7 @@ func load_map(map_id: String, entry_direction: String = "") -> void:
     _build_exits()
     _build_landmarks()
     _build_map_interaction()
+    _build_npc()
     _build_beniamino()
 
     player.global_position = _spawn_for_entry(entry_direction)
@@ -152,6 +153,21 @@ func _draw_centerpiece(position: Vector2, accent: Color) -> void:
     node.set_meta("accent", accent)
     node.set_meta("map_id", current_map_id)
     map_nodes.add_child(node)
+
+func _build_npc() -> void:
+    var npc := Area2D.new()
+    npc.collision_layer = 2
+    npc.collision_mask = 0
+    npc.position = Vector2(420, 360)
+    npc.set_script(load("res://scripts/world/NPC.gd"))
+    npc.npc_name = "Custode della Contrada"
+    npc.dialogue = "Ogni territorio custodisce una prova. Esplora, parla con gli abitanti e torna qui quando sei pronto."
+    var shape_node := CollisionShape2D.new()
+    var shape := CircleShape2D.new()
+    shape.radius = 55.0
+    shape_node.shape = shape
+    npc.add_child(shape_node)
+    map_nodes.add_child(npc)
 
 func _build_map_interaction() -> void:
     var area := Area2D.new()
