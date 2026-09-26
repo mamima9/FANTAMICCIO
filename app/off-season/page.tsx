@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 
 const GODOT_URL = "https://mamima9.github.io/FANTAMICCIO/";
 
@@ -12,6 +12,7 @@ export default function OffSeasonPage() {
   useEffect(() => {
     let mounted = true;
     const loadProfile = async () => {
+      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !mounted) return;
       const { data } = await supabase.from("profiles").select("contrada_id").eq("id", user.id).maybeSingle();
