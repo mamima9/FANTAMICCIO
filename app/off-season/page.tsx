@@ -74,6 +74,26 @@ export default function OffSeasonPage() {
         .from("profiles")
         .update({ statistiche_utenti: next })
         .eq("id", user.id);
+
+      // Godot is the source of truth for map/trial progress. Mirror every
+      // unlocked map Beniamino into the relational collection used by /tregua.
+      if (event.data.beniami && typeof event.data.beniami === "object") {
+        const rows = Object.entries(event.data.beniami)
+          .filter(([beniaminoId, owned]) => Boolean(owned) && beniaminoId !== "barone")
+          .map(([beniaminoId]) => ({
+            user_id: user.id,
+            beniamino_id: beniaminoId,
+          }));
+
+        if (rows.length > 0) {
+          await supabase
+            .from("user_beniamini")
+            .upsert(rows, {
+              onConflict: "user_id,beniamino_id",
+              ignoreDuplicates: true,
+            });
+        }
+      }
     };
 
     const onMessage = (event: MessageEvent) => {
