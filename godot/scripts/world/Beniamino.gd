@@ -59,7 +59,7 @@ func interact() -> void:
     var main = get_tree().current_scene
     if main and main.has_method("show_interaction"):
         if total >= 8:
-            main.show_interaction(display_name, "🏆 OTTAVI COMPLETATI! Hai raccolto tutti gli 8 Beniamini delle Contrade. Ora vai alla Tregua per cercare il Barone.")
+            main.show_interaction(display_name, "TUTTI GLI 8 BENIAMINI RACCOLTI! Ora puoi andare alla Tregua per cercare il Barone.")
         else:
             main.show_interaction(display_name, "Hai trovato il Beniamino!\n\nCOLLEZIONE: %d/8" % total)
 
