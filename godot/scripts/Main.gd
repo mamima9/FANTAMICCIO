@@ -14,6 +14,7 @@ func _ready() -> void:
     trial_game.won.connect(_on_trial_won)
     trial_game.failed.connect(_on_trial_failed)
     map.position = WORLD_SIZE * 0.5
+    map.scale = WORLD_SIZE / map.texture.get_size()
     player.position = PLAYER_START
     title.text = "LA QUERCIA  •  QUERCETA"
     prompt.text = "JOYSTICK / WASD / FRECCE  •  E per interagire"
