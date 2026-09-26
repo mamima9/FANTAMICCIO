@@ -36,7 +36,6 @@ func load_map(map_id: String, entry_direction: String = "") -> void:
     _build_exits()
     _build_map_collision()
     _build_map_interaction()
-    _build_npc()
     _build_beniamino()
     _build_map_hotspots()
     _build_map_objectives()
@@ -167,33 +166,6 @@ func _on_exit_body_entered(body: Node2D, area: Area2D) -> void:
         return
     var entry := {"up":"down","down":"up","left":"right","right":"left"}.get(direction, "")
     load_map(target, entry)
-
-func _build_npc() -> void:
-    var npc := Area2D.new()
-    npc.collision_layer = 2
-    npc.collision_mask = 0
-    npc.position = Vector2(430, 360)
-    npc.set_script(load("res://scripts/world/NPC.gd"))
-    var dialogue := {
-        "quercia":["Custode della Quercia","Il bosco nasconde una storia. Cerca i tre segni dorati e osserva come si collegano."],
-        "cervia":["Esploratore di Beltrame","Le tracce portano verso la torre. Non seguire sempre il sentiero più evidente."],
-        "leondoro":["Maestro del Marzocchino","La Tana del Leone è vicina all'arena. Gli indizi raccontano come arrivarci."],
-        "lucertola":["Sentinella della Ripa","Le pietre della Ripa indicano una strada. Una delle due al bivio mente."],
-        "madonnina":["Custode dei Pagliai","Nel pagliaio perduto conta ciò che vedi. La memoria sarà la tua guida."],
-        "ponte":["Passatore del Ponte","Il ponte cambia ritmo. Prima osserva, poi scegli dove mettere i piedi."],
-        "pozzo":["Custode del Pozzo","Il mistero non si risolve correndo. Metti insieme le tracce nell'ordine giusto."],
-        "ranocchio":["Custode dello Stagno","Le rane lasciano una pista tra acqua e fango. Seguila fino al Loto d'Oro."]
-    }
-    var info: Array = dialogue.get(current_map_id, ["Custode della Contrada","Esplora con calma e parla con gli abitanti."])
-    npc.npc_name = str(info[0])
-    npc.title = npc.npc_name
-    npc.dialogue = str(info[1])
-    var shape_node := CollisionShape2D.new()
-    var shape := CircleShape2D.new()
-    shape.radius = 55.0
-    shape_node.shape = shape
-    npc.add_child(shape_node)
-    map_nodes.add_child(npc)
 
 func _build_map_interaction() -> void:
     var area := Area2D.new()
@@ -512,12 +484,8 @@ func _draw_map_landmarks() -> void:
     draw_arc(p,18,0,TAU,24,Color(accent,0.65),2)
 
 func _draw_navigation() -> void:
-    var neighbors: Dictionary = current_data["neighbors"]
-    var labels := {"up":Vector2(560,28),"down":Vector2(560,700),"left":Vector2(18,350),"right":Vector2(1080,350)}
-    for direction in neighbors:
-        var target: String = neighbors[direction]
-        var data: Dictionary = MapData.get_map(target)
-        draw_string(ThemeDB.fallback_font, labels[direction], str(data["name"]), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#fff0c4"))
+    # The world remains visually clean; transitions are discovered by exploration.
+    return
 
 func get_secret_count() -> int:
     return 8
