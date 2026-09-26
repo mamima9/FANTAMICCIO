@@ -3,40 +3,26 @@ extends Area2D
 @export var contrada_id := ""
 @export var display_name := "Beniamino"
 
-const ASSET_BASE_URL := "https://raw.githubusercontent.com/mamima9/FANTAMICCIO/main/public/contrade/"
-var icon_request: HTTPRequest
-
 func _ready() -> void:
     add_to_group("interactable")
     collision_layer = 2
     collision_mask = 0
-    monitoring = true
-    _load_real_contrada_icon()
+    _load_local_icon()
     queue_redraw()
 
-func _load_real_contrada_icon() -> void:
-    icon_request = HTTPRequest.new()
-    icon_request.timeout = 10.0
-    add_child(icon_request)
-    icon_request.request_completed.connect(_on_icon_loaded)
-    icon_request.request(ASSET_BASE_URL + contrada_id + ".png")
-
-func _on_icon_loaded(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
-    if result != HTTPRequest.RESULT_SUCCESS or response_code < 200 or response_code >= 300:
+func _load_local_icon() -> void:
+    var path := "res://assets/beniamini/" + contrada_id + ".png"
+    if not ResourceLoader.exists(path):
         return
-    var image := Image.new()
-    if image.load_png_from_buffer(body) != OK:
+    var texture := load(path) as Texture2D
+    if texture == null:
         return
-    var texture := ImageTexture.create_from_image(image)
     var sprite := Sprite2D.new()
     sprite.texture = texture
     sprite.position = Vector2(0, -36)
     sprite.scale = Vector2(0.20, 0.20)
     sprite.z_index = 2
     add_child(sprite)
-    icon_request.queue_free()
-    icon_request = null
-    queue_redraw()
 
 func interact() -> void:
     if not GameManager.trial_completed(contrada_id):
