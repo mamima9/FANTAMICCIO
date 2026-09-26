@@ -39,17 +39,45 @@ func _draw():
     _draw_nature(d)
 
 func _draw_paths(d):
-    var paths=[
-      [Vector2(80,1060),Vector2(360,930),Vector2(700,900),Vector2(1050,760),Vector2(1370,680),Vector2(1700,560),Vector2(2210,420)],
-      [Vector2(420,1150),Vector2(650,980),Vector2(850,760),Vector2(850,520),Vector2(720,300)],
-      [Vector2(1050,760),Vector2(1200,900),Vector2(1500,980),Vector2(1900,920)],
-      [Vector2(850,520),Vector2(1100,400),Vector2(1450,420),Vector2(1750,300)]
-    ]
+    var paths = []
+    match contrada_id:
+        "cervia":
+            paths = [[Vector2(80,1080),Vector2(420,900),Vector2(820,780),Vector2(1180,620),Vector2(1510,330),Vector2(2200,260)],
+                     [Vector2(420,900),Vector2(380,480),Vector2(650,260),Vector2(1100,250)],
+                     [Vector2(1180,620),Vector2(1320,900),Vector2(1750,980),Vector2(2150,850)]]
+        "leondoro":
+            paths = [[Vector2(80,900),Vector2(480,820),Vector2(820,650),Vector2(1150,620),Vector2(1510,430),Vector2(2200,520)],
+                     [Vector2(480,820),Vector2(520,350),Vector2(900,230),Vector2(1350,250)],
+                     [Vector2(1150,620),Vector2(1250,900),Vector2(1700,980),Vector2(2150,850)]]
+        "lucertola":
+            paths = [[Vector2(80,500),Vector2(420,560),Vector2(780,700),Vector2(1120,650),Vector2(1450,700),Vector2(1900,600),Vector2(2200,380)],
+                     [Vector2(420,560),Vector2(520,260),Vector2(980,220),Vector2(1300,350)],
+                     [Vector2(780,700),Vector2(700,1050),Vector2(1200,1100),Vector2(1700,950)]]
+        "madonnina":
+            paths = [[Vector2(80,1040),Vector2(380,850),Vector2(700,720),Vector2(1000,520),Vector2(1450,410),Vector2(1800,500),Vector2(2200,300)],
+                     [Vector2(380,850),Vector2(350,380),Vector2(750,220),Vector2(1250,260)],
+                     [Vector2(1000,520),Vector2(1050,900),Vector2(1450,1050),Vector2(2050,900)]]
+        "ponte":
+            paths = [[Vector2(70,850),Vector2(420,850),Vector2(800,760),Vector2(1150,650),Vector2(1500,560),Vector2(1850,650),Vector2(2220,620)],
+                     [Vector2(420,850),Vector2(430,350),Vector2(900,250),Vector2(1400,300)],
+                     [Vector2(800,760),Vector2(900,1050),Vector2(1400,1080),Vector2(1900,900)]]
+        "pozzo":
+            paths = [[Vector2(70,1060),Vector2(380,900),Vector2(700,820),Vector2(1050,650),Vector2(1510,420),Vector2(1850,520),Vector2(2220,380)],
+                     [Vector2(380,900),Vector2(360,430),Vector2(800,260),Vector2(1150,300)],
+                     [Vector2(1050,650),Vector2(1120,950),Vector2(1600,1020),Vector2(2050,850)]]
+        "quercia":
+            paths = [[Vector2(80,1060),Vector2(360,930),Vector2(700,900),Vector2(1050,760),Vector2(1370,680),Vector2(1700,560),Vector2(2210,420)],
+                     [Vector2(420,1150),Vector2(650,980),Vector2(850,760),Vector2(850,520),Vector2(720,300)],
+                     [Vector2(1050,760),Vector2(1200,900),Vector2(1500,980),Vector2(1900,920)]]
+        "ranocchio":
+            paths = [[Vector2(70,1050),Vector2(350,920),Vector2(650,820),Vector2(900,700),Vector2(1200,620),Vector2(1510,430),Vector2(1900,520),Vector2(2220,360)],
+                     [Vector2(350,920),Vector2(300,450),Vector2(720,260),Vector2(1150,300)],
+                     [Vector2(900,700),Vector2(900,1050),Vector2(1400,1080),Vector2(1950,900)]]
     for p in paths:
         var pp:=PackedVector2Array(p)
-        draw_polyline(pp,Color(0.18,0.12,0.07,0.22),86,true)
-        draw_polyline(pp,d.road,68,true)
-        draw_polyline(pp,Color(d.primary,0.22),6,true)
+        draw_polyline(pp,Color(0.18,0.12,0.07,0.22),92,true)
+        draw_polyline(pp,d.road,70,true)
+        draw_polyline(pp,Color(d.primary,0.24),6,true)
 
 func _draw_buildings(d):
     _building(Vector2(260,180),Vector2(320,180),d.primary,d.secondary,"BORGO")
