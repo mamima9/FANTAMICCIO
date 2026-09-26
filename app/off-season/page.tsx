@@ -11,22 +11,87 @@ export default function OffSeasonPage() {
 
   useEffect(() => {
     let mounted = true;
+    const supabase = createClient();
+
     const loadProfile = async () => {
-      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !mounted) return;
-      const { data } = await supabase.from("profiles").select("contrada_id").eq("id", user.id).maybeSingle();
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("contrada_id")
+        .eq("id", user.id)
+        .maybeSingle();
+
       const contrada = data?.contrada_id ? String(data.contrada_id).toLowerCase() : "";
-      if (mounted && contrada) setGameUrl(GODOT_URL + "?contrada=" + encodeURIComponent(contrada));
+
+      if (mounted && contrada) {
+        setGameUrl(GODOT_URL + "?contrada=" + encodeURIComponent(contrada));
+      }
     };
-    loadProfile();
+
+    const persistGameProgress = async (event: MessageEvent) => {
+      if (event.origin !== "https://mamima9.github.io") return;
+      if (event.data?.type !== "fantamiccio-godot-progress") return;
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("statistiche_utenti")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      const current =
+        profile?.statistiche_utenti &&
+        typeof profile.statistiche_utenti === "object"
+          ? profile.statistiche_utenti
+          : {};
+
+      const existing =
+        current.fantamiccio_offseason &&
+        typeof current.fantamiccio_offseason === "object"
+          ? current.fantamiccio_offseason
+          : {};
+
+      const next = {
+        ...current,
+        fantamiccio_offseason: {
+          ...existing,
+          last_event: event.data.event ?? null,
+          current_map: event.data.event === "map_changed"
+            ? event.data.contrada
+            : existing.current_map ?? null,
+          completed_trials: event.data.trials ?? existing.completed_trials ?? {},
+          beniamini: event.data.beniami ?? existing.beniamini ?? {},
+          updated_at: new Date().toISOString(),
+        },
+      };
+
+      await supabase
+        .from("profiles")
+        .update({ statistiche_utenti: next })
+        .eq("id", user.id);
+    };
 
     const onMessage = (event: MessageEvent) => {
       if (event.origin !== "https://mamima9.github.io") return;
-      if (event.data?.type === "fantamiccio-godot-ready") setLoaded(true);
+
+      if (event.data?.type === "fantamiccio-godot-ready") {
+        setLoaded(true);
+      }
+
+      void persistGameProgress(event);
     };
+
+    loadProfile();
     window.addEventListener("message", onMessage);
-    return () => { mounted = false; window.removeEventListener("message", onMessage); };
+
+    return () => {
+      mounted = false;
+      window.removeEventListener("message", onMessage);
+    };
   }, []);
 
   return (
