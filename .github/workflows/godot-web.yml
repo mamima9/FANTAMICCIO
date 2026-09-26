@@ -27,6 +27,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Prepare map assets
+        run: |
+          mkdir -p godot/assets/maps
+          cp public/contrade/*-bg.png godot/assets/maps/
+
       - name: Prepare Godot
         run: |
           mkdir -p ~/.config ~/.local/share/godot/export_templates
