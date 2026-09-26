@@ -4,6 +4,7 @@ extends Area2D
 @export_multiline var dialogue: Array[String] = []
 @export var trial_id := ""
 @export var quest_step := -1
+
 var player_near := false
 var dialogue_index := 0
 var ready_for_trial := false
@@ -40,17 +41,24 @@ func _accent_for_name() -> Color:
         return Color("#5d8d55")
     return Color("#c98f4b")
 
+func _locked_message(quest) -> String:
+    if quest_step == 1 and quest.discoveries < 1:
+        return "Il Vecchio aspetta che tu trovi il primo indizio nel bosco."
+    if quest_step == 2 and quest.discoveries < 2:
+        return "Il Contradaiolo non parla ancora. Prima segui il secondo indizio."
+    return quest.get_objective()
+
 func _on_body_entered(body: Node) -> void:
-    if body.name == "Player":
-        var quest = get_tree().current_scene.get_node_or_null("QuestManager")
-        if quest and quest_step >= 0 and not quest.can_talk(quest_step):
-            $Prompt.text = "INDIZIO NON ANCORA DISPONIBILE"
-            $Prompt.visible = true
-            player_near = true
-            return
-        player_near = true
+    if body.name != "Player":
+        return
+    var quest = get_tree().current_scene.get_node_or_null("QuestManager")
+    player_near = true
+    if quest and quest_step >= 0 and not quest.can_talk(quest_step):
+        $Prompt.text = "INDIZIO NON ANCORA DISPONIBILE"
         $Prompt.visible = true
-        $Prompt.text = "E  •  PARLA"
+        return
+    $Prompt.visible = true
+    $Prompt.text = "E  •  PARLA"
 
 func _on_body_exited(body: Node) -> void:
     if body.name == "Player":
@@ -59,13 +67,18 @@ func _on_body_exited(body: Node) -> void:
 
 func interact() -> void:
     var quest = get_tree().current_scene.get_node_or_null("QuestManager")
+    var hud = get_tree().current_scene.get_node_or_null("HUD")
+
     if quest and quest_step >= 0 and not quest.can_talk(quest_step):
-        var hud_locked = get_tree().current_scene.get_node_or_null("HUD")
-        if hud_locked and hud_locked.has_method("show_toast"):
-            hud_locked.show_toast(quest.get_objective())
+        if hud and hud.has_method("show_toast"):
+            hud.show_toast(_locked_message(quest))
         return
 
     if ready_for_trial and trial_id != "":
+        if quest and not quest.can_start_trial(trial_id):
+            if hud and hud.has_method("show_toast"):
+                hud.show_toast("Mancano ancora degli indizi. Esplora il bosco.")
+            return
         var main = get_tree().current_scene
         if main.has_method("start_trial"):
             main.start_trial(trial_id)
@@ -74,18 +87,26 @@ func interact() -> void:
     if dialogue.is_empty():
         return
 
-    var hud = get_tree().current_scene.get_node("HUD")
-    if hud.has_method("show_dialogue"):
+    if dialogue_index >= dialogue.size():
+        dialogue_index = dialogue.size() - 1
+
+    if hud and hud.has_method("show_dialogue"):
         hud.show_dialogue(npc_name, dialogue[dialogue_index])
 
     if dialogue_index < dialogue.size() - 1:
         dialogue_index += 1
+        $Prompt.text = "E  •  CONTINUA"
     else:
-        ready_for_trial = trial_id != ""
         if quest and quest_step >= 0:
             quest.advance()
+        ready_for_trial = trial_id != ""
         if ready_for_trial:
-            $Prompt.text = "E  •  INIZIA PROVA"
+            if quest and quest.can_start_trial(trial_id):
+                $Prompt.text = "E  •  INIZIA PROVA"
+            else:
+                $Prompt.text = "TROVA GLI ULTIMI INDIZI"
+        else:
+            $Prompt.text = "INDIZIO RICEVUTO"
 
 func _draw() -> void:
     var bob := sin(pulse * 2.2) * 2.0
@@ -98,7 +119,6 @@ func _draw() -> void:
     draw_rect(Rect2(-15, body_y, 30, 31), Color("#3f6f45"))
     draw_rect(Rect2(-19, -30 + bob, 38, 9), accent)
     draw_rect(Rect2(-13, -38 + bob, 26, 9), accent.darkened(0.18))
-
     draw_circle(Vector2(-6, head_y - 2), 2.5, Color("#21150f"))
     draw_circle(Vector2(6, head_y - 2), 2.5, Color("#21150f"))
     draw_line(Vector2(-6, head_y + 8), Vector2(6, head_y + 8), Color("#7d4b38"), 2)
