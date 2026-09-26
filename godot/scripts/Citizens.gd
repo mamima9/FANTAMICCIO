@@ -119,7 +119,7 @@ func interact() -> void:
     if dialogue.is_empty():
         return
     if hud and hud.has_method("show_dialogue"):
-        hud.show_dialogue(citizen_name, dialogue[dialogue_index])
+        hud.show_interaction(citizen_name, dialogue[dialogue_index])
     dialogue_index = (dialogue_index + 1) % dialogue.size()
 
 func _draw() -> void:
