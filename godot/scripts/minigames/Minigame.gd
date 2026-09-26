@@ -27,6 +27,8 @@ var root_cell := Vector2i(0, 5)
 var root_goal := Vector2i(9, 0)
 var root_walls: Array[Vector2i] = []
 var root_moves := 0
+var root_visited: Dictionary = {}
+var root_fall_message := ""
 
 const COLORS := [
     Color("#d94a45"),
@@ -86,7 +88,10 @@ func _setup_mode() -> void:
                 Vector2i(4, 4), Vector2i(5, 4)
             ]
             root_moves = 0
-            target = 4
+            root_visited.clear()
+            root_visited[root_cell] = 1
+            root_fall_message = ""
+            target = 999
         1:
             instruction = "Tocca quando il Ranocchio atterra sul bersaglio."
         2:
@@ -244,6 +249,18 @@ func _root_slide(direction: Vector2i) -> void:
         return
     root_cell = current
     root_moves += 1
+    root_visited[root_cell] = int(root_visited.get(root_cell, 0)) + 1
+
+    # Second passage over the same root tile breaks it: fall and restart.
+    if root_visited[root_cell] >= 2 and root_cell != root_goal:
+        root_fall_message = "CRACK! La radice cede... si riparte!"
+        root_cell = Vector2i(0, 5)
+        root_visited.clear()
+        root_visited[root_cell] = 1
+        root_moves = 0
+        time_left = max(0.0, time_left - 2.5)
+        return
+
     progress = root_moves
     if root_cell == root_goal:
         _finish(true)
@@ -416,7 +433,9 @@ func _draw_root_gym(accent: Color) -> void:
     draw_string(ThemeDB.fallback_font, goal_p + Vector2(-35, 6), "♥", HORIZONTAL_ALIGNMENT_CENTER, 70, 24, Color("#fff1c7"))
 
     draw_string(ThemeDB.fallback_font, Vector2(395, 540), "←  ↑  ↓  →   SCIVOLA TRA LE RADICI", HORIZONTAL_ALIGNMENT_CENTER, 490, 19, Color("#fff1c7"))
-    draw_string(ThemeDB.fallback_font, Vector2(470, 585), "Su mobile tocca una direzione • ogni radice ti fa fermare", HORIZONTAL_ALIGNMENT_CENTER, 340, 15, Color(1, 0.95, 0.82, 0.85))
+    draw_string(ThemeDB.fallback_font, Vector2(410, 575), "PASSA UNA VOLTA SOLA SU OGNI RADICE", HORIZONTAL_ALIGNMENT_CENTER, 460, 15, Color(1, 0.95, 0.82, 0.85))
+    if not root_fall_message.is_empty():
+        draw_string(ThemeDB.fallback_font, Vector2(390, 615), root_fall_message, HORIZONTAL_ALIGNMENT_CENTER, 500, 19, Color("#e4bd43"))
 
 func _draw_frog(accent: Color) -> void:
     var phase := fmod(elapsed * 2.7, TAU)
