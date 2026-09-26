@@ -32,3 +32,5 @@ theme/default_font_multichannel_signed_distance_field=true
 [autoload]
 GameManager="*res://scripts/core/GameManager.gd"
 InputManager="*res://scripts/core/InputManager.gd"
+SaveManager="*res://scripts/core/SaveManager.gd"
+WebBridge="*res://scripts/core/WebBridge.gd"
