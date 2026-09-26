@@ -9,6 +9,8 @@ var dialogue_index := 0
 var ready_for_trial := false
 var pulse := 0.0
 var accent := Color("#d4af37")
+var idle_phase := 0.0
+var talking_glow := 0.0
 
 func _ready() -> void:
     body_entered.connect(_on_body_entered)
@@ -19,6 +21,11 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
     pulse += delta
+    idle_phase += delta
+    if player_near:
+        talking_glow = min(1.0, talking_glow + delta * 4.0)
+    else:
+        talking_glow = max(0.0, talking_glow - delta * 3.0)
     queue_redraw()
     if player_near and Input.is_action_just_pressed("interact"):
         interact()
@@ -82,11 +89,12 @@ func interact() -> void:
 
 func _draw() -> void:
     var bob := sin(pulse * 2.2) * 2.0
+    var breath := sin(idle_phase * 1.7) * 1.2
     var body_y := 4.0 + bob
     var head_y := -13.0 + bob
 
     draw_ellipse(Vector2(0, 27), Vector2(21, 7), Color(0.04,0.025,0.015,0.28))
-    draw_circle(Vector2(0, head_y), 17, Color("#d4a06b"))
+    draw_circle(Vector2(0, head_y + breath), 17, Color("#d4a06b"))
     draw_rect(Rect2(-15, body_y, 30, 31), Color("#3f6f45"))
     draw_rect(Rect2(-19, -30 + bob, 38, 9), accent)
     draw_rect(Rect2(-13, -38 + bob, 26, 9), accent.darkened(0.18))
@@ -99,6 +107,7 @@ func _draw() -> void:
         var glow := 28.0 + sin(pulse * 5.0) * 4.0
         draw_arc(Vector2.ZERO, glow, PI * 1.12, PI * 1.88, 20, Color(1,0.86,0.42,0.85), 3)
         draw_circle(Vector2(0, -52), 3.5, Color(1,0.86,0.42,0.9))
+        draw_arc(Vector2.ZERO, 36.0, -PI * 0.8, -PI * 0.2, 18, Color(1,0.88,0.5,0.28 + talking_glow * 0.5), 2)
 
 func draw_ellipse(center: Vector2, radii: Vector2, color: Color) -> void:
     var points := PackedVector2Array()
