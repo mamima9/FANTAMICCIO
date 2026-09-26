@@ -26,6 +26,9 @@ func _finish_trial() -> void:
     trial = null
 
 func _on_trial_won(id: String) -> void:
+    GameManager.complete_trial(id)
+    SaveManager.save_game()
+    WebBridge.progress("trial_completed", id)
     _finish_trial()
     var main = get_tree().current_scene
     if main and main.has_method("show_interaction"):
@@ -36,7 +39,6 @@ func _on_trial_won(id: String) -> void:
             main.show_interaction("PROVA SUPERATA!", "La prova di %s è completa. Torna dal Beniamino per aggiungerlo alla collezione." % id.capitalize())
 
 func _on_trial_failed(_id: String) -> void:
-    _finish_trial()
     var main = get_tree().current_scene
     if main and main.has_method("show_interaction"):
-        main.show_interaction("PROVA FALLITA", "La prova non è stata superata. Puoi riprovarla quando vuoi.")
+        main.show_interaction("PROVA FALLITA", "La prova non è stata superata. Riprova usando il pulsante di nuovo tentativo.")
