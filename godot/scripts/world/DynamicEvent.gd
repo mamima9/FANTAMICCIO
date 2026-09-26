@@ -22,6 +22,9 @@ func _process(delta: float) -> void:
     if not active and timer >= cooldown:
         active = true
         timer = 0.0
+        collision_layer = 2
+        if not is_in_group("interactable"):
+            add_to_group("interactable")
         queue_redraw()
     queue_redraw()
 
@@ -33,6 +36,8 @@ func interact() -> void:
         return
     active = false
     timer = 0.0
+    collision_layer = 0
+    remove_from_group("interactable")
     SaveManager.save_game()
     WebBridge.progress("map_event", GameManager.current_map)
     var main := get_tree().current_scene
