@@ -34,6 +34,7 @@ var ancient_tree := Vector2.ZERO
 var bridge_tiles: Array[Rect2] = []
 var bridge_index := 0
 var memory_symbols: Array[int] = []
+var memory_target_symbol := 0
 var route_fork := 0
 var memory_target_slot := 0
 var quercia_obstacles: Array[Rect2] = []
@@ -138,9 +139,11 @@ func _setup_trial() -> void:
             message.text = "Osserva il simbolo: sparirà presto."
             player_pos = Vector2(350,460)
             memory_symbols.clear()
-            for i in 4:
-                memory_symbols.append(i)
+            var pool := [0, 1, 2, 3]
+            pool.shuffle()
+            memory_symbols = pool.duplicate()
             memory_target_slot = rng.randi_range(0, 3)
+            memory_target_symbol = memory_symbols[memory_target_slot]
             state = 1
         "lucertola":
             time_limit = 75.0
@@ -332,7 +335,12 @@ func _update_lucertola(delta: float) -> void:
     elif route_fork == 2 and player_pos.x > 660.0:
         _win()
 
-func _update_ranocchio(_delta: float) -> void:
+func _update_ranocchio(delta: float) -> void:
+    var v := _movement()
+    if v.length() > 0.05:
+        player_pos += v * 175.0 * delta
+        player_pos.x = clamp(player_pos.x, 45.0, 700.0)
+        player_pos.y = clamp(player_pos.y, 80.0, 510.0)
     if player_pos.distance_to(lotus) < 45.0:
         _win()
 
