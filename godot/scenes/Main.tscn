@@ -34,7 +34,7 @@ corner_radius_bottom_left = 8
 
 
 [sub_resource type="RectangleShape2D" id="BuildingShape"]
-size = Vector2(544, 336)
+size = Vector2(300, 180)
 
 [sub_resource type="RectangleShape2D" id="BorderShapeH"]
 size = Vector2(2304, 40)
