@@ -8,7 +8,13 @@ func _ready() -> void:
     collision_layer = 2
     collision_mask = 0
     _load_local_icon()
+    visible = GameManager.trial_completed(contrada_id)
     queue_redraw()
+
+func _process(_delta: float) -> void:
+    var should_show := GameManager.trial_completed(contrada_id)
+    if visible != should_show:
+        visible = should_show
 
 func get_title() -> String:
     return display_name
