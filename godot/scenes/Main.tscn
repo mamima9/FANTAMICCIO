@@ -56,7 +56,7 @@ script = ExtResource("9")
 
 [node name="Player" type="CharacterBody2D" parent="."]
 script = ExtResource("3")
-z_index = 20
+z_index = 100
 
 [node name="Sprite" type="Sprite2D" parent="Player"]
 texture = ExtResource("4")
@@ -69,6 +69,7 @@ texture_filter = 1
 shape = SubResource("PlayerShape")
 
 [node name="Camera2D" type="Camera2D" parent="."]
+enabled = true
 position_smoothing_enabled = true
 position_smoothing_speed = 7.0
 position = Vector2(1152,760)
