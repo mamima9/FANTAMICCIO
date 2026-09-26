@@ -3,6 +3,7 @@ extends Area2D
 @export var title: String = "Luogo"
 @export_multiline var text: String = "Non c'è nulla da vedere."
 @export var secret_id: String = ""
+@export var required_exploration_steps: int = 0
 
 func _ready() -> void:
     add_to_group("interactable")
@@ -10,6 +11,12 @@ func _ready() -> void:
     monitorable = true
 
 func interact() -> void:
+    if required_exploration_steps > 0 and GameManager.exploration_progress(GameManager.current_map) < required_exploration_steps:
+        var main := get_tree().current_scene
+        if main and main.has_method("show_interaction"):
+            main.show_interaction(title, "🔎 Prima completa le 3 tracce di esplorazione della Contrada.")
+        return
+
     if not secret_id.is_empty() and not GameManager.secret_discovered(secret_id):
         GameManager.discover_secret(secret_id)
         SaveManager.save_game()
