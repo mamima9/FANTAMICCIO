@@ -192,17 +192,22 @@ func _input(event: InputEvent) -> void:
         if id == "pozzo" and event.keycode >= KEY_1 and event.keycode <= KEY_3:
             _select_clue(event.keycode - KEY_1)
     if event is InputEventMouseButton and event.pressed:
-        var p := arena.get_local_mouse_position()
-        if id == "pozzo":
-            _click_clue(p)
-        elif id == "ranocchio":
-            _jump_to_lily(p)
-        elif id == "ponte":
-            _bridge_click(p)
-        elif id == "madonnina":
-            _memory_click(p)
-        elif id == "lucertola":
-            _route_click(p)
+        _handle_point_input(arena.get_local_mouse_position())
+
+    if event is InputEventScreenTouch and event.pressed:
+        _handle_point_input(arena.get_local_mouse_position())
+
+func _handle_point_input(p: Vector2) -> void:
+    if id == "pozzo":
+        _click_clue(p)
+    elif id == "ranocchio":
+        _jump_to_lily(p)
+    elif id == "ponte":
+        _bridge_click(p)
+    elif id == "madonnina":
+        _memory_click(p)
+    elif id == "lucertola":
+        _route_click(p)
 
 func _movement() -> Vector2:
     var v := Input.get_vector("move_left", "move_right", "move_up", "move_down")
