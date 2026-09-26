@@ -3,81 +3,72 @@ extends Node2D
 class Critter:
     var pos := Vector2.ZERO
     var vel := Vector2.ZERO
-    var home := Vector2.ZERO
-    var home_radius := 180.0
     var kind := 0
     var phase := 0.0
     var scale := 1.0
+    var home := Vector2.ZERO
+    var zone := Vector2.ZERO
+    var speed := 20.0
     var pause := 0.0
-    var target := Vector2.ZERO
-    var fleeing := 0.0
 
 var rng := RandomNumberGenerator.new()
 var critters: Array[Critter] = []
-var player: Node2D
 
-# Zone pensate per il mondo: uccelli nelle radure, conigli ai margini,
-# lucciole vicino all'acqua. Non spawnano più casualmente ovunque.
+# Zone coerenti con la mappa:
+# conigli nelle radure basse, uccelli vicino alle chiome,
+# lucciole concentrate intorno allo stagno e alle zone umide.
 var zones := [
-    Vector2(480, 360), Vector2(980, 520), Vector2(1720, 470),
-    Vector2(420, 900), Vector2(1180, 920), Vector2(1920, 820)
+    [Vector2(430,930), Vector2(260,180), 1],
+    [Vector2(760,1040), Vector2(300,170), 1],
+    [Vector2(1810,540), Vector2(260,150), 1],
+    [Vector2(520,260), Vector2(330,150), 0],
+    [Vector2(1500,250), Vector2(420,170), 0],
+    [Vector2(1240,350), Vector2(240,150), 2],
+    [Vector2(1600,900), Vector2(350,180), 2]
 ]
 
 func _ready() -> void:
     rng.randomize()
-    player = get_tree().current_scene.get_node_or_null("Player")
-    for i in 12:
-        var c := Critter.new()
-        c.kind = i % 3
-        var zone := zones[i % zones.size()]
-        if c.kind == 0:
-            zone = zones[(i + 1) % zones.size()]
-            c.home_radius = 230.0
-        elif c.kind == 1:
-            zone = Vector2(350 + (i % 3) * 680, 980 - (i % 2) * 120)
-            c.home_radius = 150.0
-        else:
-            zone = Vector2(1240 + (i % 2) * 300, 360 + (i % 3) * 180)
-            c.home_radius = 130.0
-        c.home = zone
-        c.pos = zone + Vector2(rng.randf_range(-c.home_radius,c.home_radius), rng.randf_range(-c.home_radius,c.home_radius))
-        c.pos.x = clamp(c.pos.x, 100.0, 2200.0)
-        c.pos.y = clamp(c.pos.y, 110.0, 1180.0)
-        c.target = c.pos
-        c.phase = rng.randf_range(0.0, TAU)
-        c.scale = rng.randf_range(0.75, 1.15)
-        c.pause = rng.randf_range(0.2, 2.0)
-        critters.append(c)
+    for zone in zones:
+        for i in 2:
+            var c := Critter.new()
+            c.zone = zone[1]
+            c.home = zone[0]
+            c.kind = zone[2]
+            c.pos = c.home + Vector2(rng.randf_range(-c.zone.x, c.zone.x), rng.randf_range(-c.zone.y, c.zone.y))
+            c.vel = Vector2.from_angle(rng.randf_range(0.0, TAU)) * rng.randf_range(8.0, 18.0)
+            c.phase = rng.randf_range(0.0, TAU)
+            c.scale = rng.randf_range(0.75, 1.10)
+            c.speed = rng.randf_range(12.0, 24.0)
+            critters.append(c)
+    queue_redraw()
 
 func _process(delta: float) -> void:
-    if not is_instance_valid(player):
-        player = get_tree().current_scene.get_node_or_null("Player")
+    var player := get_tree().current_scene.get_node_or_null("Player")
+
     for c in critters:
         c.phase += delta
-        c.pause -= delta
-        if player and c.kind != 2:
-            var dist := c.pos.distance_to(player.global_position)
-            if dist < 110.0:
-                var away := (c.pos - player.global_position).normalized()
-                c.vel = away * (90.0 if c.kind == 1 else 130.0)
-                c.fleeing = 1.2
-        if c.fleeing > 0.0:
-            c.fleeing -= delta
-            c.pos += c.vel * delta
-        elif c.pause <= 0.0:
-            if c.pos.distance_to(c.home) > c.home_radius:
-                c.target = c.home + Vector2(rng.randf_range(-60,60), rng.randf_range(-60,60))
-            else:
-                c.target = c.home + Vector2(rng.randf_range(-c.home_radius,c.home_radius), rng.randf_range(-c.home_radius,c.home_radius))
-            var direction := c.pos.direction_to(c.target)
-            var speed := 18.0 if c.kind == 0 else (11.0 if c.kind == 1 else 7.0)
-            c.vel = direction * speed
-            c.pause = rng.randf_range(1.5, 4.0)
+
+        if c.pause > 0.0:
+            c.pause -= delta
         else:
-            c.vel = c.vel.lerp(Vector2.ZERO, delta * 2.0)
-        c.pos += c.vel * delta
-        c.pos.x = clamp(c.pos.x, 90.0, 2210.0)
-        c.pos.y = clamp(c.pos.y, 100.0, 1190.0)
+            c.pos += c.vel * delta
+
+        var rel := c.pos - c.home
+        if abs(rel.x) > c.zone.x or abs(rel.y) > c.zone.y:
+            var target := c.home + Vector2(rng.randf_range(-c.zone.x * 0.6, c.zone.x * 0.6), rng.randf_range(-c.zone.y * 0.6, c.zone.y * 0.6))
+            c.vel = (target - c.pos).normalized() * c.speed
+
+        # Gli animali reagiscono al giocatore senza diventare NPC:
+        # scappano leggermente se ci si avvicina troppo.
+        if player and c.kind == 1 and c.pos.distance_to(player.global_position) < 90.0:
+            c.vel = (c.pos - player.global_position).normalized() * (c.speed * 1.8)
+            c.pause = 0.2
+
+        if rng.randf() < delta * 0.12:
+            c.vel = Vector2.from_angle(rng.randf_range(0.0, TAU)) * c.speed
+            c.pause = rng.randf_range(0.2, 1.0)
+
     queue_redraw()
 
 func _draw() -> void:
