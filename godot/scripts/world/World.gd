@@ -180,9 +180,20 @@ func _build_npc() -> void:
     npc.collision_mask = 0
     npc.position = Vector2(420, 360)
     npc.set_script(load("res://scripts/world/NPC.gd"))
-    npc.npc_name = "Custode della Contrada"
+    var npc_dialogues := {
+        "quercia": ["Custode della Quercia", "Le radici ricordano tutto. Cerca dove il terreno sembra nascondere qualcosa."],
+        "ranocchio": ["Guardiano dello Stagno", "Se senti un CRA, non scappare. In questa Contrada anche i rumori possono essere indizi."],
+        "leondoro": ["Maestro dell'Arena", "Il bersaglio non è l'unica cosa da osservare. Guarda bene gli angoli dell'arena."],
+        "lucertola": ["Sentinella del Fuoco", "Le scintille segnano un percorso. Seguilo con calma e non avere paura di saltare."],
+        "pozzo": ["Custode del Pozzo", "La luce in fondo non è casuale. C'è qualcosa che risponde quando la guardi."],
+        "madonnina": ["Custode della Madonnina", "Qui i piccoli dettagli contano più della forza. Cerca il simbolo nascosto."],
+        "cervia": ["Esploratore della Cervia", "Le tracce non sono vecchie. Segui il sentiero e guarda dove il terreno cambia."],
+        "ponte": ["Passatore del Ponte", "Il passaggio sicuro non è sempre quello più veloce. Osserva prima di attraversare."]
+    }
+    var info: Array = npc_dialogues.get(current_map_id, ["Custode della Contrada", "Ogni territorio custodisce una prova. Esplora e interagisci con ciò che trovi."])
+    npc.npc_name = str(info[0])
     npc.title = npc.npc_name
-    npc.dialogue = "Ogni territorio custodisce una prova. Esplora, parla con gli abitanti e torna qui quando sei pronto."
+    npc.dialogue = str(info[1])
     var shape_node := CollisionShape2D.new()
     var shape := CircleShape2D.new()
     shape.radius = 55.0
@@ -238,6 +249,7 @@ func _build_map_hotspots() -> void:
         hotspot.set_script(load("res://scripts/world/Interactable.gd"))
         hotspot.title = str(spec[0])
         hotspot.text = str(spec[2])
+        hotspot.secret_id = current_map_id + "_secret"
         var shape_node := CollisionShape2D.new()
         var shape := CircleShape2D.new()
         shape.radius = 52.0
@@ -290,3 +302,9 @@ func _draw() -> void:
         var target: String = neighbors[direction]
         var data: Dictionary = MapData.get_map(target)
         draw_string(ThemeDB.fallback_font, labels[direction], "→ " + str(data["name"]), HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color(1, 0.95, 0.75, 0.9))
+
+
+func get_secret_count() -> int:
+    # One meaningful discovery per Contrada; all eight are part of the
+    # exploration layer rather than the main trial.
+    return 1
