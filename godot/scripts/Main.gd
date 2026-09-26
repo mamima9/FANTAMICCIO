@@ -1,200 +1,65 @@
 extends Node2D
 
-@onready var trial_game: CanvasLayer = $TrialGame
-
-const WORLD_SIZE := Vector2(2304, 1296)
-const PLAYER_START := Vector2(1150, 850)
-var contrada_id := "quercia"
-const REGIONAL_NAMES := {
-    "cervia":"LA CERVIA  •  BELTRAME",
-    "leondoro":"IL LEON D'ORO  •  MARZOCCHINO",
-    "lucertola":"LA LUCERTOLA  •  LA RIPA",
-    "madonnina":"LA MADONNINA",
-    "ponte":"IL PONTE",
-    "pozzo":"IL POZZO",
-    "quercia":"LA QUERCIA  •  QUERCETA",
-    "ranocchio":"IL RANOCCHIO"
-}
-const BENIAMINO_POSITIONS := {"cervia":Vector2(1500,330),"leondoro":Vector2(1510,430),"lucertola":Vector2(1450,700),"madonnina":Vector2(1510,410),"ponte":Vector2(1500,560),"pozzo":Vector2(1510,420),"quercia":Vector2(1510,390),"ranocchio":Vector2(1510,430)}
-const BENIAMINO_NAMES := {"cervia":"CERVIA","leondoro":"LEON D'ORO","lucertola":"LUCERTOLA","madonnina":"MADONNINA","ponte":"PONTE","pozzo":"POZZO","quercia":"QUERCIA","ranocchio":"RANOCCHIO"}
-const REGIONAL_LOCATIONS := {
-    "cervia":"BOSCHI DI BELTRAME","leondoro":"MARZOCCHINO","lucertola":"LA RIPA",
-    "madonnina":"CORTILI DELLA MADONNINA","ponte":"VIE DEL PONTE","pozzo":"PIAZZE DEL POZZO",
-    "quercia":"BOSCO DELLA QUERCIA","ranocchio":"STAGNI DEL RANOCCHIO"
-}
+const WORLD_SIZE := Vector2(1280, 720)
 
 @onready var player: CharacterBody2D = $Player
-@onready var map: Sprite2D = $Map
-@onready var prompt: Label = $HUD/Prompt
-@onready var title: Label = $HUD/Title
-@onready var beniamino: Area2D = $Beniamino
-@onready var quest: Node = $QuestManager
 
 func _ready() -> void:
-    contrada_id = _read_contrada()
-    $RegionalWorld.set_contrada(contrada_id)
-    $WorldDecoration.contrada_id = contrada_id
-    $Citizens.set_contrada(contrada_id)
-    $QuestManager.set_contrada(contrada_id)
-    _configure_regional_quest()
-    trial_game.won.connect(_on_trial_won)
-    trial_game.failed.connect(_on_trial_failed)
+    GameManager.start_game()
+    GameManager.set_map("quercia")
+    player.global_position = Vector2(640, 430)
+    queue_redraw()
 
-    map.position = WORLD_SIZE * 0.5
-    if map.texture:
-        map.scale = WORLD_SIZE / map.texture.get_size()
+func _draw() -> void:
+    draw_rect(Rect2(Vector2.ZERO, WORLD_SIZE), Color("#6f9b55"))
 
-    title.text = REGIONAL_NAMES.get(contrada_id, REGIONAL_NAMES["quercia"])
-    prompt.text = "Esplora liberamente  •  parla con i contradaioli  •  scopri indizi e luoghi"
-    player.position = Vector2(1150, 850)
+    # Main roads
+    draw_rect(Rect2(0, 305, WORLD_SIZE.x, 110), Color("#b69b6d"))
+    draw_rect(Rect2(585, 0, 110, WORLD_SIZE.y), Color("#b69b6d"))
 
-    $Player/Camera2D.enabled = true
-    $Player/Camera2D.position_smoothing_enabled = false
-    $Player/Camera2D.position = Vector2.ZERO
-    $Player/Camera2D.zoom = Vector2(1.0, 1.0)
+    # Central square
+    draw_rect(Rect2(420, 225, 440, 270), Color("#c7b486"))
+    draw_rect(Rect2(435, 240, 410, 240), Color("#d2bf94"))
 
-    if $HUD.has_method("set_location"):
-        $HUD.set_location(REGIONAL_LOCATIONS.get(contrada_id, "QUERCETA"), quest.get_objective())
-    if $HUD.has_method("set_progress"):
-        $HUD.set_progress("INDIZI  •  BENIAMINI", "0 / 3  •  0 / 8")
-    refresh_objective()
-    if $QuestWorld.has_method("set_contrada"):
-        $QuestWorld.set_contrada(contrada_id)
-    if $QuestWorld.has_method("refresh"):
-        $QuestWorld.refresh()
+    # Water
+    draw_rect(Rect2(45, 75, 255, 175), Color("#5795a5"))
+    draw_circle(Vector2(172, 162), 72, Color("#66a5b2"))
 
+    # Forest clusters
+    for position in [
+        Vector2(115, 520), Vector2(195, 575), Vector2(285, 525),
+        Vector2(1015, 115), Vector2(1100, 175), Vector2(1180, 110),
+        Vector2(1040, 570), Vector2(1160, 510)
+    ]:
+        _draw_tree(position)
 
-func _configure_regional_quest() -> void:
-    var themes = {
-        "cervia":["Custode di Beltrame","Contradaiolo della Cervia","Campanaro"],
-        "leondoro":["Custode del Marzocchino","Contradaiolo del Leone","Guardiano della Tana"],
-        "lucertola":["Custode della Ripa","Contradaiolo della Lucertola","Guida della Ripa"],
-        "madonnina":["Custode dei Pagliai","Contradaiola della Madonnina","Guardiano del Pagliaio"],
-        "ponte":["Custode del Ponte","Contradaiolo del Ponte","Maestro delle Tavole"],
-        "pozzo":["Custode del Pozzo","Contradaiolo del Pozzo","Investigatore del Miccio"],
-        "quercia":["Custode delle Querce","Vecchio della Bottega","Contradaiolo"],
-        "ranocchio":["Custode dello Stagno","Contradaiolo del Ranocchio","Guardiano del Loto"]
-    }
-    var d = themes.get(contrada_id,themes["quercia"])
-    var nodes = [$NPCs/CustodeDelleQuerce,$NPCs/VecchioDellaBottega,$NPCs/Contradaiolo]
-    var positions = [Vector2(650,430),Vector2(900,650),Vector2(1500,700)]
-    for i in nodes.size():
-        nodes[i].npc_name=d[i]
-        nodes[i].position=positions[i]
-        nodes[i].trial_id=contrada_id if i==2 else ""
-        nodes[i].dialogue=[
-            "La nostra Contrada custodisce una storia che non trovi sulla mappa.",
-            "Segui i segni, parla con gli abitanti e osserva ogni luogo.",
-            "Quando avrai raccolto i tre indizi, la prova della Contrada sarà pronta."
-        ]
-    $NPCs/CustodeDelleQuerce.dialogue=[
-        "Benvenuto nella nostra Contrada.",
-        "Qui il territorio è parte della storia: esploralo senza fretta.",
-        "Cerca il primo segno vicino ai luoghi che gli abitanti ti indicano."
-    ]
-    $NPCs/VecchioDellaBottega.dialogue=[
-        "Il primo indizio ti ha portato fin qui.",
-        "Ora cerca un luogo che racconti davvero la nostra Contrada.",
-        "Quando trovi il secondo segno, continua verso la gente della piazza."
-    ]
-    $NPCs/Contradaiolo.dialogue=[
-        "Hai seguito tutta la storia. Il territorio ti ha lasciato tre segni.",
-        "La prova di questa Contrada è pronta.",
-        "Quando vuoi, affrontala."
-    ]
+    # Fountain
+    draw_circle(Vector2(640, 360), 56, Color("#77706a"))
+    draw_circle(Vector2(640, 360), 39, Color("#5795a5"))
+    draw_circle(Vector2(640, 360), 8, Color("#d6c08a"))
 
+    draw_string(
+        ThemeDB.fallback_font,
+        Vector2(40, 48),
+        "FANTAMICCIO",
+        HORIZONTAL_ALIGNMENT_LEFT,
+        -1,
+        30,
+        Color("#fff2c7")
+    )
 
-func _process(_delta: float) -> void:
-    _update_mobile_context()
+    draw_string(
+        ThemeDB.fallback_font,
+        Vector2(40, 76),
+        "CORE DI ESPLORAZIONE",
+        HORIZONTAL_ALIGNMENT_LEFT,
+        -1,
+        16,
+        Color(1.0, 0.95, 0.82, 0.78)
+    )
 
-func _update_mobile_context() -> void:
-    var hud = get_node_or_null("HUD")
-    if not hud or not hud.has_method("set_mobile_interaction"):
-        return
-    var found := ""
-    for group in [$NPCs, $Citizens/Cittadini]:
-        for child in group.get_children():
-            if child is Area2D and child.get("player_near") == true:
-                found = "PARLA"
-                break
-        if found != "":
-            break
-    if found == "":
-        for child in $WorldInteractables.get_children():
-            if child is Area2D and child.get("player_near") == true:
-                found = "OSSERVA"
-                break
-    if found == "":
-        var qw = get_node_or_null("QuestWorld")
-        if qw and qw.get("player_near") != -1:
-            found = "SCOPRI"
-    hud.set_mobile_interaction(found != "", found)
-
-func mobile_interact() -> void:
-    var npc = get_node_or_null("NPCs")
-    if npc:
-        for child in npc.get_children():
-            if child is Area2D and child.has_method("interact") and child.player_near:
-                child.interact()
-                return
-    var citizens = get_node_or_null("Citizens/Cittadini")
-    if citizens:
-        for child in citizens.get_children():
-            if child is Area2D and child.has_method("interact") and child.get("player_near"):
-                child.interact()
-                return
-    var world = get_node_or_null("WorldInteractables")
-    if world:
-        for child in world.get_children():
-            if child is Area2D and child.has_method("interact") and child.player_near:
-                child.interact()
-                return
-    var qw = get_node_or_null("QuestWorld")
-    if qw and qw.has_method("_interact"):
-        qw._interact()
-
-func refresh_objective() -> void:
-    if $HUD.has_method("set_location"):
-        $HUD.set_location(REGIONAL_LOCATIONS.get(contrada_id, "QUERCETA"), quest.get_objective())
-    if $HUD.has_method("set_progress"):
-        $HUD.set_progress("INDIZI  •  BENIAMINI", "%d / 3  •  0 / 8" % quest.discoveries)
-
-func start_trial(id: String) -> void:
-    if Challenges.get_challenge(id).is_empty():
-        return
-    if quest and quest.has_method("can_start_trial") and not quest.can_start_trial(id):
-        $HUD.show_toast("Prima completa tutti e 3 gli indizi del bosco.")
-        return
-    if $HUD.has_method("show_trial_intro"):
-        $HUD.show_trial_intro(Challenges.get_challenge(id).get("title", "PROVA"), Challenges.get_challenge(id).get("goal", ""))
-    trial_game.start(id)
-    player.visible = false
-    player.set_physics_process(false)
-    $Player/Camera2D.enabled = false
-
-func _on_trial_won(id: String) -> void:
-    player.visible = true
-    player.set_physics_process(true)
-    $Player/Camera2D.enabled = true
-    $Player/Camera2D.position = Vector2.ZERO
-    beniamino.beniamino_id = id
-    beniamino.beniamino_name = BENIAMINO_NAMES.get(contrada_id, "BENIAMINO")
-    beniamino.position = BENIAMINO_POSITIONS.get(contrada_id, Vector2(1510,390))
-    beniamino.reveal()
-    quest.mark_complete()
-    $HUD.show_toast("PROVA SUPERATA  •  Il Beniamino della %s è apparso!" % REGIONAL_NAMES.get(contrada_id, "Contrada"))
-
-func _on_trial_failed(_id: String) -> void:
-    player.visible = true
-    player.set_physics_process(true)
-    $Player/Camera2D.enabled = true
-    $Player/Camera2D.position = Vector2.ZERO
-    $HUD.show_toast("La prova ti aspetta ancora. Riprova quando vuoi.")
-
-
-func _read_contrada() -> String:
-    if OS.has_feature("web"):
-        var value = JavaScriptBridge.eval("new URLSearchParams(window.location.search).get('contrada') || ''")
-        if value != null and REGIONAL_NAMES.has(str(value).to_lower()):
-            return str(value).to_lower()
-    return "quercia"
+func _draw_tree(position: Vector2) -> void:
+    draw_circle(position + Vector2(0, 17), 20, Color("#70482d"))
+    draw_circle(position + Vector2(0, -14), 42, Color("#345c38"))
+    draw_circle(position + Vector2(-25, -3), 28, Color("#3f7041"))
+    draw_circle(position + Vector2(25, -3), 28, Color("#3f7041"))
