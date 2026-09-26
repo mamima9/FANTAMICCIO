@@ -13,12 +13,22 @@ const PLAYER_START := Vector2(1152, 760)
 func _ready() -> void:
     trial_game.won.connect(_on_trial_won)
     trial_game.failed.connect(_on_trial_failed)
+
     map.position = WORLD_SIZE * 0.5
-    map.scale = WORLD_SIZE / map.texture.get_size()
+    if map.texture:
+        map.scale = WORLD_SIZE / map.texture.get_size()
+
     player.position = PLAYER_START
     title.text = "LA QUERCIA  •  QUERCETA"
-    prompt.text = "JOYSTICK / WASD / FRECCE  •  E per interagire"
+    prompt.text = "Esplora il bosco  •  avvicinati agli abitanti  •  E per parlare"
+
     $Camera2D.position = player.position
+    $Camera2D.zoom = Vector2(1.0, 1.0)
+
+    if $HUD.has_method("set_location"):
+        $HUD.set_location("BOSCO DELLA QUERCIA", "Trova gli indizi degli abitanti")
+    if $HUD.has_method("set_progress"):
+        $HUD.set_progress("BENIAMINI", "0 / 8")
 
 func _process(_delta: float) -> void:
     if not trial_game.active:
@@ -39,10 +49,10 @@ func _on_trial_won(id: String) -> void:
     player.visible = true
     player.set_physics_process(true)
     $Camera2D.enabled = true
-    $HUD.show_toast("PROVA SUPERATA!  Beniamino: " + id)
+    $HUD.show_toast("PROVA SUPERATA  •  Beniamino: " + id.to_upper())
 
 func _on_trial_failed(_id: String) -> void:
     player.visible = true
     player.set_physics_process(true)
     $Camera2D.enabled = true
-    $HUD.show_toast("Prova fallita. Puoi riprovare.")
+    $HUD.show_toast("La prova ti aspetta ancora. Riprova quando vuoi.")
