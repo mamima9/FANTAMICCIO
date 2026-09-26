@@ -67,6 +67,22 @@ radius = 55.0
 [sub_resource type="CircleShape2D" id="InteractShape"]
 radius = 58.0
 
+[sub_resource type="StyleBoxFlat" id="DialoguePanel"]
+bg_color = Color(0.045, 0.028, 0.018, 0.97)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.83,0.66,0.30,0.95)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+content_margin_left = 24.0
+content_margin_top = 18.0
+content_margin_right = 24.0
+content_margin_bottom = 18.0
+
 [sub_resource type="StyleBoxFlat" id="NPCPanel"]
 bg_color = Color(0.12,0.08,0.05,0.92)
 border_width_left = 2
@@ -410,6 +426,39 @@ offset_right = 700.0
 offset_bottom = 164.0
 theme_override_colors/font_color = Color(1,1,1,0.8)
 theme_override_font_sizes/font_size = 14
+
+[node name="DialoguePanel" type="PanelContainer" parent="HUD"]
+visible = false
+offset_left = 90.0
+offset_top = 475.0
+offset_right = 1062.0
+offset_bottom = 615.0
+theme_override_styles/panel = SubResource("DialoguePanel")
+
+[node name="Speaker" type="Label" parent="HUD/DialoguePanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96,0.82,0.40,1)
+theme_override_font_sizes/font_size = 20
+text = "NPC"
+
+[node name="VBox" type="VBoxContainer" parent="HUD/DialoguePanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Text" type="Label" parent="HUD/DialoguePanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1,0.96,0.86,1)
+theme_override_colors/font_shadow_color = Color(0,0,0,0.8)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 18
+text = "Dialogo"
+
+[node name="Continue" type="Label" parent="HUD/DialoguePanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1,0.86,0.50,0.85)
+theme_override_font_sizes/font_size = 12
+text = "E  •  CONTINUA"
 
 [node name="Toast" type="Label" parent="HUD"]
 visible = false
