@@ -16,14 +16,27 @@ func set_contrada(id:String) -> void:
     contrada_id=id.to_lower()
     var data=REGIONAL_CLUES.get(contrada_id,REGIONAL_CLUES["quercia"])
     for i in data.size():
-        CLUE_TEXTS[i]=data[i]
+        clue_texts[i]=data[i]
+    var positions = REGIONAL_POSITIONS.get(contrada_id, REGIONAL_POSITIONS["quercia"])
+    clue_positions = positions.slice(0,3)
+    gate_position = positions[3]
     queue_redraw()
 
 var player_near := -1
-var clue_positions := [Vector2(805, 545), Vector2(1040, 700), Vector2(1335, 585)]
-var gate_position := Vector2(1390, 650)
+const REGIONAL_POSITIONS := {
+ "cervia":[Vector2(600,720),Vector2(1050,520),Vector2(1370,360),Vector2(1500,330)],
+ "leondoro":[Vector2(700,760),Vector2(1080,580),Vector2(1370,470),Vector2(1510,430)],
+ "lucertola":[Vector2(650,600),Vector2(1050,780),Vector2(1320,680),Vector2(1450,700)],
+ "madonnina":[Vector2(620,780),Vector2(1040,560),Vector2(1350,450),Vector2(1510,410)],
+ "ponte":[Vector2(650,850),Vector2(1040,650),Vector2(1320,570),Vector2(1500,560)],
+ "pozzo":[Vector2(600,800),Vector2(1050,640),Vector2(1340,480),Vector2(1510,420)],
+ "quercia":[Vector2(805,545),Vector2(1040,700),Vector2(1335,585),Vector2(1390,650)],
+ "ranocchio":[Vector2(650,800),Vector2(1050,650),Vector2(1320,500),Vector2(1510,430)]
+}
+var clue_positions := REGIONAL_POSITIONS["quercia"].slice(0,3)
+var gate_position := REGIONAL_POSITIONS["quercia"][3]
 
-const CLUE_TEXTS := [
+var clue_texts := [
     "Una corteccia graffiata: il segno del Miccio indica il sentiero verso il bosco interno.",
     "Un nastro dorato: il percorso più corto nasconde una deviazione. Il bosco vuole che tu osservi.",
     "Tre tacche sul tronco: hai seguito la storia fino in fondo. Il Contradaiolo ti aspetta."
@@ -61,7 +74,7 @@ func _interact() -> void:
         if quest.discoveries == index and quest.step >= index + 1:
             if quest.discover_clue(index):
                 if hud and hud.has_method("show_dialogue"):
-                    hud.show_dialogue("INDIZIO DEL BOSCO", CLUE_TEXTS[index])
+                    hud.show_dialogue("INDIZIO DEL BOSCO", clue_texts[index])
         elif quest.discoveries > index:
             if hud and hud.has_method("show_toast"):
                 hud.show_toast("Hai già scoperto questo indizio.")
