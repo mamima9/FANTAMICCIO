@@ -37,6 +37,9 @@ func _ready() -> void:
     if $QuestWorld.has_method("refresh"):
         $QuestWorld.refresh()
 
+func _process(_delta: float) -> void:
+    _update_mobile_context()
+
 func _update_mobile_context() -> void:
     var hud = get_node_or_null("HUD")
     if not hud or not hud.has_method("set_mobile_interaction"):
