@@ -133,14 +133,4 @@ func _rebuild_citizens(map_id: String) -> void:
         shape_node.shape = shape
         citizen.add_child(shape_node)
 
-        var prompt := Label.new()
-        prompt.name = "Prompt"
-        prompt.text = "E • PARLA"
-        prompt.position = Vector2(-45,-55)
-        prompt.size = Vector2(90,22)
-        prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-        prompt.add_theme_color_override("font_color", Color("#fff0b0"))
-        prompt.add_theme_font_size_override("font_size", 10)
-        citizen.add_child(prompt)
-
         world.map_nodes.add_child(citizen)
