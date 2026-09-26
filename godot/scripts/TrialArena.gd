@@ -130,8 +130,8 @@ func _draw_madonnina(g) -> void:
         draw_rect(Rect2(p - Vector2(48,65), Vector2(96,130)), Color("#b58b55"), true)
         draw_rect(Rect2(p - Vector2(48,65), Vector2(96,130)), Color("#d4af37"), false, 3)
         if g.state == 1:
-            var symbols = ["1","2","3","4"]
-            draw_string(ThemeDB.fallback_font, p + Vector2(-7,10), symbols[g.memory_symbols[i]], HORIZONTAL_ALIGNMENT_LEFT, -1, 30, Color("#fff0a8"))
+            var symbols = ["SOLE","LUNA","FOGLIA","STELLA"]
+            draw_string(ThemeDB.fallback_font, p + Vector2(-30,10), symbols[g.memory_symbols[i]], HORIZONTAL_ALIGNMENT_LEFT, -1, 30, Color("#fff0a8"))
     if g.state == 2:
         draw_string(ThemeDB.fallback_font, Vector2(275,160), "TROVA IL SIMBOLO MEMORIZZATO", HORIZONTAL_ALIGNMENT_LEFT, -1, 17, Color("#fff0a8"))
     _draw_player(g.player_pos, Color("#e7b6ff"))
