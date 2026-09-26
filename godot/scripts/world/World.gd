@@ -236,7 +236,8 @@ func _build_map_hotspots() -> void:
         hotspot.set_meta("hotspot_title", str(spec[0]))
         hotspot.set_meta("hotspot_text", str(spec[2]))
         hotspot.set_script(load("res://scripts/world/Interactable.gd"))
-        hotspot.display_name = str(spec[0])
+        hotspot.title = str(spec[0])
+        hotspot.text = str(spec[2])
         var shape_node := CollisionShape2D.new()
         var shape := CircleShape2D.new()
         shape.radius = 52.0
