@@ -5,6 +5,7 @@ extends Node2D
 # vengono esclusi automaticamente dal sistema di collisione.
 
 var pulse := 0.0
+var birds_pulse := 0.0
 @export var contrada_id := "quercia"
 
 # Identità ambientale delle otto Contrade. Le future mappe riutilizzano
@@ -56,6 +57,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
     pulse += delta
+    birds_pulse += delta
     queue_redraw()
 
 func _build_collisions() -> void:
@@ -132,6 +134,13 @@ func _draw() -> void:
     for fence in fences:
         _draw_fence(fence[0], fence[1])
 
+    # Piccoli landmark ambientali: danno una direzione al giocatore senza HUD.
+    _draw_waystone(Vector2(430, 820), "BOSCO")
+    _draw_waystone(Vector2(1260, 1020), "SENTIERO")
+    _draw_waystone(Vector2(1980, 690), "RIVA")
+    _draw_flower_patch(Vector2(980, 420), 28.0)
+    _draw_flower_patch(Vector2(1660, 760), 34.0)
+
     # Quercia: il territorio deve avere una firma visiva riconoscibile.
     if contrada_id == "quercia":
         for p in secret_groves:
@@ -150,6 +159,21 @@ func _draw_oak_grove(center: Vector2, s: float) -> void:
         var p := center + Vector2(cos(angle) * 58.0, sin(angle) * 38.0)
         _draw_tree(p)
     draw_arc(center + Vector2(0,18), 86.0 * s, 0.0, TAU, 32, Color(0.86,0.72,0.34,0.18), 2.0)
+
+
+func _draw_waystone(p: Vector2, label: String) -> void:
+    var bob := sin(pulse * 2.0 + p.x) * 1.5
+    draw_ellipse(p + Vector2(0,12), Vector2(28,9), Color(0.05,0.08,0.04,0.18))
+    draw_colored_polygon(PackedVector2Array([p+Vector2(-17,8+bob),p+Vector2(-12,-13+bob),p+Vector2(11,-18+bob),p+Vector2(18,7+bob)]), Color("#77745f"))
+    draw_line(p+Vector2(-7,-7+bob),p+Vector2(8,-9+bob),Color("#a39d7c"),2)
+    draw_string(ThemeDB.fallback_font, p+Vector2(-34,34), label, HORIZONTAL_ALIGNMENT_CENTER, 68, 10, Color(1,0.93,0.72,0.62))
+
+func _draw_flower_patch(center: Vector2, radius: float) -> void:
+    for i in 12:
+        var a := TAU * float(i) / 12.0
+        var p := center + Vector2(cos(a),sin(a)) * (radius * (0.35 + float(i % 3) * 0.22))
+        draw_circle(p, 3.0, Color("#e7c968"))
+        draw_circle(p + Vector2(3,0), 2.0, Color("#fff0a8"))
 
 func _path(points: Array, width: float) -> void:
     var packed := PackedVector2Array(points)
