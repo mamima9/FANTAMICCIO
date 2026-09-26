@@ -1,6 +1,7 @@
 extends Area2D
 
 @export var npc_name := "Custode"
+@export_enum("custode","vecchio","contradaiolo") var role := "custode"
 @export_multiline var dialogue: Array[String] = []
 @export var trial_id := ""
 @export var quest_step := -1
@@ -32,14 +33,13 @@ func _process(delta: float) -> void:
         interact()
 
 func _accent_for_name() -> Color:
-    var n := npc_name.to_lower()
-    if "vecchio" in n:
-        return Color("#a87942")
-    if "custode" in n:
-        return Color("#d4af37")
-    if "contradaiolo" in n:
-        return Color("#5d8d55")
-    return Color("#c98f4b")
+    match role:
+        "vecchio":
+            return Color("#a87942")
+        "contradaiolo":
+            return Color("#5d8d55")
+        _:
+            return Color("#d4af37")
 
 func _locked_message(quest) -> String:
     if quest_step == 1 and quest.discoveries < 1:
@@ -116,12 +116,26 @@ func _draw() -> void:
 
     draw_ellipse(Vector2(0, 27), Vector2(21, 7), Color(0.04,0.025,0.015,0.28))
     draw_circle(Vector2(0, head_y + breath), 17, Color("#d4a06b"))
-    draw_rect(Rect2(-15, body_y, 30, 31), Color("#3f6f45"))
-    draw_rect(Rect2(-19, -30 + bob, 38, 9), accent)
-    draw_rect(Rect2(-13, -38 + bob, 26, 9), accent.darkened(0.18))
+    if role == "custode":
+        draw_rect(Rect2(-15, body_y, 30, 31), Color("#3f6f45"))
+        draw_rect(Rect2(-19, -30 + bob, 38, 9), accent)
+        draw_rect(Rect2(-13, -38 + bob, 26, 9), accent.darkened(0.18))
+        draw_circle(Vector2(-10, -34 + bob), 4, Color("#f2d37b"))
+        draw_circle(Vector2(10, -34 + bob), 4, Color("#f2d37b"))
+    elif role == "vecchio":
+        draw_rect(Rect2(-15, body_y, 30, 31), Color("#79563d"))
+        draw_rect(Rect2(-18, -30 + bob, 36, 10), Color("#7c593d"))
+        draw_rect(Rect2(-11, -37 + bob, 22, 8), Color("#a87942"))
+        draw_line(Vector2(-10, head_y + 5), Vector2(10, head_y + 5), Color("#8c6247"), 3)
+        draw_line(Vector2(-8, head_y + 11), Vector2(8, head_y + 11), Color("#6d4634"), 2)
+    else:
+        draw_rect(Rect2(-16, body_y, 32, 31), Color("#355d3e"))
+        draw_rect(Rect2(-21, -29 + bob, 42, 8), Color("#c69b3b"))
+        draw_rect(Rect2(-12, -39 + bob, 24, 10), Color("#8b672e"))
+        draw_line(Vector2(-9, head_y + 8), Vector2(9, head_y + 8), Color("#6b4434"), 2)
+
     draw_circle(Vector2(-6, head_y - 2), 2.5, Color("#21150f"))
     draw_circle(Vector2(6, head_y - 2), 2.5, Color("#21150f"))
-    draw_line(Vector2(-6, head_y + 8), Vector2(6, head_y + 8), Color("#7d4b38"), 2)
 
     if player_near:
         var glow := 28.0 + sin(pulse * 5.0) * 4.0
