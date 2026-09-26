@@ -31,7 +31,7 @@ func set_map_progress(map_id: String, found: int, total: int) -> void:
         var objectives := GameManager.exploration_progress(map_id)
         var trial := "✓ Prova" if GameManager.trial_completed(map_id) else "○ Prova"
         var beniamino := "✓ Beniamino" if GameManager.has_beniamino(map_id) else "○ Beniamino"
-        progress_label.text = "🔎 Esplorazione %d/3   •   ✨ Segreti %d/%d   •   %s   •   %s" % [
+        progress_label.text = "ESPLORAZIONE %d/3   |   SEGRETI %d/%d   |   %s   |   %s" % [
             objectives,
             found,
             total,
