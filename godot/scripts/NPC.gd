@@ -5,6 +5,7 @@ extends Area2D
 @export_multiline var dialogue: Array[String] = []
 @export var trial_id := ""
 @export var quest_step := -1
+@export var ambient_only := false
 
 var player_near := false
 var dialogue_index := 0
@@ -87,6 +88,9 @@ func interact() -> void:
 
     if dialogue.is_empty():
         return
+
+    if ambient_only:
+        dialogue_index = min(dialogue_index, dialogue.size() - 1)
 
     if dialogue_index >= dialogue.size():
         dialogue_index = dialogue.size() - 1
