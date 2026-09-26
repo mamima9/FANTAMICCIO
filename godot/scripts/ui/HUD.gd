@@ -7,16 +7,32 @@ extends CanvasLayer
 @onready var continue_label: Label = $UI/Dialogue/VBox/Continue
 @onready var interact_button: Button = $UI/InteractButton
 
+var progress_label: Label
+
 func _ready() -> void:
     panel.visible = false
     interact_button.visible = _is_mobile()
     get_viewport().size_changed.connect(_refresh_mobile_visibility)
+
+    progress_label = Label.new()
+    progress_label.position = Vector2(32, 86)
+    progress_label.add_theme_font_size_override("font_size", 15)
+    progress_label.modulate = Color(1.0, 0.96, 0.82, 0.92)
+    $UI.add_child(progress_label)
 
 func _refresh_mobile_visibility() -> void:
     interact_button.visible = _is_mobile()
 
 func set_prompt(text: String) -> void:
     prompt.text = text
+
+func set_map_progress(_map_id: String, found: int, total: int) -> void:
+    if progress_label:
+        progress_label.text = "✨ Segreti scoperti: %d/%d   •   🏆 Beniamini: %d/8" % [
+            found,
+            total,
+            GameManager.collected_beniamini.size()
+        ]
 
 func show_interaction(title: String, text: String) -> void:
     speaker.text = title
