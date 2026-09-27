@@ -193,13 +193,6 @@ style={{
       Off Season 2026
     </p>
 
-<Link
-  href="/off-season"
-  className="..."
->
-    🤝  Tregua tra Contrade
-</Link>
-
   </div>
 </section>
     </main>
